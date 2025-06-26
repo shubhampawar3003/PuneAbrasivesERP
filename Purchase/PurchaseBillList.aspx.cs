@@ -45,7 +45,7 @@ public partial class Purchase_PurchaseBillList : System.Web.UI.Page
     private void Gvbind()
     {
         string query = string.Empty;
-        query = @"select * from tblPurchaseBillHdr PB
+        query = @"select CONVERT(nvarchar(10),BillDate,105) AS BillDate,* from tblPurchaseBillHdr PB
 INNER JOIN  tbl_UserMaster AS UM ON UM.usercode=PB.Createdby order by PB.Id desc";
         SqlDataAdapter ad = new SqlDataAdapter(query, con);
         DataTable dt = new DataTable();
@@ -127,11 +127,11 @@ INNER JOIN  tbl_UserMaster AS UM ON UM.usercode=PB.Createdby order by PB.Id desc
         string query = string.Empty;
         if (!string.IsNullOrEmpty(txtcnamefilter.Text.Trim()))
         {
-            query = "SELECT * FROM tblPurchaseBillHdr where SupplierName like '%" + txtcnamefilter.Text.Trim() + "%' order by Id desc";
+            query = "SELECT CONVERT(nvarchar(10),BillDate,105) AS BillDate,* FROM tblPurchaseBillHdr where SupplierName like '%" + txtcnamefilter.Text.Trim() + "%' order by Id desc";
         }
         else
         {
-            query = "SELECT * FROM tblPurchaseBillHdr where order by Id desc";
+            query = "SELECT CONVERT(nvarchar(10),BillDate,105) AS BillDate,* FROM tblPurchaseBillHdr where order by Id desc";
         }
 
         SqlDataAdapter ad = new SqlDataAdapter(query, con);
@@ -153,11 +153,11 @@ INNER JOIN  tbl_UserMaster AS UM ON UM.usercode=PB.Createdby order by PB.Id desc
         string query = string.Empty;
         if (!string.IsNullOrEmpty(txtSupplierBill.Text.Trim()))
         {
-            query = "SELECT * FROM tblPurchaseBillHdr where SupplierBillNo='" + txtSupplierBill.Text.Trim() + "' order by Id desc";
+            query = "SELECT CONVERT(nvarchar(10),BillDate,105) AS BillDate,* FROM tblPurchaseBillHdr where SupplierBillNo='" + txtSupplierBill.Text.Trim() + "' order by Id desc";
         }
         else
         {
-            query = "SELECT * FROM tblPurchaseBillHdr order by Id desc";
+            query = "SELECT CONVERT(nvarchar(10),BillDate,105) AS BillDate,* FROM tblPurchaseBillHdr order by Id desc";
         }
 
         SqlDataAdapter ad = new SqlDataAdapter(query, con);

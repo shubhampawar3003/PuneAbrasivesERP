@@ -229,9 +229,20 @@
                         <div class="col-md-1" style="margin-top: 36px">
                             <asp:LinkButton ID="btnrefresh" runat="server" OnClick="btnrefresh_Click" Width="100%" CssClass="btn btn-warning"><i style="color:white" class="fa">&#xf021;</i> &nbsp;</asp:LinkButton>
                         </div>
-                        <%--<div class="table-responsive text-center">--%>
-                        <div class="table fo">
-                            <asp:GridView ID="GVPurchase" runat="server" CellPadding="4" DataKeyNames="id" PageSize="10" AllowPaging="true" Width="100%" OnRowDataBound="GVPurchase_RowDataBound"
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="flex-grow: 1;">
+                                <!-- Left empty for future content if needed -->
+                            </div>
+                            <div class="col-md-1" style="text-align: right;">
+                                <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                                    <asp:ListItem Text="10" Value="10" />
+                                    <asp:ListItem Text="50" Value="50" />
+                                    <asp:ListItem Text="All" Value="100000" />
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+                        <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #ccc;">
+                            <asp:GridView ID="GVPurchase" runat="server" CellPadding="4" DataKeyNames="id"  Width="100%" OnRowDataBound="GVPurchase_RowDataBound"
                                 OnRowCommand="GVPurchase_RowCommand" OnPageIndexChanging="GVPurchase_PageIndexChanging" CssClass="grivdiv pagination-ys" AutoGenerateColumns="false">
                                 <Columns>
                                     <asp:TemplateField HeaderText="Sr.No." ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
@@ -299,6 +310,6 @@
             <asp:PostBackTrigger ControlID="GVPurchase" />
         </Triggers>
     </asp:UpdatePanel>
-     <rsweb:ReportViewer ID="ReportViewer1" runat="server" Visible="false"></rsweb:ReportViewer>
+    <rsweb:ReportViewer ID="ReportViewer1" runat="server" Visible="false"></rsweb:ReportViewer>
 </asp:Content>
 

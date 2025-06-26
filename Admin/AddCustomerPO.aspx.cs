@@ -34,12 +34,7 @@ public partial class Admin_AddCustomerPO : System.Web.UI.Page
                     txtcompanyname.Text = objcls.Decrypt(Request.QueryString["OAID"].ToString());
                     GetCompanyDetails();
                 }
-                if (Request.QueryString["ID"] != null)
-                {
-                    string Id = objcls.Decrypt(Request.QueryString["ID"].ToString());
-                    hhd.Value = Id;
-                    Load_Record(Id);
-                }
+            
 
                 if (Session["UserCode"] == null)
                 {
@@ -48,7 +43,6 @@ public partial class Admin_AddCustomerPO : System.Web.UI.Page
                 else
                 {
                     txtpodate.Text = DateTime.Now.ToString("yyyy-MM-dd");
-
                     txtdeliverydate.Text = DateTime.Now.ToString("yyyy-MM-dd");
                 }
 
@@ -60,7 +54,9 @@ public partial class Admin_AddCustomerPO : System.Web.UI.Page
                 //Edit 
                 if (Request.QueryString["ID"] != null)
                 {
-                    ID = objcls.Decrypt(Request.QueryString["ID"].ToString());
+                    string Id = objcls.Decrypt(Request.QueryString["ID"].ToString());
+                    hhd.Value = Id;
+                    Load_Record(Id);               
                     btnsave.Text = "Update";
                     ShowDtlEdit();
                     hhd.Value = ID;
@@ -106,7 +102,19 @@ public partial class Admin_AddCustomerPO : System.Web.UI.Page
             Fillddlshippingaddress(txtcompanyname.Text);
             Fillddlbillingaddress(txtcompanyname.Text);
             ddlUser.SelectedValue = Dt.Rows[0]["UserCode"].ToString();
-            DateTime ffff2 = Convert.ToDateTime(Dt.Rows[0]["PoDate"].ToString());
+            // DateTime ffff2 = Convert.ToDateTime(Dt.Rows[0]["PoDate"].ToString());
+            string poDateStr = Dt.Rows[0]["PoDate"].ToString();
+            DateTime poDate;
+            if (DateTime.TryParse(poDateStr, out poDate))
+            {
+                txtpodate.Text = poDate.ToString("yyyy-MM-dd");
+            }
+            string deliveryDateStr = Dt.Rows[0]["Deliverydate"].ToString();
+            DateTime deliveryDate;
+            if (DateTime.TryParse(deliveryDateStr, out deliveryDate))
+            {
+                txtdeliverydate.Text = deliveryDate.ToString("yyyy-MM-dd");
+            }
             txtmobileno.Text = Dt.Rows[0]["Mobileno"].ToString();
             txtbillingGST.Text = Dt.Rows[0]["GSTNo"].ToString();
             txtpanno.Text = Dt.Rows[0]["PANNo"].ToString();
@@ -132,8 +140,8 @@ public partial class Admin_AddCustomerPO : System.Web.UI.Page
             txtDeliveryTime.Text = Dt.Rows[0]["DeliveryTime"].ToString();
             txtPacking.Text = Dt.Rows[0]["Packing"].ToString();
             txtTaxs.Text = Dt.Rows[0]["Taxs"].ToString();
-
-            DateTime ffff3 = Convert.ToDateTime(Dt.Rows[0]["Deliverydate"].ToString());
+          
+           // DateTime ffff3 = Convert.ToDateTime(Dt.Rows[0]["Deliverydate"].ToString());
             txtreferquotation.Text = Dt.Rows[0]["Referquotation"].ToString();
             txtremark.Text = Dt.Rows[0]["Remarks"].ToString();
             txtTermsofdelivery.Text = Dt.Rows[0]["Termofdelivery"].ToString();

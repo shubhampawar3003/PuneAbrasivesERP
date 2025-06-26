@@ -101,8 +101,23 @@ public partial class Admin_PurchaseBillEntry : System.Web.UI.Page
                 txtSupplierBillNo.Text = dt.Rows[0]["SupplierBillNo"].ToString();
                 txtBillNo.Text = dt.Rows[0]["BillNo"].ToString();
                 hdnBillNo.Value = txtBillNo.Text;
-                DateTime BillDate = Convert.ToDateTime(dt.Rows[0]["BillDate"].ToString());
-                txtBilldate.Text = BillDate.ToString("dd-MM-yyyy");
+                //DateTime BillDate = Convert.ToDateTime(dt.Rows[0]["BillDate"].ToString());
+                //txtBilldate.Text = BillDate.ToString("dd-MM-yyyy");
+                string billDateStr = dt.Rows[0]["BillDate"].ToString();
+
+                DateTime billDate;
+                if (DateTime.TryParse(billDateStr, out billDate))
+                {
+                    // Format to yyyy-MM-dd for HTML5 date input
+                    txtBilldate.Text = billDate.ToString("yyyy-MM-dd");
+                }
+
+                string paymentDueDateStr = dt.Rows[0]["PaymentDueDate"].ToString();
+                DateTime paymentDueDate;
+                if (DateTime.TryParse(paymentDueDateStr, out paymentDueDate))
+                {
+                    txtPaymentDueDate.Text = paymentDueDate.ToString("yyyy-MM-dd");
+                }
                 ddlBillAgainst.Text = dt.Rows[0]["BillAgainst"].ToString();
                 BindPO(ddlBillAgainst.Text);
                 ddlAgainstNumber.SelectedValue = dt.Rows[0]["AgainstNumber"].ToString();
@@ -112,7 +127,7 @@ public partial class Admin_PurchaseBillEntry : System.Web.UI.Page
                 ddinwardAgainstNumber.Enabled = false;
                 txtTransportMode.Text = dt.Rows[0]["TransportMode"].ToString();
                 txtVehicleNumber.Text = dt.Rows[0]["VehicleNo"].ToString();
-                txtPaymentDueDate.Text = dt.Rows[0]["PaymentDueDate"].ToString();
+               // txtPaymentDueDate.Text = dt.Rows[0]["PaymentDueDate"].ToString();
                 txtAccontHead.Text = dt.Rows[0]["AccountHead"].ToString();
                 txtRemark.Text = dt.Rows[0]["Remarks"].ToString();
                 txtEBillNumber.Text = dt.Rows[0]["EBillNumber"].ToString();

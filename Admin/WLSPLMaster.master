@@ -135,12 +135,12 @@
 </head>
 <body class="sb-nav-fixed">
     <form id="form1" runat="server">
-        <asp:Label runat="server" ID="lbltest"></asp:Label>
+
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
 
-            <a class="navbar-brand" href="../Admin/Dashboard.aspx" style="background-color: white">
+            <a class="navbar-brand" href="../Admin/Dashboard.aspx" style="background-color: white; margin-left: 0 !important" >
 
-                <img class="logo" src="../Content/img/Pune Abrasives_logo.png" style="width: 190px; height: 40px;" /></a>
+                <img class="logo" src="../Content/img/Pune Abrasives_logo.png" style="width: 190px; height: 40px;  margin-left: 0;" /></a>
 
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
 

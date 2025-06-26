@@ -297,7 +297,7 @@
 
                 <asp:TemplateField HeaderText="Bill Date" HeaderStyle-CssClass="gvhead">
                     <ItemTemplate>
-                        <asp:Label ID="lblBillDate" runat="server" Text='<%# Convert.ToDateTime(Eval("BillDate")).ToString("dd-MM-yyyy").TrimEnd("0:0".ToCharArray()) %>'></asp:Label>
+                        <asp:Label ID="lblBillDate" runat="server" Text='<%# Eval("BillDate") %>'></asp:Label>
                     </ItemTemplate>
                 </asp:TemplateField>
 

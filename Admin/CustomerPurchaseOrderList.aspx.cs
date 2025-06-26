@@ -47,15 +47,17 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
     //Fill GridView
     private void FillGrid()
     {
+        int pageSize = 10; // default fallback
+        int.TryParse(ddlPageSize.SelectedValue, out pageSize);
         if (Session["Role"].ToString() == "Admin")
         {
-            DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE CP.IsDeleted = 0 ORDER BY CP.ID DESC");
+            DataTable Dt = Cls_Main.Read_Table("SELECT TOP ("+ pageSize + ") * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE CP.IsDeleted = 0 ORDER BY CP.ID DESC");
             GVPurchase.DataSource = Dt;
             GVPurchase.DataBind();
         }
         else
         {
-            DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE (CP.CreatedBy='" + Session["UserCode"].ToString() + "' OR CP.UserName='" + Session["UserCode"].ToString() + "') AND  CP.IsDeleted = 0 ORDER BY CP.ID DESC");
+            DataTable Dt = Cls_Main.Read_Table("SELECT TOP ("+ pageSize + ") * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE (CP.CreatedBy='" + Session["UserCode"].ToString() + "' OR CP.UserName='" + Session["UserCode"].ToString() + "') AND  CP.IsDeleted = 0 ORDER BY CP.ID DESC");
             GVPurchase.DataSource = Dt;
             GVPurchase.DataBind();
         }
@@ -92,7 +94,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
         }
         if (e.CommandName == "RowView")
         {
-            Report(e.CommandArgument.ToString(),"PDF");
+            Report(e.CommandArgument.ToString(), "PDF");
             //Response.Redirect("Pdf_CustomerPurchase.aspx?Pono=" + objcls.encrypt(e.CommandArgument.ToString()) + " ");
             // Response.Write("<script>window.open ('Pdf_Quotation.aspx?Quotationno=" + (e.CommandArgument.ToString()) + "','_blank');</script>");
         }
@@ -196,7 +198,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
             string company = txtCustomerName.Text;
 
             DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE CP.IsDeleted = 0 AND   CustomerName='" + txtCustomerName.Text + "' ORDER BY CP.ID DESC", Cls_Main.Conn);
+            SqlDataAdapter sad = new SqlDataAdapter("SELECT TOP ('"+ ddlPageSize .SelectedValue+ "') * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE CP.IsDeleted = 0 AND   CustomerName='" + txtCustomerName.Text + "' ORDER BY CP.ID DESC", Cls_Main.Conn);
             sad.Fill(dt);
             GVPurchase.EmptyDataText = "Not Records Found";
             GVPurchase.DataSource = dt;
@@ -443,7 +445,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
             }
         }
     }
- 
+
     //added 11/11/2024 mail send creation
     private void mailsendforCustomer(string Pono)
     {
@@ -453,7 +455,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
         string OADate = string.Empty;
         try
         {
-            Report(Pono,"Mail");
+            Report(Pono, "Mail");
             DataTable Dt = Cls_Main.Read_Table("SELECT  CONVERT(nvarchar(10),PoDate,103) AS PoDate, * FROM tbl_CustomerPurchaseOrderHdr WHERE  IsDeleted=0 AND Pono='" + Pono + "' ");
             if (Dt.Rows.Count > 0)
             {
@@ -522,7 +524,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
         }
     }
 
-    public void Report(string OANO,string Type)
+    public void Report(string OANO, string Type)
     {
         try
         {
@@ -572,7 +574,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
                     bytePdf = bytePdfRep;
                     Response.ClearContent();
                     Response.ClearHeaders();
-                    if(Type =="PDF")
+                    if (Type == "PDF")
                     {
                         Response.Buffer = true;
                         string Filename = OANO + "_OrderAcceptance.pdf";
@@ -586,7 +588,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
 
                         // Save the file to the specified path
                         System.IO.File.WriteAllBytes(filePath, bytePdfRep);
-                    }             
+                    }
                     ReportViewer1.LocalReport.DataSources.Clear();
                     ReportViewer1.Reset();
 
@@ -601,6 +603,10 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
         {
             throw (ex);
         }
+    }
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        FillGrid();
     }
 }
 

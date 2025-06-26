@@ -19,8 +19,6 @@ public partial class ChatWindow : System.Web.UI.Page
             empCode = Session["UserCode"].ToString();
             if (!IsPostBack)
             {
-
-
                 string receiverId = Request.QueryString["receiverid"];
                 if (!string.IsNullOrEmpty(receiverId))
                 {
