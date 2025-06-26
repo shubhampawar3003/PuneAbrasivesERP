@@ -130,6 +130,8 @@
                     background-color: #eeeeee;
                     border-color: #dddddd;
                 }
+
+    
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
@@ -215,7 +217,7 @@
                                 </asp:DropDownList>
                             </div>
                         </div>
-                        <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #ccc;">
+                        <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
 
                             <asp:GridView ID="GVPurchase" runat="server" CellPadding="4" DataKeyNames="id" Width="100%" OnRowDataBound="GVPurchase_RowDataBound"
                                 OnRowCommand="GVPurchase_RowCommand" CssClass="grivdiv pagination-ys" AutoGenerateColumns="false">

@@ -90,7 +90,6 @@
                                         <asp:ListItem Value="-- Select Unit --" Text="-- Select Unit --"></asp:ListItem>
                                         <asp:ListItem Value="KGS" Text="KGS"></asp:ListItem>
                                         <asp:ListItem Value="Ton" Text="Ton"></asp:ListItem>
-										   <asp:ListItem Value="NOS" Text="NOS"></asp:ListItem>
                                     </asp:DropDownList>
                                     <%--      <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" ErrorMessage="Please Fill Unit" ControlToValidate="txtUnit" ForeColor="Red" ValidationGroup="Check"></asp:RequiredFieldValidator>--%>
                                 </div>

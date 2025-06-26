@@ -89,7 +89,7 @@
                 showCancelButton: false,
                 showConfirmButton: false
             }).then(function () {
-                window.location.href = "ProductMaster.aspx";
+                window.location.href = "../Admin/InwardEntryList.aspx";
             })
         };
     </script>

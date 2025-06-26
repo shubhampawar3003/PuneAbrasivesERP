@@ -21,7 +21,7 @@ public partial class Admin_InventoryList : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
-
+            this.ModalPopupHistory.Hide();
             if (Session["UserCode"] == null)
             {
                 Response.Redirect("../Login.aspx");
@@ -230,4 +230,55 @@ public partial class Admin_InventoryList : System.Web.UI.Page
             // ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Please try again leter....!');", true);
         }
     }
+
+    protected void GVInentory_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+
+    }
+
+    protected void GVInentory_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName == "ShowDetails") // Ensure this matches the CommandName used in your GridView
+        {
+            int rowIndex = Convert.ToInt32(e.CommandArgument)-1;
+            GridViewRow row = GVInentory.Rows[rowIndex];
+
+            Label Productname = row.FindControl("Productname") as Label;
+            Label Batch = row.FindControl("Batch") as Label;    
+
+            string strConnString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
+            DataSet Dtt = new DataSet();
+
+            using (SqlConnection con = new SqlConnection(strConnString))
+            {
+                using (SqlCommand cmd = new SqlCommand("[SP_Reports]", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Action", "GetInOutComponent");
+                    cmd.Parameters.AddWithValue("@ComponentName", Productname.Text);
+                    cmd.Parameters.AddWithValue("@Batch", Batch.Text);
+
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        sda.Fill(Dtt);
+                    }
+                }
+            }
+
+            if (Dtt.Tables.Count > 0 && Dtt.Tables[0].Rows.Count > 0)
+            {
+                gvDetails.DataSource = Dtt.Tables[0];
+                gvDetails.DataBind();
+                this.ModalPopupHistory.Show();
+            }
+            else
+            {
+                this.ModalPopupHistory.Hide();
+            }
+
+        
+            
+        }
+    }
+
 }

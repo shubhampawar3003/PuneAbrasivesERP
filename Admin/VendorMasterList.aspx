@@ -110,7 +110,7 @@
             <div class="row">
                 <%--<div class="table-responsive text-center">--%>
                 <div class="table ">
-                    <asp:GridView ID="GVVendor" runat="server" CellPadding="4" DataKeyNames="ID"  Width="100%" OnRowDataBound="GVVendor_RowDataBound"
+                    <asp:GridView ID="GVVendor" runat="server" CellPadding="4" DataKeyNames="ID" Width="100%" OnRowDataBound="GVVendor_RowDataBound"
                         CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowCommand="GVVendor_RowCommand" OnPageIndexChanging="GVVendor_PageIndexChanging">
                         <Columns>
                             <asp:TemplateField HeaderText="Sr.No." HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">

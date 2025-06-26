@@ -94,8 +94,8 @@
             <div class="container-fluid px-4">
                 <div class="row">
                     <div class="col-9 col-md-10">
-                          <h4 class="mt-4">&nbsp <b>USER LIST</b></h4>
-                     
+                        <h4 class="mt-4">&nbsp <b>USER LIST</b></h4>
+
                     </div>
                     <div class="col-3 col-md-2 mt-4">
                         <asp:Button ID="btnCreate" CssClass="form-control btn btn-warning" OnClick="btnCreate_Click" runat="server" Text="Create" />
@@ -123,7 +123,7 @@
                                             <asp:Label ID="username" runat="server" Text='<%#Eval("Username")%>'></asp:Label>
                                         </ItemTemplate>
                                     </asp:TemplateField>
-									    <asp:TemplateField HeaderText="Password" HeaderStyle-CssClass="gvhead">
+                                    <asp:TemplateField HeaderText="Password" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>
                                             <asp:Label ID="Password" runat="server" Text='<%#Eval("Password")%>'></asp:Label>
                                         </ItemTemplate>

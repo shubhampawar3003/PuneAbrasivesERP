@@ -41,7 +41,8 @@ public partial class Admin_Dashboard : System.Web.UI.Page
 
             lblyear.Text = "YEAR(" + financialYear + ")";
             MeetingReminder();
-           // mailsendforCustomer();
+            //that mail send method sending mail for those customers whoes payment pendng
+             mailsendforCustomer();
             ActiveUserCount(); CompanyCount(); MachineCounts(); VendorCounts(); Quotationlist(); TaxInvoicelist(); Purchaselist(); Receiptlist(); fillgridService();
             FillGrid();
             //today
@@ -51,8 +52,6 @@ public partial class Admin_Dashboard : System.Web.UI.Page
             //year
             YearEnquiryCount(); YearQuotationCount(); YearSampleCount(); YearInvoiceCount();
 
-            ActiveCount();
-            getdetails();
             //if (Session["Designation"].ToString() == "Sales Manager" || Session["Role"].ToString() == "Admin")
             if (Session["Role"].ToString() == "Admin")
             {
@@ -355,47 +354,9 @@ public partial class Admin_Dashboard : System.Web.UI.Page
         Cls_Main.Conn_Close();
     }
 
-    protected void ActiveCount()
-    {
-        Cls_Main.Conn_Open();
-        int count = 0;
-        if (Session["Role"].ToString() == "Admin")
-        {
-            SqlCommand cmd = new SqlCommand("SELECT Count(*) FROM tbl_EnquiryData where IsActive=1 AND Sample=1 AND Notiification=0  AND DATEADD(DAY, 3, CAST(SampleDate AS DATE)) <= CAST(GETDATE() AS DATE);", Cls_Main.Conn);
-            count = Convert.ToInt16(cmd.ExecuteScalar());
-        }
-        else
-        {
-            SqlCommand cmd = new SqlCommand("SELECT Count(*) FROM tbl_EnquiryData where sessionname='" + Session["UserCode"].ToString() + "'  AND IsActive=1 AND Sample=1 AND Notiification=0  AND DATEADD(DAY, 3, CAST(SampleDate AS DATE)) <= CAST(GETDATE() AS DATE);", Cls_Main.Conn);
-
-            count = Convert.ToInt16(cmd.ExecuteScalar());
-        }
 
 
-        lblcount.Text = count.ToString();
-        Cls_Main.Conn_Close();
-    }
 
-    public void getdetails()
-    {
-        DataTable dt = new DataTable();
-        if (Session["Role"].ToString() == "Admin")
-        {
-            SqlDataAdapter sad = new SqlDataAdapter("select id, cname,EnqCode,SampleDate from tbl_EnquiryData where IsActive=1 AND Sample=1 AND Notiification=0  AND DATEADD(DAY, 3, CAST(SampleDate AS DATE)) <= CAST(GETDATE() AS DATE)", Cls_Main.Conn);
-            sad.Fill(dt);
-        }
-        else
-        {
-            SqlDataAdapter sad = new SqlDataAdapter("select id, cname,EnqCode,SampleDate from tbl_EnquiryData where IsActive=1 AND Sample=1 AND Notiification=0 AND  sessionname='" + Session["UserCode"].ToString() + "' AND Sample=1  AND DATEADD(DAY, 3, CAST(SampleDate AS DATE)) <= CAST(GETDATE() AS DATE)", Cls_Main.Conn);
-            sad.Fill(dt);
-        }
-
-        if (dt.Rows.Count > 0)
-        {
-            grdnotification.DataSource = dt;
-            grdnotification.DataBind();
-        }
-    }
 
     // ------------------------------------------------------------------------------------------
 
@@ -514,7 +475,7 @@ public partial class Admin_Dashboard : System.Web.UI.Page
     }
 
     byte[] bytePdfRep = null;
-    private void mailsendforCustomer()
+    private  void mailsendforCustomer()
     {
         try
         {
@@ -532,6 +493,7 @@ public partial class Admin_Dashboard : System.Web.UI.Page
                     SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                     DataTable Dt = new DataTable();
                     adapter.Fill(Dt);
+                    connection.Close();
                     if (Dt.Rows.Count > 0)
                     {
                         foreach (DataRow obj in Dt.Rows)
@@ -541,13 +503,13 @@ public partial class Admin_Dashboard : System.Web.UI.Page
                             // PDF(Convert.ToString(invoiceno)); that code removed on 19102024
                             var MailTO = obj.ItemArray[6];
                             string stringInvoiceNo = Convert.ToString(invoiceno).Replace("/", "-");
-                            string fileName = stringInvoiceNo + "_CustomerTaxInvoice.pdf";
+                            string fileName = stringInvoiceNo + "_TaxInvoice.pdf";
                             var fromMailID = obj.ItemArray[14].ToString();
-                           // var fromMailID = "testing@weblinkservices.net";
+                            // var fromMailID = "testing@weblinkservices.net";
                             string mailTo = MailTO.ToString();
                             MailMessage mm = new MailMessage();
                             //string strMessage = "Apologies for the confusion caused by the previous email. It was sent in error, and we would like to clarify that the earlier message regarding the ERP system testing was meant as part of our regular testing process.\r\n\r\nPlease note that the data shared may not reflect the final figures as it is part of an ongoing test. We appreciate your understanding as we continue to ensure everything is functioning correctly.\r\n\r\nThank you for your attention and cooperation, and please feel free to reach out if you have any questions.";
-                           // mm.From = new MailAddress("girish.kulkarni@puneabrasives.com", fromMailID);
+                            // mm.From = new MailAddress("girish.kulkarni@puneabrasives.com", fromMailID);
                             string strMessage = "Invoice No.:" + invoiceno + "<br/>" +
                                 "Invoice Date:" + obj.ItemArray[1] + "<br/>" +
                                 "Grand total :" + obj.ItemArray[7] + "<br/>" +
@@ -565,19 +527,11 @@ public partial class Admin_Dashboard : System.Web.UI.Page
                 "<strong> PUNE ABRASIVES PVT. LTD.<strong>";
                             mm.Subject = " - UPDATE - FROM PUNE ABRASIVES PVT. LTD.";
                             mm.To.Add(mailTo);
-                           // mm.To.Add("erpdeveloper3003@gmail.com");
+                            // mm.To.Add("erpdeveloper3003@gmail.com");
 
                             mm.CC.Add("girish.kulkarni@puneabrasives.com");
                             mm.CC.Add(fromMailID);
-                            EInvoiceReports(Convert.ToString(invoiceno));
-                            if (!string.IsNullOrEmpty(fileName))
-                            {
-                                byte[] file = bytePdfRep;
-
-                                Stream stream = new MemoryStream(file);
-                                Attachment aa = new Attachment(stream, fileName);
-                                 mm.Attachments.Add(aa);
-                            }
+                       
                             StreamReader reader = new StreamReader(Server.MapPath("~/Templates/CommentPage_templet.html"));
                             string readFile = reader.ReadToEnd();
                             string myString = "";
@@ -613,8 +567,17 @@ public partial class Admin_Dashboard : System.Web.UI.Page
                             {
                                 DateTime reminderDate = Convert.ToDateTime(date).Date;
                                 DateTime Todaydate = DateTime.Now.Date;
-                                if (reminderDate.AddDays(2) < Todaydate)
+                                if (reminderDate.AddDays(7) < Todaydate)
                                 {
+                                    EInvoiceReports(Convert.ToString(invoiceno));
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        byte[] file = bytePdfRep;
+
+                                        Stream stream = new MemoryStream(file);
+                                        Attachment aa = new Attachment(stream, fileName);
+                                        mm.Attachments.Add(aa);
+                                    }
                                     smtp.SendMailAsync(mm);
                                     Cls_Main.Conn_Open();
                                     SqlCommand Cmd = new SqlCommand("UPDATE [tblTaxInvoiceHdr] SET IsReminderMail=@IsReminderMail,Reminderdate=@Reminderdate WHERE InvoiceNo=@Invoiceno", Cls_Main.Conn);
@@ -629,6 +592,15 @@ public partial class Admin_Dashboard : System.Web.UI.Page
                             }
                             else
                             {
+                                EInvoiceReports(Convert.ToString(invoiceno));
+                                if (!string.IsNullOrEmpty(fileName))
+                                {
+                                    byte[] file = bytePdfRep;
+
+                                    Stream stream = new MemoryStream(file);
+                                    Attachment aa = new Attachment(stream, fileName);
+                                    mm.Attachments.Add(aa);
+                                }
                                 smtp.SendMailAsync(mm);
                                 Cls_Main.Conn_Open();
                                 SqlCommand Cmd = new SqlCommand("UPDATE [tblTaxInvoiceHdr] SET IsReminderMail=@IsReminderMail,Reminderdate=@Reminderdate WHERE InvoiceNo=@Invoiceno", Cls_Main.Conn);
@@ -776,37 +748,6 @@ public partial class Admin_Dashboard : System.Web.UI.Page
 
     }
 
-    protected void grdnotification_RowDataBound(object sender, GridViewRowEventArgs e)
-    {
-        int rowCount = grdnotification.Rows.Count;
-
-        // Update the label with the row count
-        lblcount.Text = rowCount.ToString();
-
-        // Optionally hide the badge if the count is zero
-        if (rowCount == 0)
-        {
-            notificationCount.Style.Add("display", "none");
-        }
-        else
-        {
-            notificationCount.Style.Add("display", "inline-block");
-        }
-    }
-
-    [WebMethod]
-    public static string MarkNotificationsAsSeen()
-    {
-
-        //Cls_Main.Conn_Open();
-        //SqlCommand Cmd = new SqlCommand("update tbl_EnquiryData set Notiification=1 where IsActive=1 AND  Notiification=0  AND Sample=1  AND DATEADD(DAY, 3, CAST(SampleDate AS DATE)) <= CAST(GETDATE() AS DATE)", Cls_Main.Conn);
-        ////  Cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(e.CommandArgument.ToString()));
-        ////  Cmd.Parameters.AddWithValue("@IsDeleted", '1');     
-        //Cmd.ExecuteNonQuery();
-        //Cls_Main.Conn_Close();
-
-        return "success";
-    }
     protected void MeetingReminder()
     {
 
@@ -1179,7 +1120,7 @@ public partial class Admin_Dashboard : System.Web.UI.Page
                     else
                     {
                         ReportViewer1.LocalReport.ReportPath = "RDLC_Reports\\EInvoice.rdlc";
-                    }                  
+                    }
                     ReportViewer1.LocalReport.Refresh();
                     //-------- Print PDF directly without showing ReportViewer ----
                     Warning[] warnings;

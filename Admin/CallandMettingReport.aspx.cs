@@ -191,7 +191,31 @@ public partial class Admin_CallandMettingReport : System.Web.UI.Page
                 //GVfollowup.DataBind();
             }
 
-           
+            //Authorization
+            //if (e.Row.RowType == DataControlRowType.DataRow)
+            //{
+            //   // LinkButton btnEdit = e.Row.FindControl("btnEdit") as LinkButton;
+            //    LinkButton btnDelete = e.Row.FindControl("btnDelete") as LinkButton;
+
+            //    string empcode = Session["UserCode"].ToString();
+            //    DataTable Dt = new DataTable();
+            //    SqlDataAdapter Sd = new SqlDataAdapter("Select ID from tbl_UserMaster where UserCode='" + empcode + "'", con);
+            //    Sd.Fill(Dt);
+            //    if (Dt.Rows.Count > 0)
+            //    {
+            //        string id = Dt.Rows[0]["ID"].ToString();
+            //        DataTable Dtt = new DataTable();
+            //        SqlDataAdapter Sdd = new SqlDataAdapter("Select * FROM tblUserRoleAuthorization where UserID = '" + id + "' AND PageName = 'CallandMettingReport.aspx' AND PagesView = '1'", con);
+            //        Sdd.Fill(Dtt);
+            //        if (Dtt.Rows.Count > 0)
+            //        {
+            //            btnCreate.Visible = false;
+            //            //GVQuotation.Columns[15].Visible = false;
+            //            //btnEdit.Visible = false;
+            //            btnDelete.Visible = false;
+            //        }
+            //    }
+            //}
         }
         catch (Exception ex)
         {

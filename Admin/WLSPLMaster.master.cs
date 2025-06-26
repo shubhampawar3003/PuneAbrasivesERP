@@ -1,16 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 public partial class Account_AccountMasterPage : System.Web.UI.MasterPage
 {
     SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["constr"].ConnectionString);
+    CommonCls objcls = new CommonCls();
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null)
@@ -27,9 +24,10 @@ public partial class Account_AccountMasterPage : System.Web.UI.MasterPage
 
 
             PageAuthorization();
-
-
+            ActiveCount();
+            RequestCount();
             lblusername.Text = Session["Username"].ToString();
+            LoadNotifications();
         }
     }
 
@@ -536,6 +534,20 @@ public partial class Account_AccountMasterPage : System.Web.UI.MasterPage
                     }
                 }
 
+                if (MenuName == "TallyReports.aspx")
+                {
+                    string page1 = row["Pages"].ToString();
+                    string pageView = row["PagesView"].ToString();
+                    if (page1 == "False" && pageView == "False")
+                    {
+                        IDTallyReports.Visible = false;
+                    }
+                    else
+                    {
+                        IDTallyReports.Visible = true;
+                    }
+                }
+
                 //condition
 
                 if (UserListid.Visible == false && CompanyListid.Visible == false && ComponentID.Visible == false && RolelistID.Visible == false && ProductMasterListID.Visible == false && VendorMasterListid.Visible == false && TrasnportermasterID.Visible == false && TargetMasterID.Visible == false && SalesTargetID.Visible == false)
@@ -626,4 +638,97 @@ public partial class Account_AccountMasterPage : System.Web.UI.MasterPage
     //        GVServices.DataBind();
     //    }
     //}
+
+    protected void lnlComponentRequests_Click(object sender, EventArgs e)
+    {
+        // Response.Redirect("~/Account/WarehouseInvoiceList.aspx");
+        Response.Redirect("~/Account/ComponentRequestList.aspx?Id=" + objcls.encrypt("Request") + " ");
+    }
+
+    protected void lnkSample_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("~/Admin/SampleReminder.aspx");
+    }
+
+    protected void lnkViewAll_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    protected void ActiveCount()
+    {
+        Cls_Main.Conn_Open();
+        int count = 0;
+        if (Session["Role"].ToString() == "Admin")
+        {
+            SqlCommand cmd = new SqlCommand("SELECT Count(*) FROM tbl_EnquiryData where IsActive=1 AND Sample=1 AND Notiification=0  AND DATEADD(DAY, 3, CAST(SampleDate AS DATE)) <= CAST(GETDATE() AS DATE);", Cls_Main.Conn);
+            count = Convert.ToInt16(cmd.ExecuteScalar());
+        }
+        else
+        {
+            SqlCommand cmd = new SqlCommand("SELECT Count(*) FROM tbl_EnquiryData where sessionname='" + Session["UserCode"].ToString() + "'  AND IsActive=1 AND Sample=1 AND Notiification=0  AND DATEADD(DAY, 3, CAST(SampleDate AS DATE)) <= CAST(GETDATE() AS DATE);", Cls_Main.Conn);
+
+            count = Convert.ToInt16(cmd.ExecuteScalar());
+        }
+        lblSamplecount.Text = count.ToString();
+        Cls_Main.Conn_Close();
+    }
+
+    protected void RequestCount()
+    {
+        Cls_Main.Conn_Open();
+        int count = 0;
+        if (Session["Role"].ToString() == "Admin")
+        {
+            SqlCommand cmd = new SqlCommand("SELECT Count(*) FROM  tbl_OutwardEntryHdr where IsEditApproval=1", Cls_Main.Conn);
+            count = Convert.ToInt16(cmd.ExecuteScalar());
+        }
+        else
+        {
+            count = 0;
+        }
+        lblcomporequestCount.Text = count.ToString();
+        Cls_Main.Conn_Close();
+        int count1 = 0, count2 = 0;
+        int.TryParse(lblSamplecount.Text, out count1);
+        int.TryParse(lblcomporequestCount.Text, out count2);
+
+        lblTotalNotif.Text = (count1 + count2).ToString();
+
+    }
+
+    private void LoadNotifications()
+    {
+        string empCode = ""; // or "bdeempcode"     
+
+        con.Open();
+
+        empCode = Session["ID"].ToString(); 
+
+        SqlDataAdapter ad = new SqlDataAdapter(@"
+SELECT TOP 5 
+    M.Message, 
+    M.Sentat, 
+    E.Username AS SenderName,ReceiverId
+FROM ChatMessages M
+INNER JOIN tbl_UserMaster E ON M.SenderID = E.id
+WHERE M.ReceiverId='" + empCode + "' AND IsSeen = 0 ORDER BY M.Sentat DESC", con);
+        DataTable dt = new DataTable();
+        ad.Fill(dt);
+        if (dt.Rows.Count > 0)
+        {
+            rptNotifications.DataSource = dt;
+            rptNotifications.DataBind();
+        }
+
+        string countQuery = "SELECT COUNT(*) FROM ChatMessages WHERE ReceiverID = @ReceiverID AND IsSeen = 0";
+        SqlCommand countCmd = new SqlCommand(countQuery, con);
+        countCmd.Parameters.AddWithValue("@ReceiverID", empCode);
+
+        int unseenCount = (int)countCmd.ExecuteScalar();
+
+        // 4. Set to label (e.g., red badge)
+        lblChatCount.Text = unseenCount.ToString();
+        con.Close();
+    }
 }

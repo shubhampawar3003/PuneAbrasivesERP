@@ -49,10 +49,10 @@ public partial class Admin_Pdf_CustomerPurchase : System.Web.UI.Page
 
             Document doc = new Document(PageSize.A4, 10f, 10f, 55f, 0f);
 
-            PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(Server.MapPath("~/PDF_Files/") + "OAPDF.pdf", FileMode.Create));
+            PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(Server.MapPath("~/PDF_Files/") + "OA3.pdf", FileMode.Create));
 
             doc.Open();
-        string UserName = Dt.Rows[0]["UserName"] != DBNull.Value ? Dt.Rows[0]["UserName"].ToString() : string.Empty;
+            string UserName = Dt.Rows[0]["UserName"] != DBNull.Value ? Dt.Rows[0]["UserName"].ToString() : string.Empty;
             if (UserName != null && UserName != "")
             {
                 DataTable dt = new DataTable();
@@ -437,7 +437,7 @@ public partial class Admin_Pdf_CustomerPurchase : System.Web.UI.Page
                 doc.Add(table);
             }
             doc.Close();
-            ifrRight6.Attributes["src"] = @"../PDF_Files/" + "OAPDF.pdf";
+            ifrRight6.Attributes["src"] = @"../PDF_Files/" + "OA3.pdf";
 
         }
         catch (Exception ex)

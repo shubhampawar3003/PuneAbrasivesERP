@@ -87,72 +87,7 @@
                     border-color: #dddddd;
                 }
     </style>
-    <style>
-        .spancls {
-            color: #5d5656 !important;
-            font-size: 13px !important;
-            font-weight: 600;
-            text-align: left;
-        }
 
-        .starcls {
-            color: red;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .card .card-header span {
-            color: #060606;
-            display: block;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        .errspan {
-            float: right;
-            margin-right: 6px;
-            margin-top: -25px;
-            position: relative;
-            z-index: 2;
-            color: black;
-        }
-
-        .currentlbl {
-            text-align: center !important;
-        }
-
-        .completionList {
-            border: solid 1px Gray;
-            border-radius: 5px;
-            margin: 0px;
-            padding: 3px;
-            height: 120px;
-            overflow: auto;
-            background-color: #FFFFFF;
-        }
-
-        .listItem {
-            color: #191919;
-        }
-
-        .itemHighlighted {
-            background-color: #ADD6FF;
-        }
-
-        .reqcls {
-            color: red;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .aspNetDisabled {
-            cursor: not-allowed !important;
-        }
-
-        .rwotoppadding {
-            padding-top: 10px;
-        }
-    </style>
     <link href="../Content/css/cards.css" rel="stylesheet" />
     <script>
         function resetNotificationCount() {
@@ -188,6 +123,116 @@
             });
         });
     </script>
+    <style>
+        .modelprofile1 {
+            background-color: rgba(0, 0, 0, 0.54);
+            display: block;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            /*top: 10px;*/
+            height: 100%;
+            overflow: auto;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .profilemodel2 {
+            background-color: #fefefe;
+            margin-top: 25px;
+            /*padding: 17px 5px 18px 22px;*/
+            padding: 0px 0px 15px 0px;
+            width: 100%;
+            top: 40px;
+            color: #000;
+            border-radius: 5px;
+        }
+
+        .lblpopup {
+            text-align: left;
+        }
+
+        .wp-block-separator:not(.is-style-wide):not(.is-style-dots)::before, hr:not(.is-style-wide):not(.is-style-dots)::before {
+            content: '';
+            display: block;
+            height: 1px;
+            width: 100%;
+            background: #cccccc;
+        }
+
+        .btnclose {
+            background-color: #ef1e24;
+            float: right;
+            font-size: 18px !important;
+            /* font-weight: 600; */
+            color: #f7f6f6 !important;
+            border: 0px groove !important;
+            background-color: none !important;
+            /*margin-right: 10px !important;*/
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        /*hr {
+            margin-top: 5px !important;
+            margin-bottom: 15px !important;
+            border: 1px solid #eae6e6 !important;
+            width: 100%;
+        }*/
+        hr.new1 {
+            border-top: 1px dashed green !important;
+            border: 0;
+            margin-top: 5px !important;
+            margin-bottom: 5px !important;
+            width: 100%;
+        }
+
+        .errspan {
+            float: right;
+            margin-right: 6px;
+            margin-top: -25px;
+            position: relative;
+            z-index: 2;
+            color: black;
+        }
+
+        .currentlbl {
+            text-align: center !important;
+        }
+
+        .completionList {
+            border: solid 1px Gray;
+            border-radius: 5px;
+            margin: 0px;
+            padding: 3px;
+            height: 120px;
+            overflow: auto;
+            background-color: #FFFFFF;
+        }
+
+        .listItem {
+            color: #191919;
+        }
+
+        .itemHighlighted {
+            background-color: #ADD6FF;
+        }
+
+        .headingcls {
+            background-color: #01a9ac;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px 5px 0px 0px;
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1250px !important;
+            }
+        }
+    </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <asp:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server"></asp:ToolkitScriptManager>
@@ -248,9 +293,15 @@
                     <div class="row">
                         <%--<div class="table-responsive text-center">--%>
                         <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #ccc;">
-                            <asp:GridView ID="GVInentory" runat="server" CellPadding="4" Width="100%"
+                            <asp:GridView ID="GVInentory" runat="server" CellPadding="4" Width="100%" OnRowDataBound="GVInentory_RowDataBound" OnRowCommand="GVInentory_RowCommand"
                                 CssClass="grivdiv pagination-ys" AutoGenerateColumns="false">
                                 <Columns>
+                                    <asp:TemplateField HeaderText="ACTION" HeaderStyle-CssClass="gvhead">
+                                        <ItemTemplate>
+                                            <asp:LinkButton ID="btnEdit" runat="server" Height="27px" CausesValidation="false" CommandName="ShowDetails" CommandArgument='<%#Eval("ID")%>'><i class='fas fa-eye' style='font-size:24px;color: #212529;'></i></asp:LinkButton>
+
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
                                     <asp:TemplateField HeaderText="Sr.No." HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>
                                             <asp:Label ID="lblsno" runat="server" Text='<%# Container.DataItemIndex+1 %>'></asp:Label>
@@ -271,11 +322,11 @@
                                             <asp:Label ID="Productname" runat="server" Text='<%#Eval("ComponentName")%>'></asp:Label>
                                         </ItemTemplate>
                                     </asp:TemplateField>
-									   <asp:TemplateField HeaderText="Grade" HeaderStyle-CssClass="gvhead">
-       <ItemTemplate>
-           <asp:Label ID="Description" runat="server" Text='<%#Eval("Description")%>'></asp:Label>
-       </ItemTemplate>
-   </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="Grade" HeaderStyle-CssClass="gvhead">
+                                        <ItemTemplate>
+                                            <asp:Label ID="Description" runat="server" Text='<%#Eval("Description")%>'></asp:Label>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
                                     <asp:TemplateField HeaderText="Batch" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>
                                             <asp:Label ID="Batch" runat="server" Text='<%#Eval("Batch")%>'></asp:Label>
@@ -301,22 +352,6 @@
                                             <asp:Label ID="Rate" runat="server" Text='<%#Eval("Rate")%>'></asp:Label>
                                         </ItemTemplate>
                                     </asp:TemplateField>
-                                    <%--    <asp:TemplateField HeaderText="Total" HeaderStyle-CssClass="gvhead">
-                                        <ItemTemplate>
-                                            <asp:Label ID="Total" runat="server" Text='<%#Eval("Total")%>'></asp:Label>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                    <asp:TemplateField HeaderText="All total" HeaderStyle-CssClass="gvhead">
-                                        <ItemTemplate>
-                                            <asp:Label ID="Alltotal" runat="server" Text='<%#Eval("Alltotal")%>'></asp:Label>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>--%>
-
-                                    <%--     <asp:TemplateField HeaderText="GST No." HeaderStyle-CssClass="gvhead">
-                                        <ItemTemplate>
-                                            <asp:Label ID="GSTno" runat="server" Text='<%#Eval("GSTno")%>'></asp:Label>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>   --%>
                                 </Columns>
                             </asp:GridView>
                         </div>
@@ -327,7 +362,58 @@
         </ContentTemplate>
         <Triggers>
             <asp:PostBackTrigger ControlID="btnDownload" />
+            <asp:PostBackTrigger ControlID="GVInentory" />
         </Triggers>
     </asp:UpdatePanel>
+
+    <asp:Button ID="btnhist" runat="server" Style="display: none" />
+    <asp:ModalPopupExtender ID="ModalPopupHistory" runat="server" TargetControlID="btnhist"
+        PopupControlID="PopupHistoryDetail" OkControlID="Closepophistory" />
+
+    <asp:Panel ID="PopupHistoryDetail" runat="server" CssClass="modelprofile1">
+        <div class="row container">
+            <div class="col-md-4"></div>
+            <div class="col-md-8">
+                <div class="profilemodel2">
+                    <div class="headingcls">
+                        <h4 class="modal-title">Component Details
+                              
+                            <button type="button" id="Closepophistory" class="btnclose" style="display: inline-block;" data-dismiss="modal">Close</button></h4>
+                    </div>
+
+                    <%--                    <br />
+                    <div class="col-md-4" style="text-align: left">
+                        <asp:LinkButton ID="LinkButton1" CssClass="form-control btn btn-info" data-dismiss="modal" Font-Bold="true" CausesValidation="false" runat="server" OnClick="LinkButton1_Click">
+    <i class="fas fa-file-alt"></i>&nbsp&nbsp DSR LIST
+                        </asp:LinkButton>
+                    </div>--%>
+                    <div class="body" style="margin-right: 10px; margin-left: 10px; padding-right: 1px; padding-left: 1px;">
+                        <div class="row">
+
+                            <asp:GridView ID="gvDetails" runat="server" DataKeyNames="ID"
+                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false">
+                                <Columns>
+                                    <asp:BoundField ItemStyle-Width="150px" DataField="ID" HeaderText="Sr. No." />
+                                    <asp:BoundField ItemStyle-Width="150px" DataField="ComponentName" HeaderText="Component Name" />
+                                    <asp:BoundField ItemStyle-Width="150px" DataField="Description" HeaderText="Description" />
+                                    <asp:BoundField ItemStyle-Width="150px" DataField="InwardQty" HeaderText="Inward Qty" />
+                                    <asp:BoundField ItemStyle-Width="150px" DataField="InvoiceDate" HeaderText="Inward DateTime" />
+                                    <asp:BoundField ItemStyle-Width="150px" DataField="OutwardQty" HeaderText="Outward Qty" />
+                                    <asp:BoundField ItemStyle-Width="150px" DataField="OutwradDate" HeaderText="Outward DateTime" />
+
+                                </Columns>
+                            </asp:GridView>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </asp:Panel>
+
+
 </asp:Content>
 

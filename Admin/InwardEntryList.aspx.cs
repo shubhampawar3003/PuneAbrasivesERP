@@ -4,11 +4,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -57,7 +52,7 @@ public partial class Admin_InwardEntryList : System.Web.UI.Page
 
             using (SqlCommand com = new SqlCommand())
             {
-                com.CommandText = "SELECT DISTINCT [Suppliername] FROM [tbl_InwardEntryHdr] where " + "Suppliername like @Search + '%' and IsDeleted=0";
+                com.CommandText = "SELECT DISTINCT [Suppliername] FROM [tbl_InwardEntryHdr] where Suppliername like " + " @Search + '%' and IsDeleted=0";
 
                 com.Parameters.AddWithValue("@Search", prefixText);
                 com.Connection = con;
@@ -104,33 +99,34 @@ public partial class Admin_InwardEntryList : System.Web.UI.Page
             Response.Redirect("InwardEntry.aspx?Id=" + objcls.encrypt(e.CommandArgument.ToString()) + "");
         }
 
-           if (e.CommandName == "RowDelete")
-   {
-       Cls_Main.Conn_Open();
-       SqlCommand Cmd = new SqlCommand("UPDATE [tbl_InwardEntryHdr] SET IsDeleted=@IsDeleted,DeletedBy=@DeletedBy,DeletedOn=@DeletedOn WHERE ID=@ID", Cls_Main.Conn);
-       Cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(e.CommandArgument.ToString()));
-       Cmd.Parameters.AddWithValue("@IsDeleted", '1');
-       Cmd.Parameters.AddWithValue("@DeletedBy", Session["UserCode"].ToString());
-       Cmd.Parameters.AddWithValue("@DeletedOn", DateTime.Now);
-       Cmd.ExecuteNonQuery();
-       Cls_Main.Conn_Close();            
-       FillGrid();
+        if (e.CommandName == "RowDelete")
+        {
+            Cls_Main.Conn_Open();
+            SqlCommand Cmd = new SqlCommand("UPDATE [tbl_InwardEntryHdr] SET IsDeleted=@IsDeleted,DeletedBy=@DeletedBy,DeletedOn=@DeletedOn WHERE ID=@ID", Cls_Main.Conn);
+            Cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(e.CommandArgument.ToString()));
+            Cmd.Parameters.AddWithValue("@IsDeleted", '1');
+            Cmd.Parameters.AddWithValue("@DeletedBy", Session["UserCode"].ToString());
+            Cmd.Parameters.AddWithValue("@DeletedOn", DateTime.Now);
+            Cmd.ExecuteNonQuery();
+            Cls_Main.Conn_Close();            
+            FillGrid();
 
-       con.Open();
-       SqlCommand cmd1 = new SqlCommand("select OrderNo from tbl_InwardEntryHdr where Id = " + Convert.ToInt32(e.CommandArgument.ToString()) + "", con);
-       Object OrderNo = cmd1.ExecuteScalar();
+            con.Open();
+            SqlCommand cmd1 = new SqlCommand("select OrderNo from tbl_InwardEntryHdr where Id = " + Convert.ToInt32(e.CommandArgument.ToString()) + "", con);
+            Object OrderNo = cmd1.ExecuteScalar();
 
-       SqlCommand Cmd4 = new SqlCommand("delete tbl_InwardComponentsdtls where OrderNo=@OrderNo", con);
-       Cmd4.Parameters.AddWithValue("@OrderNo", OrderNo);
-       Cmd4.ExecuteNonQuery();
-       con.Close();
-       ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "HideLabel('Enward Entry Deleted Successfully..!!')", true);
-   }
+            SqlCommand Cmd4 = new SqlCommand("delete tbl_InwardComponentsdtls where OrderNo=@OrderNo", con);
+            Cmd4.Parameters.AddWithValue("@OrderNo", OrderNo);
+            Cmd4.ExecuteNonQuery();
+            con.Close();
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "HideLabel('Enward Entry Deleted Successfully..!!')", true);
+        }
        
     }
 
     protected void GVInward_PageIndexChanging(object sender, GridViewPageEventArgs e)
     {
+       
         GVInward.PageIndex = e.NewPageIndex;
         FillGrid();
     }

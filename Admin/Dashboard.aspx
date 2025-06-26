@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Admin/WLSPLMaster.master" AutoEventWireup="true" Async="true" CodeFile="Dashboard.aspx.cs" Inherits="Admin_Dashboard" %>
+
 <%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
@@ -55,42 +56,7 @@
         .bg-dark {
             background-color: #212529 !important;
         }
-    </style>
-
-    <script>
-        function resetNotificationCount() {
-            document.getElementById('notificationCount').innerText = '0';
-            // Optionally, if you want to hide the badge when the count is zero:
-            document.getElementById('notificationCount').style.display = 'none';
-        }
-
-    </script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        function markNotificationsAsSeen() {
-            $.ajax({
-                type: 'POST',
-                url: 'Dashboard.aspx/MarkNotificationsAsSeen',
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                success: function (response) {
-                    if (response.d === 'success') {
-                        // Optionally refresh the notifications or update the UI
-                        // $('#lblcount').text('0');
-                        // window.location.reload();
-                        window.location.href = "../Admin/SampleReminder.aspx";
-                    }
-                }
-            });
-        }
-        $(document).ready(function () {
-            $('#notificationDropdown').on('hidden.bs.dropdown', function () {
-
-                // Refresh the page when the dropdown is closed
-                window.location.reload();
-            });
-        });
-    </script>
+    </style> 
     <style>
         .modelprofile1 {
             background-color: rgba(0, 0, 0, 0.54);
@@ -457,42 +423,6 @@
                             <div class="col-md-11" style="text-align: center">
                                 <asp:Label ID="lbltoday" runat="server" Font-Size="20px" Font-Bold="true"></asp:Label>
                             </div>
-                            <div class="col-md-1">
-                                <a class="nav-link" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="markNotificationsAsSeen()">
-                                    <i class="fas fa-bell" style="font-size: 20px;"></i>
-                                    <span class="badge bg-danger" id="notificationCount" runat="server">
-                                        <asp:Label ID="lblcount" runat="server" Text="0"></asp:Label>
-                                    </span>
-                                </a>
-                            </div>
-                            <%-- <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-                                    <li class="dropdown-header">Notifications</li>--%>
-                            <asp:GridView ID="grdnotification" runat="server" OnRowDataBound="grdnotification_RowDataBound" CellPadding="4" Visible="false" DataKeyNames="id" PageSize="10" AllowPaging="true" Width="100%"
-                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false">
-                                <Columns>
-                                    <asp:TemplateField HeaderText="Sr No." HeaderStyle-CssClass="gvhead">
-                                        <ItemTemplate>
-                                            <asp:Label ID="lblSRNO" runat="server" Text='<%# Container.DataItemIndex + 1 %>'></asp:Label>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                    <asp:TemplateField HeaderText="EnqCode" HeaderStyle-CssClass="gvhead">
-                                        <ItemTemplate>
-                                            <asp:Label ID="Address" runat="server" Text='<%# Eval("EnqCode") %>'></asp:Label>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                    <asp:TemplateField HeaderText="cname" HeaderStyle-CssClass="gvhead">
-                                        <ItemTemplate>
-                                            <asp:Label ID="Contactperson" runat="server" Text='<%# Eval("cname") %>'></asp:Label>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                    <asp:TemplateField HeaderText="SampleDate" HeaderStyle-CssClass="gvhead">
-                                        <ItemTemplate>
-                                            <asp:Label ID="mobileno" runat="server" Text='<%# Eval("SampleDate") %>'></asp:Label>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                </Columns>
-                            </asp:GridView>
-                            <%-- </ul>--%>
                         </div>
                         <div class="row">
                             <div class="col-xl-3 col-sm-6 col-12">
@@ -1099,10 +1029,10 @@
                             <div>
                                 <asp:LinkButton ID="LinkButton7" CssClass="btn btn-primary btn-sm" Visible="false" data-dismiss="modal" Font-Bold="true" CausesValidation="false" runat="server" OnClick="LinkButton7_Click" Style="font-weight: bold;">
                 <i class="fas fa-file-alt"></i> OA List 
-            </asp:LinkButton>
+                                </asp:LinkButton>
                                 <asp:LinkButton ID="LinkButton9" CssClass="btn btn-primary btn-sm" Visible="false" data-dismiss="modal" Font-Bold="true" CausesValidation="false" runat="server" OnClick="LinkButton9_Click" Style="font-weight: bold;">
                 <i class="fas fa-file-alt"></i> Invoice List
-            </asp:LinkButton>
+                                </asp:LinkButton>
                                 <button type="button" id="Closepophistory1" class="btn btn-danger btn-sm" style="margin-left: 10px; font-weight: bold;" data-dismiss="modal">Close</button>
                             </div>
                         </h4>
@@ -1199,5 +1129,6 @@
                 </div>
             </div>
         </div>
-    </asp:Panel>  <rsweb:ReportViewer ID="ReportViewer1" runat="server" Visible="false"></rsweb:ReportViewer>
+    </asp:Panel>
+    <rsweb:ReportViewer ID="ReportViewer1" runat="server" Visible="false"></rsweb:ReportViewer>
 </asp:Content>

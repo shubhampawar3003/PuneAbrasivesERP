@@ -1,5 +1,6 @@
 ﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="WLSPLMaster.master.cs" Inherits="Account_AccountMasterPage" %>
 
+
 <!DOCTYPE html>
 <style>
     .logo {
@@ -10,6 +11,12 @@
 
     .label {
         margin: 5px;
+    }
+
+    .pagination-ys th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
     }
 </style>
 <html>
@@ -34,18 +41,104 @@
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
     <script src="../Content/js/datatables-simple-demo.js"></script>
 
+    <style>
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-menu .small {
+            font-size: 0.8rem;
+        }
+
+        .dropdown-menu .fw-bold {
+            font-size: 0.9rem;
+        }
+
+        .dropdown-menu li {
+            border: 1px solid #dee2e6; /* light gray border */
+            border-radius: 5px;
+            margin: 4px 8px;
+        }
+    </style>
+    <style>
+        /* Default dropdown menu style */
+        .dropdown-menu[aria-labelledby="chatDropdown"] {
+            width: 320px;
+        }
+
+        /* Mobile: Adjust dropdown on small screens */
+        @media (max-width: 576px) {
+            .dropdown-menu[aria-labelledby="chatDropdown"] {
+                width: 100vw;
+                left: 0 !important;
+                right: 0 !important;
+                border-radius: 0;
+            }
+
+                .dropdown-menu[aria-labelledby="chatDropdown"] a.dropdown-item {
+                    white-space: normal;
+                    font-size: 14px;
+                    padding: 10px;
+                }
+
+                .dropdown-menu[aria-labelledby="chatDropdown"] .dropdown-header {
+                    font-size: 16px;
+                    padding: 10px;
+                }
+        }
+
+        /* Badge repositioning for small screens if needed */
+        @media (max-width: 576px) {
+            #chatDropdown .badge {
+                top: 0;
+                start: 90%;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+    <style>
+        /* Default width for notification dropdown */
+        .dropdown-menu[aria-labelledby="notificationDropdown"] {
+            width: 320px;
+        }
+
+        /* Responsive design for mobile screens */
+        @media (max-width: 576px) {
+            .dropdown-menu[aria-labelledby="notificationDropdown"] {
+                width: 100vw;
+                left: 0 !important;
+                right: 0 !important;
+                border-radius: 0;
+            }
+
+                .dropdown-menu[aria-labelledby="notificationDropdown"] .dropdown-item {
+                    white-space: normal;
+                    font-size: 14px;
+                    padding: 10px;
+                }
+
+                .dropdown-menu[aria-labelledby="notificationDropdown"] .dropdown-header {
+                    font-size: 16px;
+                    padding: 10px;
+                }
+
+            #notificationDropdown .badge {
+                top: 0;
+                start: 90%;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
 <body class="sb-nav-fixed">
     <form id="form1" runat="server">
         <asp:Label runat="server" ID="lbltest"></asp:Label>
-        <div>
-            <%--    session timer is hear--%>
-        </div>
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
 
-            <a class="navbar-brand ps-3" href="../Admin/Dashboard.aspx" style="background-color: white">
+            <a class="navbar-brand" href="../Admin/Dashboard.aspx" style="background-color: white">
 
                 <img class="logo" src="../Content/img/Pune Abrasives_logo.png" style="width: 190px; height: 40px;" /></a>
 
@@ -57,22 +150,161 @@
             </div>
 
             <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-                <li class="nav-item dropdown ">
+                <!-- 🔵 Chat Dropdown (NEW) -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle position-relative" id="chatDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-comments fa-lg"></i>
+                        <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-success">
+                            <asp:Label ID="lblChatCount" runat="server"></asp:Label>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="chatDropdown" style="width: 320px;">
 
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <asp:Label ID="lblusername" runat="server" Class="label" Text="User Name"></asp:Label><i class="fas fa-user fa-fw"></i></a>
-
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li>
-                            <hr class="dropdown-divider" />
+                        <li class="dropdown-header fw-bold text-dark px-2 py-1 border-bottom">
+                            <a class="dropdown-item d-flex align-items-center gap-2"
+                                href="#"
+                                data-bs-toggle="offcanvas"
+                                data-bs-target="#profileSidebar1"
+                                aria-controls="profileSidebar1">
+                                <i class="fas fa-id-badge text-primary"></i>
+                                <span>Chats</span>
+                            </a>
                         </li>
-                        <li><a class="dropdown-item" href="../Login.aspx">Logout</a></li>
+                        <asp:Repeater ID="rptNotifications" runat="server">
+                            <ItemTemplate>
+                                <a href="#"
+                                    class="dropdown-item d-flex flex-column align-items-start open-chat-sidebar"
+                                    data-bs-toggle="offcanvas"
+                                    data-bs-target="#profileSidebar1"
+                                    data-receiverid='<%# Eval("ReceiverId") %>'>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-comment text-primary"></i>
+                                        <strong><%# Eval("SenderName") %>:</strong>
+                                    </div>
+                                    <span class="ms-4"><%# Eval("Message") %></span>
+                                    <small class="text-muted ms-4"><%# Eval("Sentat", "{0:dd MMM yyyy hh:mm tt}") %></small>
+                                </a>
+                            </ItemTemplate>
+                        </asp:Repeater>
                     </ul>
                 </li>
+                <li>   <asp:Label ID="Label2" runat="server"></asp:Label></li>               
+                  <li>   <asp:Label ID="Label3" runat="server"></asp:Label></li>   
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle position-relative" id="notificationDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger">
+                            <asp:Label ID="lblTotalNotif" runat="server"></asp:Label>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown" style="width: 320px;">
+                        <li class="dropdown-header fw-bold text-dark px-2 py-1 border-bottom">Notifications
+                        </li>
+
+                        <li>
+                            <asp:LinkButton ID="lnlComponentRequests" runat="server" OnClick="lnlComponentRequests_Click"
+                                CssClass="dropdown-item d-flex align-items-center text-start w-100 border-0 bg-transparent">
+                                <div class="me-2">
+                                    <i class="fas fa-envelope text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="small text-gray-500 fw-semibold">Component Requests</div>
+                                    <div class="fw-bold text-dark">
+                                        <asp:Label ID="lblcomporequestCount" runat="server" Text="0"></asp:Label>
+                                        new requests
+                                    </div>
+                                </div>
+                            </asp:LinkButton>
+                        </li>
+
+                        <li>
+                            <asp:LinkButton ID="lnkSample" runat="server" OnClick="lnkSample_Click"
+                                CssClass="dropdown-item d-flex align-items-center text-start w-100 border-0 bg-transparent">
+                                <div class="me-2">
+                                    <i class="fas fa-vials text-success"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="small text-gray-500 fw-semibold">Samples</div>
+                                    <div class="fw-bold text-dark">
+                                        <asp:Label ID="lblSamplecount" runat="server" Text="0"></asp:Label>
+                                        Samples
+                                    </div>
+                                </div>
+                            </asp:LinkButton>
+                        </li>
+                        <li>
+                            <asp:LinkButton ID="lnkViewAll" runat="server" OnClick="lnkViewAll_Click"
+                                CssClass="dropdown-item text-center fw-bold text-primary">
+                View All Notifications
+                            </asp:LinkButton>
+                        </li>
+                    </ul>
+                </li>
+
+                <li></li>
+                <li>
+                    <asp:Label ID="Label1" runat="server" Class="label"></asp:Label></li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle fa-lg text-light"></i>
+                        <asp:Label ID="lblusername" runat="server" CssClass="fw-semibold text-light small" Text="User Name"></asp:Label>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3 mt-2" aria-labelledby="navbarDropdown">
+                        <%--  <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="../UserProfile.aspx">
+                                <i class="fas fa-id-badge text-primary"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>--%>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2"
+                                href="#"
+                                data-bs-toggle="offcanvas"
+                                data-bs-target="#profileSidebar"
+                                aria-controls="profileSidebar">
+                                <i class="fas fa-id-badge text-primary"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="../Login.aspx">
+                                <i class="fas fa-sign-out-alt text-danger"></i>
+                                <span>Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </li>
+
+
             </ul>
 
 
         </nav>
+        <!-- Offcanvas Right Sidebar to Show UserProfile.aspx -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="profileSidebar" aria-labelledby="profileSidebarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="profileSidebarLabel"><b>Profile</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body p-0">
+                <iframe src="../UserProfile.aspx" style="border: none; width: 100%; height: 100%;" title="Profile"></iframe>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="profileSidebar1" aria-labelledby="profileSidebarLabel" style="width: 800px!important">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="profileSidebarLabel1"><b>Chat</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body p-0">
+                <iframe src="../ChatWindow.aspx" style="border: none; width: 100%; height: 100%;" title="Profile"></iframe>
+            </div>
+        </div>
+
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
                 <nav class="sb-sidenav accordion sb-sidenav-dark " id="sidenavAccordion">
@@ -185,7 +417,8 @@
                                     <a class="nav-link" href="../Admin/InventoryList.aspx"><i class="fa fa-plus"></i>&nbsp;Inventory</a>
                                 </nav>
                                 <nav id="EnwardEntryID" runat="server" class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="../Admin/InwardEntryList.aspx"><i class="fa fa-cart-arrow-down"></i>&nbsp;Inward Entry</a>
+                                    <%--  <a class="nav-link" href="../Admin/InwardEntryList.aspx"><i class="fa fa-cart-arrow-down"></i>&nbsp;Inward Entry</a>--%>
+                                    <a class="nav-link" href="../Inventory/StoreInwardList.aspx"><i class="fa fa-cart-arrow-down"></i>&nbsp;Inward Entry</a>
                                 </nav>
                                 <nav id="OutwardEntryID" runat="server" class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="../Admin/OutwardEntryList.aspx"><i class="fa fa-truck"></i>&nbsp;Outward Entry</a>
@@ -264,6 +497,10 @@ Add Company</a>
                                 </nav>
                             </div>
                             <div class="sb-sidenav-menu-heading">Setting</div>
+                            <a id="IDTallyReports" runat="server" class="nav-link" href="../Reports/TallyReports.aspx">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-lock"></i></div>
+                                Tally Reports
+                            </a>
                             <a id="UserAuthorizationid" runat="server" class="nav-link" href="../Admin/UserAuthorization.aspx">
                                 <div class="sb-nav-link-icon"><i class="fas fa-user-lock"></i></div>
                                 User Authorization

@@ -162,7 +162,7 @@
             <div class="container-fluid px-4">
                 <div class="row">
                     <div class="col-9 col-md-10">
-                        <h4 class="mt-4 "><b>LESS QUONTITY LIST</b></h4>
+                        <h4 class="mt-4 "><b>LESS QUANTITY LIST</b></h4>
                     </div>
                     <div class="col-md-2 mt-4">
                         <asp:LinkButton ID="Button1" CssClass="form-control btn btn-info" Font-Bold="true" CausesValidation="false" runat="server" OnClick="Button1_Click">

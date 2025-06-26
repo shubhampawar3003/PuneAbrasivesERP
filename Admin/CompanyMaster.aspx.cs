@@ -120,6 +120,20 @@ public partial class Admin_CompanyMaster : System.Web.UI.Page
         DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_CompanyMaster] WHERE ID ='" + ID + "' ");
         if (Dt.Rows.Count > 0)
         {
+            con.Open();
+            SqlCommand cmdQrdtl = new SqlCommand("select id from tblTaxInvoiceHdr where BillingCustomer='" + Dt.Rows[0]["Companyname"].ToString() + "'", con);
+            Object IsEdited = cmdQrdtl.ExecuteScalar();
+            con.Close();
+            if (IsEdited == null || IsEdited == DBNull.Value || IsEdited == "")
+            {
+                txtcompanyname.Enabled = true;
+                txtgstno.Enabled = true;
+            }
+            else
+            {
+                txtcompanyname.Enabled = false;
+                txtgstno.Enabled = false;
+            }
             btnsave.Text = "Update";
             hhd.Value = Dt.Rows[0]["ID"].ToString();
             txtvendorcode.Text = Dt.Rows[0]["VendorCode"].ToString();

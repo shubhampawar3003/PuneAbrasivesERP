@@ -476,7 +476,7 @@
                                         </div>
 
                                         <%--<div class="row" id="divdtls">--%>
-                                     <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #ccc;">
+                                         <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #ccc;">
                                             <asp:GridView ID="gvcomponent" runat="server" CellPadding="4" DataKeyNames="id" AllowPaging="false" Width="100%" CssClass="grivdiv pagination-ys"
                                                 OnRowEditing="gvcomponent_RowEditing" OnRowDataBound="gvcomponent_RowDataBound" AutoGenerateColumns="false">
                                                 <Columns>

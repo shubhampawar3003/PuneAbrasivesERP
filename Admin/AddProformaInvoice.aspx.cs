@@ -1,17 +1,12 @@
 ﻿
 using Microsoft.Reporting.WebForms;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 using System.Net.Mail;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -87,10 +82,8 @@ public partial class Admin_AddProformaInvoice : System.Web.UI.Page
         string previousyear = (Convert.ToDecimal(FinFullYear) - 1).ToString();
         string strInvoiceNumber = "";
         string fY = previousyear.ToString() + "-" + FinYear;
-        string strSelect = @"select     CONCAT(
-        '2024-25/', 
-        RIGHT('0000' + CAST(CAST(SUBSTRING(MAX(InvoiceNo), 10, 4) AS INT)  AS VARCHAR), 4)
-    ) AS maxno from tbl_ProformaTaxInvoiceHdr where InvoiceNo like '%" + fY + "%' ";
+        string strSelect = @"select top 1  InvoiceNo from tbl_ProformaTaxInvoiceHdr where 
+ InvoiceNo like '%" + fY + "%' order by id desc";
         // string strSelect = @"SELECT TOP 1 MAX(ID) FROM tblTaxInvoiceHdr where InvoiceNo like '%" + fY + "%' ";
 
         SqlCommand cmd = new SqlCommand();

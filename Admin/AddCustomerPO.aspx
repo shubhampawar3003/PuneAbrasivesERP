@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Admin/WLSPLMaster.Master" EnableEventValidation="false" AutoEventWireup="true" Async="true"  CodeFile="AddCustomerPO.aspx.cs" Inherits="Admin_AddCustomerPO" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Admin/WLSPLMaster.Master" EnableEventValidation="false" AutoEventWireup="true" Async="true" CodeFile="AddCustomerPO.aspx.cs" Inherits="Admin_AddCustomerPO" %>
 
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
@@ -256,7 +256,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 col-12 mb-3" runat="server" visible="false">
+                                <div class="col-md-6 col-12 mb-3">
                                     <asp:Label ID="Label4" runat="server" Font-Bold="true" CssClass="form-label">OA No.  :</asp:Label>
 
                                     <asp:TextBox ID="txtpono" runat="server" ForeColor="red" ValidationGroup="1" AutoComplete="off" ReadOnly="true" CssClass="form-control"></asp:TextBox>
@@ -650,7 +650,6 @@
                                                     <ItemTemplate>
                                                         <asp:Label ID="lblsno" runat="server" Text='<%# Container.DataItemIndex+1 %>'></asp:Label>
                                                         <asp:Label ID="lblid" runat="Server" Text='<%# Eval("id") %>' Visible="false" />
-                                                        <asp:Label ID="lblpono" runat="Server" Text='<%# Eval("pono") %>'   Visible="false" />
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
                                                 <asp:TemplateField HeaderText="Product" ItemStyle-Width="120" HeaderStyle-CssClass="gvhead">

@@ -182,9 +182,9 @@
 
                                     <div class="form-group row">
                                         <div class="col-sm-12">
-                                            <div id="divgv" runat="server">
+                                           <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
                                                 <asp:GridView ID="GvLoginlog" runat="server" CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" Width="100%"
-                                                    DataKeyNames="ID" AllowPaging="true" PageSize="10" OnPageIndexChanging="GvLoginlog_PageIndexChanging">
+                                                    DataKeyNames="ID"  OnPageIndexChanging="GvLoginlog_PageIndexChanging">
                                                     <Columns>
                                                         <asp:TemplateField HeaderText="Sr. No." HeaderStyle-Width="80px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
                                                             <ItemTemplate>

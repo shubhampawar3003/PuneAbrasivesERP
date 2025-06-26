@@ -425,7 +425,7 @@
                                         <ItemTemplate>
                                             <asp:LinkButton ID="btnlrletter" runat="server" Height="27px" ToolTip="Show LR Letter" Visible='<%# Eval("LRLetterPath").ToString() == "" ? false : true %>' CausesValidation="false" CommandName="Letter" CommandArgument='<%#Eval("ID")%>'><i class='fas fa-file-pdf' style='font-size:24px;color: red;'></i></asp:LinkButton>
                                             &nbsp;
-                                            <asp:LinkButton ID="btnshow" runat="server" Height="27px" ToolTip="Upload Letter" CausesValidation="false" CommandName="show" CommandArgument='<%#Eval("ID")%>'><i class='fa fa-upload' style='font-size:24px;color: #212529;'></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnshow" runat="server" Height="27px" ToolTip="Upload Letter"  CausesValidation="false" CommandName="show" CommandArgument='<%#Eval("ID")%>'><i class='fa fa-upload' style='font-size:24px;color: #212529;'></i></asp:LinkButton>
                                             &nbsp;
                                             <asp:LinkButton ID="btnDelete" runat="server" Height="27px" ToolTip="Delete" CausesValidation="false" CommandName="RowDelete" OnClientClick="Javascript:return confirm('Are you sure to Delete?')" CommandArgument='<%#Eval("ID")%>'><i class='fas fa-trash' style='font-size:24px;color: red;'></i></asp:LinkButton>
                                             &nbsp;                                        

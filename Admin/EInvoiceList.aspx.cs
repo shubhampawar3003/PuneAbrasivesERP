@@ -65,7 +65,7 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
         try
         {
             DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("select * from tblTaxInvoiceHdr where isdeleted='0'  AND Status>2 order by CreatedOn DESC", con);
+            SqlDataAdapter sad = new SqlDataAdapter("select TOP 20 * from tblTaxInvoiceHdr where isdeleted='0'  AND Status>2 order by CreatedOn DESC", con);
             sad.Fill(dt);
             GvInvoiceList.DataSource = dt;
             GvInvoiceList.DataBind();
@@ -215,9 +215,22 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
         }
         if (e.CommandName == "RowCancel")
         {
-            string ID = e.CommandArgument.ToString();
-            Cancel_EInv(ID);
-            //Response.Redirect("EInvoiceList.aspx");
+           
+            if (!string.IsNullOrEmpty(e.CommandArgument.ToString()))
+            {
+
+                DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbltaxinvoicehdr] WHERE id='" + e.CommandArgument.ToString() + "' ");
+                if (Dt.Rows.Count > 0)
+                {
+                        lblcompanynamepop.Text = Dt.Rows[0]["Billingcustomer"].ToString();
+                        lblinvoicename.Text = Dt.Rows[0]["InvoiceNo"].ToString();
+                        hdnid.Value = Dt.Rows[0]["id"].ToString();
+                        this.ModalPopupHistory.Show();
+                    
+                }
+
+
+            }
         }
     }
 
@@ -287,15 +300,14 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
                 }
 
 
-               
-                string InvNoChk = "123456";//dtCompany.Rows[0]["invoiceno"].ToString();
+                string InvNoChk = dtCompany.Rows[0]["invoiceno"].ToString();
                 if (InvNoChk == null || InvNoChk == "")
                 {
                     Invoice_No = dtCompany.Rows[0]["FinalBasic"].ToString();
                 }
                 else
                 {
-                    Invoice_No ="123456";// dtCompany.Rows[0]["invoiceno"].ToString();
+                    Invoice_No = dtCompany.Rows[0]["invoiceno"].ToString();
                 }
                 if (string.IsNullOrWhiteSpace(Invoice_No))
                 {
@@ -328,14 +340,14 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
                     ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Seller_Location Not Set Please Enter Seller_Location..!');", true);
                 }
 
-               //  Seller_Pin_Code = "411019";  //for pune abrasives
-                Seller_Pin_Code = "587315";  // for testing
+                Seller_Pin_Code = "411019";  //for pune abrasives
+                                             // Seller_Pin_Code = "587315";  // for testing
                 if (string.IsNullOrWhiteSpace(Seller_Pin_Code))
                 {
                     ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Seller_Pin_Code Not Set Please Enter Seller_Pin_Code..!');", true);
                 }
-                Seller_State_Code = "29"; // for testing
-                        //                   Seller_State_Code = "27"; // for pune abrasives
+                // Seller_State_Code = "29"; // for testing
+                Seller_State_Code = "27"; // for pune abrasives
                 if (string.IsNullOrWhiteSpace(Seller_State_Code))
                 {
                     ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Seller_State_Code Not Set Please Enter Seller_State_Code..!');", true);
@@ -514,7 +526,7 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
                     {
                         ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Qty Not Set Please Enter Qty....!!');", true);
                     }
-                    Unit = "KGS";//dt.Rows[i]["UOM"].ToString();
+                    Unit = dt.Rows[i]["UOM"].ToString();
                     if (string.IsNullOrWhiteSpace(Unit))
                     {
                         ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Unit Not Set Please Enter Unit....!!');", true);
@@ -637,7 +649,7 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
                     }
 
                     // Final Grandtotal
-                    if (OthChrg == "0.00")
+                    if (OthChrg == "0")
                     {
                         SqlCommand cmdTotInvVal = new SqlCommand("select SUM(cast(GrandTotal as float)) FROM [VW_EINVTransport] where headerId='" + ID + "'", con);
                         Object F_TotInvVal = cmdTotInvVal.ExecuteScalar();
@@ -990,6 +1002,10 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
                                 Status = JsonRespons["data"]["Status"].ToString();
                                 Remarks = JsonRespons["data"]["Remarks"].ToString();
                             }
+                            else
+                            {
+                                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('" + result2 + "');", true);
+                            }
                         }
                     }
                 }
@@ -1099,6 +1115,7 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
             Sdd.Fill(Dtt);
             if (Dtt.Rows.Count > 0)
             {
+                DateTime createdOn;
                 string e_invoice_status = Dtt.Rows[0]["e_invoice_status"].ToString();
                 string e_invoice_cancel_status = Dtt.Rows[0]["e_invoice_cancel_status"].ToString();
 
@@ -1119,6 +1136,23 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
                 if (lblInvoiceNo.Text == null || lblInvoiceNo.Text == "")
                 {
                     lblInvoiceNo.Text = Dtt.Rows[0]["FinalBasic"].ToString();
+
+                }
+                if (Dtt.Rows[0]["Ackdt"] != DBNull.Value && !string.IsNullOrWhiteSpace(Dtt.Rows[0]["Ackdt"].ToString()))
+                {
+                    createdOn = Convert.ToDateTime(Dtt.Rows[0]["Ackdt"].ToString());
+
+                    if (e_invoice_status == true.ToString() && (DateTime.Now - createdOn).TotalHours <= 24)
+                    {
+                        lnkCreateInv.Visible = false;
+                        lnkPDF.Visible = true;
+                        lnkCancel.Visible = true;
+                        e.Row.BackColor = System.Drawing.Color.LightGray;
+                    }
+                    else
+                    {
+                        lnkCancel.Visible = false;
+                    }
                 }
             }
             con.Close();
@@ -1625,5 +1659,17 @@ public partial class Admin_TaxInvoiceList : System.Web.UI.Page
         }
     }
 
+
+    protected void btnsave_Click(object sender, EventArgs e)
+    {
+        Cls_Main.Conn_Open();
+        SqlCommand Cmd = new SqlCommand("UPDATE [tblTaxInvoiceHdr] SET CancelRemark=@CancelRemark WHERE invoiceNo=@invoiceNo", Cls_Main.Conn);       
+        Cmd.Parameters.AddWithValue("@invoiceNo", lblinvoicename.Text);
+        Cmd.Parameters.AddWithValue("@CancelRemark", txtremark.Text);
+        Cmd.ExecuteNonQuery();
+        Cls_Main.Conn_Close();
+        Cancel_EInv(hdnid.Value);
+       // ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('E-Invoice Cancelled ...!!');", true);
+    }
 }
 

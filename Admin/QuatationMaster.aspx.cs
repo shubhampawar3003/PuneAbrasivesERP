@@ -628,7 +628,10 @@ public partial class Admin_QuatationMaster : System.Web.UI.Page
                     mm.To.Add(mailTo);
 
                     mm.CC.Add("girish.kulkarni@puneabrasives.com");
-                    mm.CC.Add("b.tikhe@puneabrasives.com");
+                    if(Session["Role"].ToString()!="Admin")
+                    {
+                        mm.CC.Add("b.tikhe@puneabrasives.com");
+                    }                
                     mm.CC.Add(Session["EmailID"].ToString().Trim().ToLower());
                     if (!string.IsNullOrEmpty(fileName))
                     {
