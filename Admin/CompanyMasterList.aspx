@@ -2,7 +2,7 @@
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
-      <link href="../Content/css/Griddiv.css" rel="stylesheet" />
+    <link href="../Content/css/Griddiv.css" rel="stylesheet" />
     <style>
         .spancls {
             color: #5d5656 !important;
@@ -162,7 +162,7 @@
                     <div class="col-md-3">
                         <asp:Label ID="Label3" runat="server" Font-Bold="true" Text="Location :"></asp:Label>
                         <div style="margin-top: 14px;">
-                             <asp:TextBox ID="txtarea" CssClass="form-control" placeholder="Search Location " runat="server" OnTextChanged="txtarea_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
+                            <asp:TextBox ID="txtarea" CssClass="form-control" placeholder="Search Location " runat="server" OnTextChanged="txtarea_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
                             <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" Display="Dynamic" ErrorMessage="Please Enter Location Name"
                                 ControlToValidate="txtarea" ValidationGroup="form1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
                             <asp:AutoCompleteExtender ID="AutoCompleteExtender2" runat="server" CompletionListCssClass="completionList"
@@ -172,10 +172,10 @@
                             </asp:AutoCompleteExtender>
                         </div>
                     </div>
-                      <div class="col-md-3">
+                    <div class="col-md-3">
                         <asp:Label ID="Label2" runat="server" Font-Bold="true" Text="GST No. :"></asp:Label>
                         <div style="margin-top: 14px;">
-                             <asp:TextBox ID="txtGST" CssClass="form-control" placeholder="Search GSt No. " runat="server" OnTextChanged="txtGST_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
+                            <asp:TextBox ID="txtGST" CssClass="form-control" placeholder="Search GSt No. " runat="server" OnTextChanged="txtGST_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
                             <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" Display="Dynamic" ErrorMessage="Please Enter GST No."
                                 ControlToValidate="txtGST" ValidationGroup="form1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
                             <asp:AutoCompleteExtender ID="AutoCompleteExtender3" runat="server" CompletionListCssClass="completionList"
@@ -185,10 +185,10 @@
                             </asp:AutoCompleteExtender>
                         </div>
                     </div>
-                      <div class="col-md-3">
+                    <div class="col-md-3">
                         <asp:Label ID="Label4" runat="server" Font-Bold="true" Text="Supply Type :"></asp:Label>
                         <div style="margin-top: 14px;">
-                             <asp:TextBox ID="txtSupply" CssClass="form-control" placeholder="Search Supply Wise " runat="server" OnTextChanged="txtSupply_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
+                            <asp:TextBox ID="txtSupply" CssClass="form-control" placeholder="Search Supply Wise " runat="server" OnTextChanged="txtSupply_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
                             <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" Display="Dynamic" ErrorMessage="Please Enter Supply Type "
                                 ControlToValidate="txtSupply" ValidationGroup="form1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
                             <asp:AutoCompleteExtender ID="AutoCompleteExtender4" runat="server" CompletionListCssClass="completionList"
@@ -198,10 +198,10 @@
                             </asp:AutoCompleteExtender>
                         </div>
                     </div>
-                      <div class="col-md-3">
+                    <div class="col-md-3">
                         <asp:Label ID="Label5" runat="server" Font-Bold="true" Text="Client :"></asp:Label>
                         <div style="margin-top: 14px;">
-                             <asp:TextBox ID="txtclient" CssClass="form-control" placeholder="Search Client Wise " runat="server" OnTextChanged="txtclient_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
+                            <asp:TextBox ID="txtclient" CssClass="form-control" placeholder="Search Client Wise " runat="server" OnTextChanged="txtclient_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
                             <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" Display="Dynamic" ErrorMessage="Please Enter client"
                                 ControlToValidate="txtclient" ValidationGroup="form1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
                             <asp:AutoCompleteExtender ID="AutoCompleteExtender5" runat="server" CompletionListCssClass="completionList"
@@ -211,7 +211,7 @@
                             </asp:AutoCompleteExtender>
                         </div>
                     </div>
-                   
+
                     <div class="col-md-1" style="margin-top: 36px">
                         <asp:LinkButton ID="btnrefresh" runat="server" OnClick="btnrefresh_Click" Width="100%" CssClass="btn btn-warning"><i style="color:white" class="fa">&#xf021;</i> &nbsp;</asp:LinkButton>
                     </div>
@@ -220,10 +220,21 @@
                 <br />
                 <div>
                     <div class="row">
-                        <%--<div class="table-responsive text-center">--%>
-                        <div class="table ">
-                            <asp:GridView ID="GVCompany" runat="server" CellPadding="4" DataKeyNames="id" PageSize="10" AllowPaging="true" Width="100%" OnRowDataBound="GVCompany_RowDataBound"
-                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowCommand="GVCompany_RowCommand" OnPageIndexChanging="GVCompany_PageIndexChanging">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="flex-grow: 1;">
+                                <!-- Left empty for future content if needed -->
+                            </div>
+                            <div class="col-md-1" style="text-align: right;">
+                                <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                                    <asp:ListItem Text="10" Value="10" />
+                                    <asp:ListItem Text="50" Value="50" />
+                                    <asp:ListItem Text="All" Value="100000" />
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+                        <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
+                            <asp:GridView ID="GVCompany" runat="server" CellPadding="4" DataKeyNames="id" Width="100%" OnRowDataBound="GVCompany_RowDataBound"
+                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowCommand="GVCompany_RowCommand" >
                                 <Columns>
                                     <asp:TemplateField HeaderText="Sr.No." HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>
@@ -280,7 +291,9 @@
                 </div>
 
                 <div class="col-md-12">
-                    <center><asp:Label ID="lblnotfound" runat="server" Text="" style="color:red;font-size:20px;font-weight:600;"></asp:Label></center>
+                    <center>
+                        <asp:Label ID="lblnotfound" runat="server" Text="" style="color: red; font-size: 20px; font-weight: 600;"></asp:Label>
+                    </center>
                 </div>
             </div>
 

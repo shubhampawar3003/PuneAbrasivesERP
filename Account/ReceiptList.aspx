@@ -72,7 +72,7 @@
                 }
     </style>
 
-      <style>
+    <style>
         .spancls {
             color: #5d5656 !important;
             font-size: 13px !important;
@@ -175,16 +175,28 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="table ">
-                            <asp:GridView ID="GvRecipt" runat="server" CellPadding="4" DataKeyNames="Id" PageSize="15" AllowPaging="true" Width="100%"
-                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowCommand="GvRecipt_RowCommand" OnRowDataBound="GvRecipt_RowDataBound" OnPageIndexChanging="GvRecipt_PageIndexChanging">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="flex-grow: 1;">
+                                <!-- Left empty for future content if needed -->
+                            </div>
+                            <div class="col-md-1" style="text-align: right;">
+                                <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                                    <asp:ListItem Text="10" Value="10" />
+                                    <asp:ListItem Text="50" Value="50" />
+                                    <asp:ListItem Text="All" Value="100000" />
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+                        <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
+                            <asp:GridView ID="GvRecipt" runat="server" CellPadding="4" DataKeyNames="Id" Width="100%"
+                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowCommand="GvRecipt_RowCommand" OnRowDataBound="GvRecipt_RowDataBound">
                                 <Columns>
-                                    <asp:TemplateField HeaderText="SNo." HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" Visible="false">
+                                    <asp:TemplateField HeaderText="SNo." HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead" >
                                         <ItemTemplate>
                                             <asp:Label ID="lblsno" runat="server" Text='<%# Container.DataItemIndex+1 %>'></asp:Label>
                                         </ItemTemplate>
                                     </asp:TemplateField>
-                                    <asp:TemplateField HeaderText="No" HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
+                                    <asp:TemplateField HeaderText="No" HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead" Visible="false">
                                         <ItemTemplate>
                                             <asp:Label ID="lblid" runat="server" Text='<%# Eval("Id") %>'></asp:Label>
                                         </ItemTemplate>
@@ -240,7 +252,7 @@
                                     <asp:TemplateField HeaderText="Action" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>
                                             <asp:LinkButton runat="server" ID="btnedit" CommandName="RowEdit" CommandArgument='<%# Eval("Id") %>' ToolTip="Edit"><i class="fa fa-edit" style="font-size:24px;color:black;"></i></asp:LinkButton>
-                                            <asp:LinkButton runat="server" ID="btnpdf" CommandName="DownloadPDF" CommandArgument='<%# Eval("Id") %>' ToolTip="Download"><i class="fa fa-file-pdf" style="font-size:24px;color:red;"></i></asp:LinkButton>                       
+                                            <asp:LinkButton runat="server" ID="btnpdf" CommandName="DownloadPDF" CommandArgument='<%# Eval("Id") %>' ToolTip="Download"><i class="fa fa-file-pdf" style="font-size:24px;color:red;"></i></asp:LinkButton>
                                             <asp:LinkButton runat="server" ID="btndelete" CommandName="RowDelete" CommandArgument='<%# Eval("Id") %>' ToolTip="Delete" OnClientClick="Javascript:return confirm('Are you sure to Delete?')"><i class="fa fa-trash" aria-hidden="true" style="font-size:24px;"></i></asp:LinkButton>
 
                                         </ItemTemplate>

@@ -35,10 +35,12 @@ public partial class Account_ReceiptList : System.Web.UI.Page
 
     protected void GvBindList()
     {
+        int pageSize = 10; // default fallback
+        int.TryParse(ddlPageSize.SelectedValue, out pageSize);
         if (Session["Role"].ToString()=="Admin")
         {
             DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("select * from tblReceiptHdr where isdeleted='0' order by Createddate DESC", con);
+            SqlDataAdapter sad = new SqlDataAdapter("select TOP ("+ pageSize + ")  * from tblReceiptHdr where isdeleted='0' order by Createddate DESC", con);
             sad.Fill(dt);
             GvRecipt.DataSource = dt;
             GvRecipt.DataBind();
@@ -47,7 +49,7 @@ public partial class Account_ReceiptList : System.Web.UI.Page
         else
         {
             DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("select * from tblReceiptHdr where isdeleted='0' AND CreatedBy='" + Session["Username"].ToString() +"' order by Createddate DESC", con);
+            SqlDataAdapter sad = new SqlDataAdapter("select TOP ("+ pageSize + ")  * from tblReceiptHdr where isdeleted='0' AND CreatedBy='" + Session["Username"].ToString() +"' order by Createddate DESC", con);
             sad.Fill(dt);
             GvRecipt.DataSource = dt;
             GvRecipt.DataBind();
@@ -94,8 +96,10 @@ public partial class Account_ReceiptList : System.Web.UI.Page
     {
         try
         {
+            int pageSize = 10; // default fallback
+            int.TryParse(ddlPageSize.SelectedValue, out pageSize);
             DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("select * from tblReceiptHdr where Partyname='" + txtpartyname.Text + "' AND isdeleted='0'", con);
+            SqlDataAdapter sad = new SqlDataAdapter("select TOP ("+ pageSize + ")  * from tblReceiptHdr where Partyname='" + txtpartyname.Text + "' AND isdeleted='0'", con);
             sad.Fill(dt);
             GvRecipt.DataSource = dt;
             GvRecipt.DataBind();
@@ -260,11 +264,9 @@ public partial class Account_ReceiptList : System.Web.UI.Page
         Response.Redirect("Receipt.aspx");
     }
 
-
-
-    protected void GvRecipt_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
     {
-        GvRecipt.PageIndex = e.NewPageIndex;
         GvBindList();
     }
+
 }

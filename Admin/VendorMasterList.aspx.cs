@@ -28,7 +28,7 @@ public partial class Admin_VendorMasterList : System.Web.UI.Page
             if (!IsPostBack)
             {
                 FillGrid();
-           
+
             }
         }
     }
@@ -36,12 +36,12 @@ public partial class Admin_VendorMasterList : System.Web.UI.Page
     //Fill GridView
     private void FillGrid()
     {
-        DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_VendorMaster] WHERE IsDeleted = 0");
+        int pageSize = 10; // default fallback
+        int.TryParse(ddlPageSize.SelectedValue, out pageSize);
+        DataTable Dt = Cls_Main.Read_Table("SELECT  TOP (" + pageSize + ") * FROM [tbl_VendorMaster] WHERE IsDeleted = 0");
         GVVendor.DataSource = Dt;
         GVVendor.DataBind();
     }
-
-
 
     protected void btnCreate_Click(object sender, EventArgs e)
     {
@@ -68,11 +68,6 @@ public partial class Admin_VendorMasterList : System.Web.UI.Page
             ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('User Deleted Successfully..!!')", true);
             FillGrid();
         }
-    }
-
-    protected void GVVendor_PageIndexChanging(object sender, GridViewPageEventArgs e)
-    {
-
     }
 
     protected void GVVendor_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -103,4 +98,70 @@ public partial class Admin_VendorMasterList : System.Web.UI.Page
             }
         }
     }
+
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        FillGrid();
+    }
+
+    [System.Web.Script.Services.ScriptMethod()]
+    [System.Web.Services.WebMethod]
+    public static List<string> GetPartyList(string prefixText, int count)
+    {
+        return AutoFillPartylist(prefixText);
+    }
+
+    public static List<string> AutoFillPartylist(string prefixText)
+    {
+        using (SqlConnection con = new SqlConnection())
+        {
+            con.ConnectionString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
+
+            using (SqlCommand com = new SqlCommand())
+            {
+                com.CommandText = "select DISTINCT Vendorname from tbl_VendorMaster where " + "Vendorname like @Search + '%' AND isdeleted='0'";
+
+                com.Parameters.AddWithValue("@Search", prefixText);
+                com.Connection = con;
+                con.Open();
+                List<string> Partyname = new List<string>();
+                using (SqlDataReader sdr = com.ExecuteReader())
+                {
+                    while (sdr.Read())
+                    {
+                        Partyname.Add(sdr["Vendorname"].ToString());
+                    }
+                }
+                con.Close();
+                return Partyname;
+            }
+
+        }
+    }
+
+    protected void txtpartyname_TextChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            int pageSize = 10; // default fallback
+            int.TryParse(ddlPageSize.SelectedValue, out pageSize);
+            DataTable dt = new DataTable();
+            SqlDataAdapter sad = new SqlDataAdapter("select TOP (" + pageSize + ")  * from tbl_VendorMaster where Vendorname='" + txtpartyname.Text + "' AND isdeleted='0'", con);
+            sad.Fill(dt);
+            GVVendor.DataSource = dt;
+            GVVendor.DataBind();
+            GVVendor.EmptyDataText = "Record Not Found";
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    protected void btnresetfilter_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("VendorMasterList.aspx");
+    }
+
 }

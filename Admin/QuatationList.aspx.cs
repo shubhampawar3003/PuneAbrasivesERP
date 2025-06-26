@@ -35,15 +35,17 @@ public partial class Admin_QuatationList : System.Web.UI.Page
     //Fill GridView
     private void FillGrid()
     {
+        int pageSize = 10; // default fallback
+        int.TryParse(ddlPageSize.SelectedValue, out pageSize);
         if (Session["Role"].ToString() == "Admin")
         {
-            DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy WHERE QH.IsDeleted = 0 ORDER BY QH.ID DESC");
+            DataTable Dt = Cls_Main.Read_Table("SELECT TOP ("+ pageSize + ")   * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy WHERE QH.IsDeleted = 0 ORDER BY QH.ID DESC");
             GVQuotation.DataSource = Dt;
             GVQuotation.DataBind();
         }
         else
         {
-            DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy WHERE QH.CreatedBy='" + Session["UserCode"].ToString() + "'  AND QH.IsDeleted = 0 ORDER BY QH.ID DESC");
+            DataTable Dt = Cls_Main.Read_Table("SELECT TOP ("+ pageSize + ")   * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy WHERE QH.CreatedBy='" + Session["UserCode"].ToString() + "'  AND QH.IsDeleted = 0 ORDER BY QH.ID DESC");
             GVQuotation.DataSource = Dt;
             GVQuotation.DataBind();
 
@@ -210,6 +212,8 @@ public partial class Admin_QuatationList : System.Web.UI.Page
     {
         try
         {
+            int pageSize = 10; // default fallback
+            int.TryParse(ddlPageSize.SelectedValue, out pageSize);
             if (string.IsNullOrEmpty(txtQuotationNo.Text) && string.IsNullOrEmpty(txtbillingcustomer.Text) && string.IsNullOrEmpty(txtfromdate.Text) && string.IsNullOrEmpty(txttodate.Text))
             {
                 FillGrid();
@@ -224,7 +228,7 @@ public partial class Admin_QuatationList : System.Web.UI.Page
                         string Quono = txtQuotationNo.Text;
 
                         DataTable dt = new DataTable();
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.Quotationno = '" + Quono + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT  TOP ("+ pageSize + ")  * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.Quotationno = '" + Quono + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
                         sad.Fill(dt);
                         GVQuotation.EmptyDataText = "Not Records Found";
                         GVQuotation.DataSource = dt;
@@ -235,7 +239,7 @@ public partial class Admin_QuatationList : System.Web.UI.Page
                         string company = txtbillingcustomer.Text;
 
                         DataTable dt = new DataTable();
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.Companyname = '" + company + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT  TOP ("+ pageSize + ")   * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.Companyname = '" + company + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
                         sad.Fill(dt);
                         GVQuotation.EmptyDataText = "Not Records Found";
                         GVQuotation.DataSource = dt;
@@ -247,7 +251,7 @@ public partial class Admin_QuatationList : System.Web.UI.Page
                         DataTable dt = new DataTable();
 
                         //SqlDataAdapter sad = new SqlDataAdapter(" select [Id],[JobNo],[DateIn],[CustName],[Subcustomer],[Branch],[MateName],[SrNo],[MateStatus],FinalStatus,[TestBy],[ModelNo],[otherinfo],[Imagepath],[CreatedBy],[CreatedDate],[UpdateBy],[UpdateDate] ,ProductFault,RepeatedNo,DATEDIFF(DAY, CreatedDate, getdate()) AS days FROM [tblInwardEntry] Where DateIn between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy WHERE  QH.IsDeleted = 0 AND QH.Quotationdate between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT TOP ("+ pageSize + ")   * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy WHERE  QH.IsDeleted = 0 AND QH.Quotationdate between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
                         sad.Fill(dt);
 
                         GVQuotation.EmptyDataText = "Not Records Found";
@@ -263,7 +267,7 @@ public partial class Admin_QuatationList : System.Web.UI.Page
                         string Quono = txtQuotationNo.Text;
 
                         DataTable dt = new DataTable();
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.CreatedBy='" + Session["UserCode"].ToString() + "'  AND QH.Quotationno = '" + Quono + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT TOP ("+ pageSize + ")   * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.CreatedBy='" + Session["UserCode"].ToString() + "'  AND QH.Quotationno = '" + Quono + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
                         sad.Fill(dt);
                         GVQuotation.EmptyDataText = "Not Records Found";
                         GVQuotation.DataSource = dt;
@@ -274,7 +278,7 @@ public partial class Admin_QuatationList : System.Web.UI.Page
                         string company = txtbillingcustomer.Text;
 
                         DataTable dt = new DataTable();
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.CreatedBy='" + Session["UserCode"].ToString() + "'  AND QH.Companyname = '" + company + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT  TOP ("+ pageSize + ")  * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.CreatedBy='" + Session["UserCode"].ToString() + "'  AND QH.Companyname = '" + company + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
                         sad.Fill(dt);
                         GVQuotation.EmptyDataText = "Not Records Found";
                         GVQuotation.DataSource = dt;
@@ -286,7 +290,7 @@ public partial class Admin_QuatationList : System.Web.UI.Page
                         DataTable dt = new DataTable();
 
                         //SqlDataAdapter sad = new SqlDataAdapter(" select [Id],[JobNo],[DateIn],[CustName],[Subcustomer],[Branch],[MateName],[SrNo],[MateStatus],FinalStatus,[TestBy],[ModelNo],[otherinfo],[Imagepath],[CreatedBy],[CreatedDate],[UpdateBy],[UpdateDate] ,ProductFault,RepeatedNo,DATEDIFF(DAY, CreatedDate, getdate()) AS days FROM [tblInwardEntry] Where DateIn between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy WHERE QH.CreatedBy='" + Session["UserCode"].ToString() + "'  AND  IsDeleted = 0 AND QH.Quotationdate between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT TOP ("+ pageSize + ")   * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy WHERE QH.CreatedBy='" + Session["UserCode"].ToString() + "'  AND  IsDeleted = 0 AND QH.Quotationdate between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
                         sad.Fill(dt);
 
                         GVQuotation.EmptyDataText = "Not Records Found";
@@ -347,6 +351,8 @@ public partial class Admin_QuatationList : System.Web.UI.Page
     {
         if (txtbillingcustomer.Text != "")
         {
+            int pageSize = 10; // default fallback
+            int.TryParse(ddlPageSize.SelectedValue, out pageSize);
             string company = txtbillingcustomer.Text;
 
             DataTable dt = new DataTable();
@@ -397,14 +403,20 @@ public partial class Admin_QuatationList : System.Web.UI.Page
     {
         if (txtQuotationNo.Text != "")
         {
+            int pageSize = 10; // default fallback
+            int.TryParse(ddlPageSize.SelectedValue, out pageSize);
             string Quono = txtQuotationNo.Text;
 
             DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.Quotationno = '" + Quono + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
+            SqlDataAdapter sad = new SqlDataAdapter("SELECT  TOP ("+ pageSize + ")  * FROM [tbl_QuotationHdr] AS QH INNER JOIN tbl_UserMaster AS UM ON UM.UserCode=QH.CreatedBy where QH.Quotationno = '" + Quono + "' AND QH.IsDeleted = 0", Cls_Main.Conn);
             sad.Fill(dt);
             GVQuotation.EmptyDataText = "Not Records Found";
             GVQuotation.DataSource = dt;
             GVQuotation.DataBind();
         }
+    }
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        FillGrid();
     }
 }

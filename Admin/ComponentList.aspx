@@ -173,10 +173,21 @@
                 <br />
                 <div>
                     <div class="row">
-                        <%--<div class="table-responsive text-center">--%>
-                        <div class="table ">
-                            <asp:GridView ID="GVComponentlist" runat="server" CellPadding="4" DataKeyNames="id" PageSize="10" AllowPaging="true" Width="100%"
-                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowCommand="GVComponentlist_RowCommand" OnPageIndexChanging="GVComponentlist_PageIndexChanging" OnRowDataBound="GVComponentlist_RowDataBound">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="flex-grow: 1;">
+                                <!-- Left empty for future content if needed -->
+                            </div>
+                            <div class="col-md-1" style="text-align: right;">
+                                <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                                    <asp:ListItem Text="10" Value="10" />
+                                    <asp:ListItem Text="50" Value="50" />
+                                    <asp:ListItem Text="All" Value="100000" />
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+                        <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
+                            <asp:GridView ID="GVComponentlist" runat="server" CellPadding="4" DataKeyNames="id"  Width="100%"
+                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowCommand="GVComponentlist_RowCommand" OnRowDataBound="GVComponentlist_RowDataBound">
                                 <Columns>
                                     <asp:TemplateField HeaderText="Sr.No." HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>

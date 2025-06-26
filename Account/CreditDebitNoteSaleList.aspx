@@ -154,7 +154,7 @@
                                 <h5>Credit/Debit List</h5>
                             </div>
                             <div class="col-2 col-md-2">
-                                <asp:Button ID="Button2"  CssClass="form-control btn btn-success" Font-Bold="true" runat="server" Text="Add E-Invoice" OnClick="Button2_Click" />
+                                <asp:Button ID="Button2" CssClass="form-control btn btn-success" Font-Bold="true" runat="server" Text="Add E-Invoice" OnClick="Button2_Click" />
 
                             </div>
                             <div class="col-2 col-md-2">
@@ -179,9 +179,21 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="table ">
-                            <asp:GridView ID="GvCreditDebit" runat="server" CellPadding="4" DataKeyNames="Id" PageSize="15" AllowPaging="true" Width="100%"
-                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowDataBound="GvCreditDebit_RowDataBound" OnRowCommand="GvCreditDebit_RowCommand" OnPageIndexChanging="GvInvoiceList_PageIndexChanging">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="flex-grow: 1;">
+                                <!-- Left empty for future content if needed -->
+                            </div>
+                            <div class="col-md-1" style="text-align: right;">
+                                <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                                    <asp:ListItem Text="10" Value="10" />
+                                    <asp:ListItem Text="50" Value="50" />
+                                    <asp:ListItem Text="All" Value="100000" />
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+                        <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
+                            <asp:GridView ID="GvCreditDebit" runat="server" CellPadding="4" DataKeyNames="Id" Width="100%"
+                                CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowDataBound="GvCreditDebit_RowDataBound" OnRowCommand="GvCreditDebit_RowCommand">
                                 <Columns>
                                     <asp:TemplateField HeaderText="Sr.No." HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>

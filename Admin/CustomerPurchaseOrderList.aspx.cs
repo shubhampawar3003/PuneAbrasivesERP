@@ -196,9 +196,10 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
         if (txtCustomerName.Text != "" || txtCustomerName.Text != null)
         {
             string company = txtCustomerName.Text;
-
+            int pageSize = 10; // default fallback
+            int.TryParse(ddlPageSize.SelectedValue, out pageSize);
             DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("SELECT TOP ('"+ ddlPageSize .SelectedValue+ "') * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE CP.IsDeleted = 0 AND   CustomerName='" + txtCustomerName.Text + "' ORDER BY CP.ID DESC", Cls_Main.Conn);
+            SqlDataAdapter sad = new SqlDataAdapter("SELECT TOP (" + pageSize + ") * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE CP.IsDeleted = 0 AND   CustomerName='" + txtCustomerName.Text + "' ORDER BY CP.ID DESC", Cls_Main.Conn);
             sad.Fill(dt);
             GVPurchase.EmptyDataText = "Not Records Found";
             GVPurchase.DataSource = dt;
@@ -250,9 +251,10 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
         if (txtCpono.Text != "" || txtCpono.Text != null)
         {
             string Cpono = txtCpono.Text;
-
+            int pageSize = 10; // default fallback
+            int.TryParse(ddlPageSize.SelectedValue, out pageSize);
             DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName AND SerialNo='" + Cpono + "' ORDER BY CP.ID DESC", Cls_Main.Conn);
+            SqlDataAdapter sad = new SqlDataAdapter("SELECT TOP ("+ pageSize + ") * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName AND SerialNo='" + Cpono + "' ORDER BY CP.ID DESC", Cls_Main.Conn);
             sad.Fill(dt);
             GVPurchase.EmptyDataText = "Not Records Found";
             GVPurchase.DataSource = dt;
@@ -271,6 +273,8 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
             }
             else
             {
+                int pageSize = 10; // default fallback
+                int.TryParse(ddlPageSize.SelectedValue, out pageSize);
                 if (Session["Role"].ToString() == "Admin")
                 {
                     if (txtCpono.Text != "")
@@ -278,7 +282,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
                         string Quono = txtCpono.Text;
 
                         DataTable dt = new DataTable();
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName where SerialNo = '" + Quono + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT  TOP ("+ pageSize + ") * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName where SerialNo = '" + Quono + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
                         sad.Fill(dt);
                         GVPurchase.EmptyDataText = "Not Records Found";
                         GVPurchase.DataSource = dt;
@@ -289,7 +293,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
                         string company = txtCustomerName.Text;
 
                         DataTable dt = new DataTable();
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName where CustomerName = '" + company + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT TOP ("+ pageSize + ")  * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName where CustomerName = '" + company + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
                         sad.Fill(dt);
                         GVPurchase.EmptyDataText = "Not Records Found";
                         GVPurchase.DataSource = dt;
@@ -301,7 +305,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
                         DataTable dt = new DataTable();
 
                         //SqlDataAdapter sad = new SqlDataAdapter(" select [Id],[JobNo],[DateIn],[CustName],[Subcustomer],[Branch],[MateName],[SrNo],[MateStatus],FinalStatus,[TestBy],[ModelNo],[otherinfo],[Imagepath],[CreatedBy],[CreatedDate],[UpdateBy],[UpdateDate] ,ProductFault,RepeatedNo,DATEDIFF(DAY, CreatedDate, getdate()) AS days FROM [tblInwardEntry] Where DateIn between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE  CP.IsDeleted = 0 AND CP.CreatedOn between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT  TOP ("+ pageSize + ") * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE  CP.IsDeleted = 0 AND CP.CreatedOn between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
                         sad.Fill(dt);
 
                         GVPurchase.EmptyDataText = "Not Records Found";
@@ -317,7 +321,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
                         string Quono = txtCpono.Text;
 
                         DataTable dt = new DataTable();
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE (CP.CreatedBy='" + Session["UserCode"].ToString() + "' OR CP.UserName='" + Session["UserCode"].ToString() + "') AND  SerialNo = '" + Quono + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT  TOP ("+ pageSize + ") * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE (CP.CreatedBy='" + Session["UserCode"].ToString() + "' OR CP.UserName='" + Session["UserCode"].ToString() + "') AND  SerialNo = '" + Quono + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
                         sad.Fill(dt);
                         GVPurchase.EmptyDataText = "Not Records Found";
                         GVPurchase.DataSource = dt;
@@ -328,7 +332,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
                         string company = txtCustomerName.Text;
 
                         DataTable dt = new DataTable();
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE (CP.CreatedBy='" + Session["UserCode"].ToString() + "' OR CP.UserName='" + Session["UserCode"].ToString() + "') AND  CustomerName = '" + company + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT  TOP ("+ pageSize + ") * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE (CP.CreatedBy='" + Session["UserCode"].ToString() + "' OR CP.UserName='" + Session["UserCode"].ToString() + "') AND  CustomerName = '" + company + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
                         sad.Fill(dt);
                         GVPurchase.EmptyDataText = "Not Records Found";
                         GVPurchase.DataSource = dt;
@@ -340,7 +344,7 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
                         DataTable dt = new DataTable();
 
                         //SqlDataAdapter sad = new SqlDataAdapter(" select [Id],[JobNo],[DateIn],[CustName],[Subcustomer],[Branch],[MateName],[SrNo],[MateStatus],FinalStatus,[TestBy],[ModelNo],[otherinfo],[Imagepath],[CreatedBy],[CreatedDate],[UpdateBy],[UpdateDate] ,ProductFault,RepeatedNo,DATEDIFF(DAY, CreatedDate, getdate()) AS days FROM [tblInwardEntry] Where DateIn between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' ", Cls_Main.Conn);
-                        SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE (CP.CreatedBy='" + Session["UserCode"].ToString() + "' OR CP.UserName='" + Session["UserCode"].ToString() + "') AND  CP.CreatedOn between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
+                        SqlDataAdapter sad = new SqlDataAdapter("SELECT  TOP ("+ pageSize + ") * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName WHERE (CP.CreatedBy='" + Session["UserCode"].ToString() + "' OR CP.UserName='" + Session["UserCode"].ToString() + "') AND  CP.CreatedOn between'" + txtfromdate.Text + "' AND '" + txttodate.Text + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
                         sad.Fill(dt);
 
                         GVPurchase.EmptyDataText = "Not Records Found";
@@ -397,9 +401,10 @@ public partial class Admin_CustomerPurchaseOrderList : System.Web.UI.Page
         if (txtGST.Text != "" || txtGST.Text != null)
         {
             string GST = txtGST.Text;
-
+            int pageSize = 10; // default fallback
+            int.TryParse(ddlPageSize.SelectedValue, out pageSize);
             DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("SELECT * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName where GSTNo = '" + GST + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
+            SqlDataAdapter sad = new SqlDataAdapter("SELECT TOP ("+ pageSize + ")  * FROM [tbl_CustomerPurchaseOrderHdr] AS CP LEFT JOIN tbl_UserMaster AS UM ON UM.UserCode=CP.UserName where GSTNo = '" + GST + "' AND CP.IsDeleted = 0", Cls_Main.Conn);
             sad.Fill(dt);
             GVPurchase.EmptyDataText = "Not Records Found";
             GVPurchase.DataSource = dt;

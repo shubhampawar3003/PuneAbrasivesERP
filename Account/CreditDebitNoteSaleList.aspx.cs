@@ -33,8 +33,10 @@ public partial class Account_CreditDebitList : System.Web.UI.Page
 
     private void Gvbind()
     {
+        int pageSize = 10; // default fallback
+        int.TryParse(ddlPageSize.SelectedValue, out pageSize);
         string query = string.Empty;
-        query = @"select * from tblCreditDebitNoteHdr where NoteFor='Sale' AND Isdeleted=0 order by Id desc";
+        query = @"select TOP ("+ pageSize + ")  * from tblCreditDebitNoteHdr where NoteFor='Sale' AND Isdeleted=0 order by Id desc";
         SqlDataAdapter ad = new SqlDataAdapter(query, con);
         DataTable dt = new DataTable();
         ad.Fill(dt);
@@ -203,14 +205,16 @@ from tbl_OutwardEntryComponentsDtls where OrderNo=@ID", Cls_Main.Conn);
 
     protected void txtcnamefilter_TextChanged(object sender, EventArgs e)
     {
+        int pageSize = 10; // default fallback
+        int.TryParse(ddlPageSize.SelectedValue, out pageSize);
         string query = string.Empty;
         if (!string.IsNullOrEmpty(txtcnamefilter.Text.Trim()))
         {
-            query = "SELECT * FROM tblCreditDebitNoteHdr where Isdeleted=0 AND SupplierName like '" + txtcnamefilter.Text.Trim() + "%' order by Id desc";
+            query = "SELECT TOP ("+ pageSize + ")  * FROM tblCreditDebitNoteHdr where Isdeleted=0 AND SupplierName like '" + txtcnamefilter.Text.Trim() + "%' order by Id desc";
         }
         else
         {
-            query = "SELECT * FROM tblCreditDebitNoteHdr where  Isdeleted=0  order by Id desc";
+            query = "SELECT TOP ("+ pageSize + ")  * FROM tblCreditDebitNoteHdr where  Isdeleted=0  order by Id desc";
         }
 
         SqlDataAdapter ad = new SqlDataAdapter(query, con);
@@ -429,11 +433,6 @@ from tbl_OutwardEntryComponentsDtls where OrderNo=@ID", Cls_Main.Conn);
         Response.Redirect("../Gov_Bills/EInv_CrDbNote.aspx");
     }
 
-    protected void GvInvoiceList_PageIndexChanging(object sender, GridViewPageEventArgs e)
-    {
-        GvCreditDebit.PageIndex = e.NewPageIndex;
-        Gvbind();
-    }
 
     public void GetInventoryCalculation(string lblCompo, string lblnewQuantity, string Product)
     {
@@ -561,6 +560,10 @@ from tbl_OutwardEntryComponentsDtls where OrderNo=@ID", Cls_Main.Conn);
         cmdd.Parameters.AddWithValue("@Batch", lblbatch);
         cmdd.ExecuteNonQuery();
         Cls_Main.Conn_Close();
+    }
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        Gvbind();
     }
 
 }

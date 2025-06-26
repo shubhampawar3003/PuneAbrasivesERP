@@ -38,7 +38,9 @@ public partial class Admin_ProductMasterList : System.Web.UI.Page
     //Fill GridView
     private void FillGrid()
     {
-        DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_ProductMaster] WHERE IsDeleted = 0 ORDER BY ID DESC");
+        int pageSize = 10; // default fallback
+        int.TryParse(ddlPageSize.SelectedValue, out pageSize);
+        DataTable Dt = Cls_Main.Read_Table("SELECT TOP ("+ pageSize + ")  * FROM [tbl_ProductMaster] WHERE IsDeleted = 0 ORDER BY ID DESC");
         GVProductlist.DataSource = Dt;
         GVProductlist.DataBind();
     }
@@ -70,11 +72,7 @@ public partial class Admin_ProductMasterList : System.Web.UI.Page
         }
     }
 
-    protected void GVProductlist_PageIndexChanging(object sender, GridViewPageEventArgs e)
-    {
-        GVProductlist.PageIndex = e.NewPageIndex;
-        FillGrid();
-    }
+
 
     protected void GVProductlist_RowDataBound(object sender, GridViewRowEventArgs e)
     {
@@ -209,5 +207,9 @@ public partial class Admin_ProductMasterList : System.Web.UI.Page
             GVProductlist.DataSource = dt;
             GVProductlist.DataBind();
         }
+    }
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        FillGrid();
     }
 }

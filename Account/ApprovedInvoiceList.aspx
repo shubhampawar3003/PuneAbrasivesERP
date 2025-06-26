@@ -224,7 +224,7 @@
                             </asp:DropDownList>
                         </div>
                     </div>
-                    <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #ccc;">
+                    <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
                         <asp:GridView ID="GVInvoice" runat="server" CellPadding="4" DataKeyNames="Id" Width="100%" OnRowDataBound="GVInvoice_RowDataBound"
                             CssClass="grivdiv pagination-ys" OnRowCommand="GVInvoice_RowCommand" AutoGenerateColumns="false" OnPageIndexChanging="GVInvoice_PageIndexChanging">
                             <Columns>

@@ -206,10 +206,21 @@
                 <br />
                 <div>
                     <div class="row">
-                        <%--<div class="table-responsive text-center">--%>
-                        <div class="table ">
-                            <asp:GridView ID="GVQuotation" runat="server" CellPadding="4" DataKeyNames="id" PageSize="10" AllowPaging="true" Width="100%"
-                                OnRowCommand="GVQuotation_RowCommand" OnPageIndexChanging="GVQuotation_PageIndexChanging" OnRowDataBound="GVQuotation_RowDataBound" CssClass="grivdiv pagination-ys" AutoGenerateColumns="false">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="flex-grow: 1;">
+                                <!-- Left empty for future content if needed -->
+                            </div>
+                            <div class="col-md-1" style="text-align: right;">
+                                <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                                    <asp:ListItem Text="10" Value="10" />
+                                    <asp:ListItem Text="50" Value="50" />
+                                    <asp:ListItem Text="All" Value="100000" />
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+                        <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
+                            <asp:GridView ID="GVQuotation" runat="server" CellPadding="4" DataKeyNames="id" Width="100%"
+                                OnRowCommand="GVQuotation_RowCommand"  OnRowDataBound="GVQuotation_RowDataBound" CssClass="grivdiv pagination-ys" AutoGenerateColumns="false">
                                 <Columns>
                                     <asp:TemplateField HeaderText="Sr.No." ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>
@@ -247,7 +258,7 @@
                                             <asp:Label ID="Total_Price" runat="server" Text='<%#Eval("Total_Price")%>'></asp:Label>
                                         </ItemTemplate>
                                     </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="Created By" HeaderStyle-CssClass="gvhead">
+                                    <asp:TemplateField HeaderText="Created By" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>
                                             <asp:Label ID="createdby" runat="server" Text='<%#Eval("Username")%>'></asp:Label>
                                         </ItemTemplate>
@@ -255,11 +266,11 @@
                                     <asp:TemplateField HeaderText="ACTION" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>
                                             <asp:LinkButton ID="btnEdit" runat="server" Height="27px" CausesValidation="false" Visible='<%# Eval("Status").ToString() == "0" ? false : true %>' CommandName="RowEdit" CommandArgument='<%#Eval("Quotationno")%>'><i class='fas fa-edit' style='font-size:24px;color: #212529;'></i></asp:LinkButton>
-                                            
+
                                             <asp:LinkButton ID="btnDelete" runat="server" Height="27px" ToolTip="Delete" CausesValidation="false" CommandName="RowDelete" OnClientClick="Javascript:return confirm('Are you sure to Delete?')" CommandArgument='<%#Eval("ID")%>'><i class='fas fa-trash' style='font-size:24px;color: red;'></i></asp:LinkButton>
-                                        
+
                                             <asp:LinkButton runat="server" ID="btnpdfview" ToolTip="View Quotation PDF" CommandName="RowView" CommandArgument='<%# Eval("Quotationno") %>'><i class="fas fa-file-pdf"  style="font-size: 26px; color:red; "></i></i></asp:LinkButton>
-                                          
+
                                             <asp:LinkButton runat="server" ID="btnNewQ" ToolTip="New Quotation" CommandName="RowNew" Visible='<%# Eval("Status").ToString() == "0" ? false : true %>' CommandArgument='<%# Eval("Quotationno") %>'><i class="fas fa-plane"  style="font-size: 26px; color:red; "></i></i></asp:LinkButton>
 
                                             <%--  <a href="../Admin/Pdf_Quotation.aspx?Quotationno=<%#Eval("Quotationno")%>" target="_blank">

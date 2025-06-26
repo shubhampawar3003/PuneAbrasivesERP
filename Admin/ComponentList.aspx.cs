@@ -21,15 +21,15 @@ public partial class Admin_ComponentList : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
-           // Fillddlbrand();
-       
+            // Fillddlbrand();
+
             if (Session["UserCode"] == null)
             {
                 Response.Redirect("../Login.aspx");
             }
             else
             {
-                
+
                 FillGrid();
             }
         }
@@ -38,7 +38,9 @@ public partial class Admin_ComponentList : System.Web.UI.Page
     //Fill GridView
     private void FillGrid()
     {
-        DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_ComponentMaster] WHERE IsDeleted = 0");
+        int pageSize = 10; // default fallback
+        int.TryParse(ddlPageSize.SelectedValue, out pageSize);
+        DataTable Dt = Cls_Main.Read_Table("SELECT TOP (" + pageSize + ")   * FROM [tbl_ComponentMaster] WHERE IsDeleted = 0");
         GVComponentlist.DataSource = Dt;
         GVComponentlist.DataBind();
     }
@@ -70,12 +72,6 @@ public partial class Admin_ComponentList : System.Web.UI.Page
         }
     }
 
-    protected void GVComponentlist_PageIndexChanging(object sender, GridViewPageEventArgs e)
-    {
-        GVComponentlist.PageIndex = e.NewPageIndex;
-        FillGrid();
-    }
-
     protected void GVComponentlist_RowDataBound(object sender, GridViewRowEventArgs e)
     {
         //Authorization
@@ -105,7 +101,7 @@ public partial class Admin_ComponentList : System.Web.UI.Page
         }
     }
 
-   
+
 
     protected void btnrefresh_Click(object sender, EventArgs e)
     {
@@ -161,5 +157,10 @@ public partial class Admin_ComponentList : System.Web.UI.Page
             GVComponentlist.DataSource = dt;
             GVComponentlist.DataBind();
         }
+    }
+
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        FillGrid();
     }
 }

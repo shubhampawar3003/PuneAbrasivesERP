@@ -1,5 +1,8 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Admin/WLSPLMaster.Master" AutoEventWireup="true" CodeFile="VendorMasterList.aspx.cs" Inherits="Admin_VendorMasterList" %>
 
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="../Content/css/Griddiv.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.all.min.js"></script>
@@ -92,26 +95,116 @@
                     border-color: #dddddd;
                 }
     </style>
+    <style>
+        .spancls {
+            color: #5d5656 !important;
+            font-size: 13px !important;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .starcls {
+            color: red;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .card .card-header span {
+            color: #060606;
+            display: block;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .errspan {
+            float: right;
+            margin-right: 6px;
+            margin-top: -25px;
+            position: relative;
+            z-index: 2;
+            color: black;
+        }
+
+        .currentlbl {
+            text-align: center !important;
+        }
+
+        .completionList {
+            border: solid 1px Gray;
+            border-radius: 5px;
+            margin: 0px;
+            padding: 3px;
+            height: 120px;
+            overflow: auto;
+            background-color: #FFFFFF;
+        }
+
+        .listItem {
+            color: #191919;
+        }
+
+        .itemHighlighted {
+            background-color: #ADD6FF;
+        }
+
+        .reqcls {
+            color: red;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .aspNetDisabled {
+            cursor: not-allowed !important;
+        }
+
+        .rwotoppadding {
+            padding-top: 10px;
+        }
+    </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
-    <asp:ScriptManager ID="ToolkitScriptManager1" runat="server"></asp:ScriptManager>
+    <asp:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server"></asp:ToolkitScriptManager>
 
     <div class="container-fluid px-4">
         <div class="row">
             <div class="col-9 col-md-10">
-                 <h4 class="mt-4">&nbsp <b>SUPPLIER LIST</b></h4>
+                <h4 class="mt-4">&nbsp <b>SUPPLIER LIST</b></h4>
             </div>
             <div class="col-3 col-md-2 mt-4">
                 <asp:Button ID="btnCreate" CssClass="form-control btn btn-warning" OnClick="btnCreate_Click" runat="server" Text="Create" />
             </div>
         </div>
-        <br />
+        <hr />
+        <div class="row">
+            <div class="col-xl-3 col-md-3">
+                <asp:TextBox ID="txtpartyname" runat="server" CssClass="form-control" placeholder="Party Name" Width="100%" AutoPostBack="true" OnTextChanged="txtpartyname_TextChanged"></asp:TextBox>
+                <asp:AutoCompleteExtender ID="AutoCompleteExtender1" runat="server" CompletionListCssClass="completionList"
+                    CompletionListHighlightedItemCssClass="itemHighlighted" CompletionListItemCssClass="listItem"
+                    CompletionInterval="10" MinimumPrefixLength="1" ServiceMethod="GetPartyList"
+                    TargetControlID="txtpartyname">
+                </asp:AutoCompleteExtender>
+            </div>
+            <div class="col-xl-1 col-md-1">
+                <asp:Button ID="btnresetfilter" CssClass="btn btn-danger" runat="server" Text="Reset" Style="padding: 8px;" OnClick="btnresetfilter_Click" />
+            </div>
+        </div>     
         <div>
             <div class="row">
-                <%--<div class="table-responsive text-center">--%>
-                <div class="table ">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="flex-grow: 1;">
+                        <!-- Left empty for future content if needed -->
+                    </div>
+                    <div class="col-md-1" style="text-align: right;">
+                        <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                            <asp:ListItem Text="10" Value="10" />
+                            <asp:ListItem Text="50" Value="50" />
+                            <asp:ListItem Text="All" Value="100000" />
+                        </asp:DropDownList>
+                    </div>
+                </div>
+                <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
                     <asp:GridView ID="GVVendor" runat="server" CellPadding="4" DataKeyNames="ID" Width="100%" OnRowDataBound="GVVendor_RowDataBound"
-                        CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowCommand="GVVendor_RowCommand" OnPageIndexChanging="GVVendor_PageIndexChanging">
+                        CssClass="grivdiv pagination-ys" AutoGenerateColumns="false" OnRowCommand="GVVendor_RowCommand">
                         <Columns>
                             <asp:TemplateField HeaderText="Sr.No." HeaderStyle-Width="50px" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
                                 <ItemTemplate>

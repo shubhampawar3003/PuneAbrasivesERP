@@ -38,7 +38,9 @@ public partial class Admin_CompanyMasterList : System.Web.UI.Page
     //Fill GridView
     private void FillGrid()
     {
-        DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_CompanyMaster] WHERE IsDeleted = 0 ORDER BY ID DESC");
+        int pageSize = 10; // default fallback
+        int.TryParse(ddlPageSize.SelectedValue, out pageSize);
+        DataTable Dt = Cls_Main.Read_Table("SELECT TOP ("+ pageSize + ")   * FROM [tbl_CompanyMaster] WHERE IsDeleted = 0 ORDER BY ID DESC");
         GVCompany.DataSource = Dt;
         GVCompany.DataBind();
     }
@@ -98,12 +100,7 @@ public partial class Admin_CompanyMasterList : System.Web.UI.Page
         }
     }
 
-    protected void GVCompany_PageIndexChanging(object sender, GridViewPageEventArgs e)
-    {
-        GVCompany.PageIndex = e.NewPageIndex;
-        FillGrid();
-    }
-
+    
     protected void btnCreate_Click(object sender, EventArgs e)
     {
         Response.Redirect("CompanyMaster.aspx");
@@ -163,6 +160,7 @@ public partial class Admin_CompanyMasterList : System.Web.UI.Page
     {
         if (txtCustomerName.Text != "" || txtCustomerName.Text != null)
         {
+          
             string company = txtCustomerName.Text;
 
             DataTable dt = new DataTable();
@@ -401,5 +399,9 @@ public partial class Admin_CompanyMasterList : System.Web.UI.Page
             GVCompany.DataSource = dt;
             GVCompany.DataBind();
         }
+    }
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        FillGrid();
     }
 }
