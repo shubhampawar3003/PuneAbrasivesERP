@@ -1,0 +1,293 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="WLSPLMaster.master.cs" Inherits="Account_AccountMasterPage" %>
+
+<!DOCTYPE html>
+<style>
+    .logo {
+        width: 201px;
+        padding: 24px;
+        margin-top: 12px;
+    }
+
+    .label {
+        margin: 5px;
+    }
+</style>
+<html>
+<head runat="server">
+    <meta charset="utf-8" />
+    <title>ERP Pune Abrasives PVT. LTD.</title>
+    <link href="../Content/css/pagination.css" rel="stylesheet" />
+    <%-- <link rel="icon" type="image/x-icon" href="Content/Img/W-logo.png">--%>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+
+    <link href="../Content/css/styles.css" rel="stylesheet" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.all.min.js"></script>
+
+    <script src="../Content/js/scripts.js"></script>
+    <%--    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+    <script src="../Content/assets/demo/chart-area-demo.js"></script>
+    <script src="../Content/assets/demo/chart-bar-demo.js"></script>--%>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
+    <script src="../Content/js/datatables-simple-demo.js"></script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body class="sb-nav-fixed">
+    <form id="form1" runat="server">
+        <asp:Label runat="server" ID="lbltest"></asp:Label>
+        <div>
+            <%--    session timer is hear--%>
+        </div>
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+
+            <a class="navbar-brand ps-3" href="../Admin/Dashboard.aspx" style="background-color: white">
+
+                <img class="logo" src="../Content/img/Pune Abrasives_logo.png" style="width: 190px; height: 40px;" /></a>
+
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+
+            <div class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                <div class="input-group" id="sessionTimer">
+                </div>
+            </div>
+
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown ">
+
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <asp:Label ID="lblusername" runat="server" Class="label" Text="User Name"></asp:Label><i class="fas fa-user fa-fw"></i></a>
+
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li><a class="dropdown-item" href="../Login.aspx">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark " id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading"></div>
+                            <a class="nav-link" id="Dashboardid" href="../Admin/Dashboard.aspx">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Pages</div>
+
+                            <a id="Salesmarketing" runat="server" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts1" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Sales Marketing                               
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts1" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <%--    <nav id="QuotationListid" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="shubham">Add Company</a>
+                                </nav>--%>
+
+                                <nav id="EnquiryID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/EnquiryMaster.aspx"><i class="fa fa-question-circle"></i>&nbsp;Add Enquiry</a>
+                                </nav>
+                                <nav id="GeneralQuotationListID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/QuatationMaster.aspx"><i class="fa fa-newspaper-o"></i>&nbsp;Quotation</a>
+                                </nav>
+
+                                <nav id="POCustomerID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/AddCustomerPO.aspx"><i class="fa fa-shopping-bag"></i>&nbsp; Order Acceptance</a>
+                                </nav>
+
+                                <nav id="ProfarmaID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/AddProformaInvoice.aspx"><i class="fa fa-cart-plus"></i>&nbsp; Proforma</a>
+                                </nav>
+                                <%--       <nav id="CallandMeetingID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="CallandMeetingUpdate.aspx"><i class="fa fa-phone-square"></i>&nbsp;DSR Update</a>
+                                </nav>--%>
+                                <nav id="CallandMeetingListID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/CallandMeetingUpdate.aspx"><i class="fa fa-address-book"></i>&nbsp;DSR Update</a>
+                                </nav>
+                                <nav id="DSRReports" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/DSRReports.aspx"><i class="fa fa-address-book"></i>&nbsp;DSR Report</a>
+                                </nav>
+                            </div>
+                            <a id="Accounts" runat="server" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutss" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Account                               
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayoutss" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav id="TaxInvoiceListid" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Account/TaxInvoiceList.aspx"><i class="fa fa-file-text"></i>&nbsp;Tax Invoice</a>
+                                </nav>
+                                <nav id="ApprovedInvoiceListID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Account/ApprovedInvoiceList.aspx"><i class="fa fa-file-text"></i>&nbsp;Approved Invoice</a>
+                                </nav>
+                                <%--  <nav id="EInvoiceID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Account/EInvoiceList.aspx"><i class="fa fa-file-text"></i>&nbsp;E-Invoice</a>
+                                </nav>--%>
+                                <nav id="ReceiptVoucherID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Account/ReceiptList.aspx"><i class="fa fa-file-text"></i>&nbsp;Receipt Voucher</a>
+                                </nav>
+
+                                <nav id="CreditDebitNoteSaleID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Account/CreditDebitNoteSaleList.aspx"><i class="fa fa-file-text"></i>&nbsp;Credit/DebitNote Sale</a>
+                                </nav>
+                            </div>
+                            <%--   <a id="Payments" runat="server" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutssss" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Warehouse Invoice List                            
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayoutssss" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            </div>--%>
+
+                            <a id="Purchase" runat="server" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsssss" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Purchase                              
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayoutsssss" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav id="PurchaseOrderID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Purchase/PurchaseOrderList.aspx"><i class="fa fa-download"></i>&nbsp;Purchase Order</a>
+                                </nav>
+                                <nav id="PurchaseBillID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Purchase/PurchaseBillList.aspx"><i class="fa fa-download"></i>&nbsp;Purchase Bill</a>
+                                </nav>
+                                <nav id="PaymentVoucherID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Purchase/PaymentList.aspx"><i class="fa fa-file-text"></i>&nbsp;Payment Voucher</a>
+                                </nav>
+                                <nav id="CreditDebitNotePurchaseID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Purchase/CreditDebitNoteList.aspx"><i class="fa fa-file-text"></i>&nbsp;Credit/DebitNote Purchase</a>
+                                </nav>
+                            </div>
+                            <a id="Stock" runat="server" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsss" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Stock                               
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayoutsss" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav id="oaforwarehouseID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/OAListForWarehouse.aspx"><i class="fa fa-truck"></i>&nbsp;Order Acceptance</a>
+                                </nav>
+                                <nav id="WarehouseInvoiceListID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Account/WarehouseInvoiceList.aspx"><i class="fa fa-download"></i>&nbsp;Invoice List</a>
+                                </nav>
+                                <nav id="InventryID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/InventoryList.aspx"><i class="fa fa-plus"></i>&nbsp;Inventory</a>
+                                </nav>
+                                <nav id="EnwardEntryID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/InwardEntryList.aspx"><i class="fa fa-cart-arrow-down"></i>&nbsp;Inward Entry</a>
+                                </nav>
+                                <nav id="OutwardEntryID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/OutwardEntryList.aspx"><i class="fa fa-truck"></i>&nbsp;Outward Entry</a>
+                                </nav>
+                            </div>
+
+                            <a id="Reports" runat="server" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayout" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Reports                              
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayout" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav id="SalesReportID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Reports/SalesReport.aspx"><i class="fa fa-download"></i>&nbsp;Sales Report</a>
+                                </nav>
+                                <%--   <nav id="InventoryForAccountID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Reports/InventoryForAccount.aspx"><i class="fa fa-download"></i>&nbsp;Inventory Report</a>
+                                </nav>--%>
+                                <nav id="PurchaseReportID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Reports/PurchaseReport.aspx"><i class="fa fa-download"></i>&nbsp;Purchase Report</a>
+                                </nav>
+                                <%-- <nav id="BalanceQuantityReportID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Reports/BalanceQuantityReport.aspx"><i class="fa fa-download"></i>&nbsp;Balance Quantity Report</a>
+                                </nav>--%>
+                                <nav id="PartyLedgerReportID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Reports/PartyLedgerReport.aspx"><i class="fa fa-download"></i>&nbsp;Party Ledger Report</a>
+                                </nav>
+                                <nav id="OutstandingReportID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Reports/OutstandingReport.aspx"><i class="fa fa-download"></i>&nbsp;OutStanding Report</a>
+                                </nav>
+                                <nav id="PerformanceReportID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Reports/PerformanceReport.aspx"><i class="fa fa-download"></i>&nbsp;Performance Report</a>
+                                </nav>
+                                <nav id="ConsumptionReportID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Reports/MarginReport.aspx"><i class="fa fa-download"></i>&nbsp;Consumption Report</a>
+                                </nav>
+                            </div>
+                            <a id="Mastersid" runat="server" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Masters                               
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav id="UserListid" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/UserMasterList.aspx">
+                                        <i class="fas fa-user"></i>&nbsp
+                                        <!-- Font Awesome user icon -->
+                                        User Master
+                                    </a>
+                                </nav>
+                                <nav id="CompanyListid" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/CompanyMasterList.aspx"><i class="fa fa-building"></i>&nbsp
+Add Company</a>
+                                </nav>
+                                <nav id="ComponentID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/ComponentList.aspx"><i class="fa fa-box"></i>&nbsp;Component Master</a>
+                                </nav>
+                                <nav id="RolelistID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/RoleList.aspx"><i class="fa fa-bold"></i>&nbsp;Role Master</a>
+                                </nav>
+                                <nav id="ProductMasterListID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/ProductMasterList.aspx"><i class="fa fa-cubes"></i>&nbsp;Product Master</a>
+                                </nav>
+                                <nav id="VendorMasterListid" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/VendorMasterList.aspx"><i class="fa fa-users"></i>&nbsp;Supplier Master</a>
+                                </nav>
+                                <nav id="TrasnportermasterID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/TransporterList.aspx"><i class="fa fa-users"></i>&nbsp;Transporter Master</a>
+                                </nav>
+
+                                <nav id="TargetMasterID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/TargetList.aspx"><i class="fa fa-users"></i>&nbsp;Target Master</a>
+                                </nav>
+                                <nav id="SalesTargetID" runat="server" class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="../Admin/SalesTargetList.aspx"><i class="fa fa-users"></i>&nbsp;Sales Target</a>
+                                </nav>
+                            </div>
+                            <div class="sb-sidenav-menu-heading">Setting</div>
+                            <a id="UserAuthorizationid" runat="server" class="nav-link" href="../Admin/UserAuthorization.aspx">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-lock"></i></div>
+                                User Authorization
+                            </a>
+                            <a id="AuditlogID" runat="server" class="nav-link" href="../Admin/AuditLogDashboard.aspx">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-lock"></i></div>
+                                Audit Log
+                            </a>
+                            <a class="nav-link" href="../Login.aspx">
+                                <div class="sb-nav-link-icon"><i class="fas fa-right-from-bracket"></i></div>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                    </asp:ContentPlaceHolder>
+                </main>
+            </div>
+        </div>
+    </form>
+
+</body>
+</html>

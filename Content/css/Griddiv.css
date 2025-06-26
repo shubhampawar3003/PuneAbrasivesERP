@@ -1,0 +1,144 @@
+﻿.grivdiv > DIV {
+    margin: 1em 0;
+    /*width: 100%;*/
+    overflow: hidden;
+    background: #FFF;
+    color: #024457;
+    border-radius: 10px;
+    border: 1px solid #167F92;
+    display: table;
+    border-spacing: 2px;
+    border-collapse: separate;
+}
+
+.grivdiv tr:nth-child(odd) {
+    background-color: #e3e3e3;
+}
+
+.grivdiv tr {
+    border: 1px solid #ececec;
+}
+
+    .grivdiv tr th {
+        border: 1px solid #FFF;
+        padding: 1em;
+        display: table-cell;
+        text-align: center;
+        margin: .5em 1em;
+    }
+
+    .grivdiv tr td {
+        color: #024457 !important;
+        color: #FFF;
+        padding: 5px;
+        display: table-cell;
+        text-align: center;
+    }
+
+
+.GridPager:hover {
+    background-color: white !important;
+}
+
+
+
+
+
+.GridPager a,
+.GridPager span {
+    display: inline-block;
+    padding: 3px 9px;
+    margin: 4px auto;
+    border-radius: 3px;
+    border: solid 1px #08515f;
+    background: #167f92;
+    box-shadow: inset 0px 1px 0px rgba(255,255,255, .8), 0px 1px 3px rgba(0,0,0, .1);
+    font-size: .875em;
+    font-weight: bold;
+    text-decoration: none;
+    color: #ffffff;
+    text-shadow: 0px 1px 0px rgba(255,255,255, 1);
+    font-weight: 600;
+}
+
+.GridPager a {
+    background-color: #f5f5f5;
+    color: #167f92;
+    border: 1px solid #167f92;
+}
+
+.GridPager span {
+    background: #167f92;
+    box-shadow: inset 0px 0px 8px rgba(0,0,0, .5), 0px 1px 0px rgba(255,255,255, .8);
+    color: #f0f0f0;
+    text-shadow: 0px 0px 3px rgba(0,0,0, .5);
+    border: 1px solid #08515f;
+}
+
+.GridPager td {
+    border: 1px solid #ddd;
+    padding: 4px;
+    background-color: #f2f2f2 !important;
+}
+
+.GridPager table tr td {
+    background-color: #EAF3F3 !important;
+}
+
+
+
+.card [class*=card-header-]:not(.card-header-icon):not(.card-header-text):not(.card-header-image) {
+    border-radius: 3px;
+    margin-top: -20px;
+    padding: 15px;
+}
+
+.card .card-header-warning .card-icon, .card .card-header-warning .card-text, .card .card-header-warning:not(.card-header-icon):not(.card-header-text) {
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(255,152,0,.4);
+}
+
+.card.bg-warning, .card .card-header-warning .card-icon, .card .card-header-warning .card-text, .card .card-header-warning:not(.card-header-icon):not(.card-header-text), .card.card-rotate.bg-warning .back, .card.card-rotate.bg-warning .front {
+    background: linear-gradient(60deg,#4e718d,#1f6195);
+}
+
+card [class*=card-header-] {
+    margin: 0 15px;
+    padding: 0;
+    position: relative;
+}
+
+.card .card-header {
+    z-index: 3 !important;
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid #eee;
+    border-radius: .25rem;
+}
+
+/*.card {
+    font-size: .875rem;
+    margin-top: 35px;
+}*/
+
+.card-header {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    vertical-align: middle;
+}
+
+.card .body {
+    font-size: 13px;
+    color: #555;
+    padding: 20px;
+}

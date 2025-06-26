@@ -1,0 +1,1209 @@
+var GetWorkOrderForm = function () {
+    function getUrlParameters(parameter, staticURL, decode) {
+
+        var currLocation = (staticURL.length) ? staticURL : window.location.search,
+            parArr = currLocation.split("?")[1].split("&"),
+            returnBool = true;
+        var parr2 = null;
+        for (var i = 0; i < parArr.length; i++) {
+            parr = parArr[i].substring(0, parameter.length);
+            parr2 = parArr[i].substring(parameter.length + 1);
+            if (parr == parameter) {
+                return (decode) ? decodeURIComponent(parr2) : parr2;
+                returnBool = true;
+            } else {
+                returnBool = false;
+            }
+        }
+
+        if (!returnBool) return false;
+    }
+
+    var WorkOrderId = null;
+    var url = window.location.href;
+    if (url.indexOf("?") > -1) {
+        WorkOrderId = getUrlParameters("ID", url, true)
+    }
+
+    var IsCreate = $("#hdnCreate").val();
+    if (WorkOrderId == null) {
+        if (IsCreate == "F") {
+            window.location.href = "/Account/LogIn";
+        }
+    }
+
+    var Companytext = "";
+    var BindCompanyList = function () {
+        $.ajax({
+            url: "/Project/GetCompany",
+            data: { "Status": "Active" },
+            type: "post",
+            cache: false,
+            success: function (response) {
+                if (response.Success == true) {
+                    var html = "<option value='' selected='selected'>-- Select Company --</option>";
+                    var users = response.Data;
+                    if (users.length > 0) {
+                        $.each(users, function (key, data) {
+
+                            if (data == Companytext) {
+                                html += "<option value='" + data + "' selected='selected'>" + data + "</option>";
+                            }
+                            else {
+                                html += "<option value='" + data + "'>" + data + "</option>";
+                            }
+                        });
+                    }
+                    $("#ddlCompanyname").html(html);
+                }
+                else {
+                    new PNotify({
+                        title: response.TitleMsg,
+                        text: response.Message,
+                        type: response.MsgType,
+                        delay: response.TimeOutMsg,
+                        styling: 'bootstrap3'
+                    });
+                    console.log(response.Error);
+
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //$('#lblCommentsNotification').text("Error encountered while saving the comments.");
+            }
+        });
+    }
+
+    var AddDeleteRow = function () {
+
+        $(".add-row").click(function () {
+            if ($('#ddlPaymentMode option:selected').text() == '--Select Payment Mode--') {
+                pnotifymsg('Please select payment mode first');
+            }
+            else {
+
+                var BankName = $("#txtBankName").val();
+                var ChequeNo = $("#txtChequeNo").val();
+                var Chequedate = $("#txtChequedate").val();
+                var Amount = $("#txtAmount").val();
+
+                if (BankName != "" && ChequeNo != "" && Chequedate != "" && Amount != "") {
+                    $('#divtable').show();
+                    var table = $('#tblUser');
+
+                    var markup = "<tr><td><input type='checkbox' name='record'></td><td>" + BankName + "</td><td>" + ChequeNo + "</td><td>" + Chequedate + "</td><td>" + Amount + "</td></tr>";
+                    $("#tblBankDetail tbody").append(markup);
+
+
+                }
+                else {
+                    new PNotify({
+                        title: 'error',
+                        text: 'Please Fill Required Fields',
+                        type: 'error',
+                        delay: 3000,
+                        styling: 'bootstrap3'
+                    });
+                }
+
+                $("#txtBankName").val("");
+                $("#txtChequeNo").val("");
+                $("#txtAmount").val("");
+            }
+        });
+
+        // Find and remove selected table rows
+        $(".delete-row").click(function () {
+            var checkCount = $('table').find('input[name="record"]:checked').length;
+            if (checkCount > 0) {
+                $("#tblBankDetail tbody").find('input[name="record"]').each(function () {
+                    if ($(this).is(":checked")) {
+                        $(this).parents("tr").remove();
+                    }
+                });
+            }
+            else {
+                new PNotify({
+                    title: 'error',
+                    text: 'Please Select Record',
+                    type: 'error',
+                    delay: 3000,
+                    styling: 'bootstrap3'
+                });
+            }
+
+        });
+    }
+
+    $('#ddlCompanyname').change(function () {
+        var companyName = $('#ddlCompanyname option:selected').val();
+
+        $.ajax({
+            url: "/WorkOrder/GetCompanyDataByName",
+            data: JSON.stringify({ "CompanyName": companyName }),
+            contentType: "application/json; charset=utf-8",
+            type: "post",
+            dataType: "json",
+            cache: false,
+            success: function (response) {
+                if (response.Success == true) {
+                    var result = response.Data;
+                    if (result != null && result != undefined && result != "") {
+
+                        $('#txtOwnerName').val(result.OwnerName);
+                        $('#txtAddress').val(result.Address);
+                        $('#txtGSTNo').val(result.GSTNo == null ? "NA" : result.GSTNo);
+                        $('#txtEmailID').val(result.EmailId);
+                    }
+                }
+                else {
+                    new PNotify({
+                        title: response.TitleMsg,
+                        text: response.Message,
+                        type: response.MsgType,
+                        delay: response.TimeOutMsg,
+                        styling: 'bootstrap3'
+                    });
+                    console.log(response.Error);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //$('#lblCommentsNotification').text("Error encountered while saving the comments.");
+            }
+        });
+    });
+
+    var GenerateWONo = function () {
+        $.ajax({
+            url: "/WorkOrder/GenerateWorkOrderNo",
+            data: JSON.stringify({ "ID": '' }),
+            contentType: "application/json; charset=utf-8",
+            type: "post",
+            dataType: "json",
+            beforeSend: function () {
+                $("#loader").show();
+            },
+            cache: false,
+            success: function (response) {
+                if (response.Success == true) {
+                    var result = response.Data;
+                    if (result != null && result != undefined && result != "") {
+
+                        $('#txtWorkOrderNo').val(result);
+                    }
+                }
+                else {
+                    new PNotify({
+                        title: response.TitleMsg,
+                        text: response.Message,
+                        type: response.MsgType,
+                        delay: response.TimeOutMsg,
+                        styling: 'bootstrap3'
+                    });
+                    console.log(response.Error);
+                }
+            },
+            complete: function (data) {
+                $("#loader").hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //$('#lblCommentsNotification').text("Error encountered while saving the comments.");
+            }
+        });
+    }
+
+    var pnotifymsg = function (msg) {
+        new PNotify({
+            title: 'error',
+            text: msg,
+            type: 'error',
+            delay: 3000,
+            styling: 'bootstrap3'
+        });
+    }
+
+    var formValidator = function () {
+        $("#btnSubmit").click(function () {
+            var submitted = false;
+            $("#WorkOrderform").validate({
+                rules: {
+                    ddlType: {
+                        required: true
+                    },
+                    ddlWOStatus: {
+                        required: true
+                    },
+                    ddlCompanyname: {
+                        required: true
+                    },
+                    ddlPaymentMode: {
+                        required: true
+                    },
+                    txtTotalDealBasicAmount: {
+                        required: true
+                    },
+                    txtBasicAmountReceived: {
+                        required: true
+                    },
+                    txtGSTAmountReceived: {
+                        required: true
+                    },
+                    txtTotalAmountBalance: {
+                        required: true
+                    }
+                },
+
+                showErrors: function (errorMap, errorList) {
+
+                    if (submitted) {
+                        $("#WorkOrderform").find("input,textarea").each(function () {
+                            $(this).removeClass("error");
+                        });
+                        $("#divShowErrors").html("");
+                        if (errorList.length) {
+                            new PNotify({
+                                title: 'Error',
+                                text: errorList[0]['message'],
+                                type: 'error',
+                                delay: 3000,
+                                styling: 'bootstrap3',
+                            });
+                            $(errorList[0]['element']).addClass("error");
+                        }
+                        submitted = false;
+
+                    }
+                    //this.defaultShowErrors();
+                },
+                invalidHandler: function (form, validator) {
+                    submitted = true;
+
+                },
+                messages: {
+                    ddlType: "Please Select Type",
+                    ddlWOStatus: "Please Select Status",
+                    ddlCompanyname: "Please Select Company Name",
+                    ddlPaymentMode: "Please Select Payment Mode",
+                    txtTotalDealBasicAmount: "Total Deal Basic Amount Can't Be Blank",
+                    txtBasicAmountReceived: "Received Basic Amount Can't Be Blank",
+                    txtGSTAmountReceived: "Received GST Amount Can't Be Blank",
+                    txtTotalAmountBalance: "Balance Total Amount Can't Be Blank"
+                },
+                submitHandler: function (form) {
+                    var WorkOrderID = $("#WorkOrderID").val();
+
+                    var Type = $('#ddlType option:selected').val();
+                    var WOStatus = $('#ddlWOStatus option:selected').val();
+                    var Companyname = $('#ddlCompanyname option:selected').val();
+                    var OwnerName = $('#txtOwnerName').val();
+                    var Address = $('#txtAddress').val();
+                    var GSTNo = $('#txtGSTNo').val();
+                    var WorkOrderNo = $("#txtWorkOrderNo").val();
+                    var EmailID = $("#txtEmailID").val();
+
+                    var Rdate = new Date($("#txtRenewalDate").val().split('/').reverse().join('-')).toISOString().slice(0, 10);
+                    var RenewalDate = Rdate;
+
+                    var Todate = new Date($("#txtTodayDate").val().split('/').reverse().join('-')).toISOString().slice(0, 10);
+                    var TodayDate = Todate;
+
+                    var BasicTotal = $("#ftTotal").text();
+                    var PaymentMode = $('#ddlPaymentMode option:selected').val();
+
+                    var TotalDealBasicAmount = $("#txtTotalDealBasicAmount").val();
+                    var TotalDealGSTAmount = $("#txtTotalDealGSTAmount").val();
+                    var BasicAmountReceived = $("#txtBasicAmountReceived").val();
+                    var GSTAmountReceived = $("#txtGSTAmountReceived").val();
+                    var BalanceBasicAmount = $("#txtBalanceBasicAmount").val();
+                    var BalanceGSTAmount = $("#txtBalanceGSTAmount").val();
+                    var TotalAmountBalance = $("#txtTotalAmountBalance").val();
+                    var count = 0;
+                    if (validate()) {
+                        var ServiceDescriptionList = new Array();
+                        var rowCount = $('#tblServiceDescription >tbody >tr').length;
+
+                        if (rowCount > 0) {
+                            $("#tblServiceDescription TBODY TR").each(function () {
+                                var row = $(this);
+
+                                var ServiceDescriptiondata = {};
+                                ServiceDescriptiondata.Department = row.find("TD").eq(1).html();
+                                ServiceDescriptiondata.ServicesDescription = row.find("TD").eq(2).html();
+                                ServiceDescriptiondata.Remark = row.find("td:eq(3) textarea[type='text']").val();
+                                ServiceDescriptiondata.Qty = row.find("td:eq(4) input[type='text']").val();
+                                ServiceDescriptiondata.NoofYr = row.find("td:eq(5) input[type='text']").val();
+                                ServiceDescriptiondata.Rate = row.find("td:eq(6) input[type='text']").val();
+                                ServiceDescriptiondata.Amount = row.find("td:eq(7) input[type='text']").val();
+                                ServiceDescriptionList.push(ServiceDescriptiondata);
+
+                                if (row.find('input[type="checkbox"]').is(':checked')) {
+                                    if (row.find("td:eq(3) textarea[type='text']").val() == "") {
+                                        count++;
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            ServiceDescriptionList = null;
+                        }
+
+                        var BankDetailList = new Array();
+                        var rowCount = $('#tblBankDetail >tbody >tr').length;
+                        if (rowCount > 0) {
+                            $("#tblBankDetail TBODY TR").each(function () {
+                                var row = $(this);
+                                var BankDetaildata = {};
+                                BankDetaildata.BankName = row.find("TD").eq(1).html();
+                                BankDetaildata.ChequeNo = row.find("TD").eq(2).html();
+
+                                var date = new Date(row.find("TD").eq(3).html().split('/').reverse().join('-')).toISOString().slice(0, 10);
+                                var CheqDate = date;
+
+                                BankDetaildata.ChequeDate = CheqDate;
+                                BankDetaildata.Amount = row.find("TD").eq(4).html();
+                                BankDetailList.push(BankDetaildata);
+                            });
+                        }
+                        else {
+                            BankDetailList = null;
+                        }
+
+                        var DataList = {
+                            WorkOrderID: WorkOrderID
+                            , Type: Type
+                            , WOStatus: WOStatus
+                            , WONo: WorkOrderNo
+                            , CompanyName: Companyname
+                            , OwnerName: OwnerName
+                            , Address: Address
+                            , GSTNO: GSTNo
+                            , EmailID: EmailID
+                            , TodayDt: TodayDate
+                            , RenewalDt: RenewalDate
+                            , PaymentMode: PaymentMode
+                            , TotalDealBasicAmount: TotalDealBasicAmount
+                            , TotalDealGSTAmount: TotalDealGSTAmount
+                            , BasicAmountReceived: BasicAmountReceived
+                            , GSTAmountReceived: GSTAmountReceived
+                            , BalanceBasicAmount: BalanceBasicAmount
+                            , BalanceGSTAmount: BalanceGSTAmount
+                            , TotalAmountBalance: TotalAmountBalance
+                            , objtblWorkOrderDtl: ServiceDescriptionList
+                            , objtblBankDetail: BankDetailList
+                        };
+
+                        if (count == 0) {
+                            $.ajax({
+                                url: "/WorkOrder/CreateOrEdit",
+                                data: JSON.stringify(DataList),
+                                contentType: "application/json; charset=utf-8",
+                                type: "post",
+                                dataType: "json",
+                                beforeSend: function () {
+                                    $("#loader").show();
+                                },
+                                cache: false,
+                                success: function (response) {
+                                    if (response.Success == true) {
+
+                                        new PNotify({
+                                            title: response.TitleMsg,
+                                            text: response.Message,
+                                            type: response.MsgType,
+                                            delay: response.TimeOutMsg,
+                                            styling: 'bootstrap3'
+                                        });
+
+                                        setTimeout(function () {
+                                            window.location.href = "/WorkOrder/Index";
+                                        }, 2000);
+                                    }
+                                    else {
+                                        new PNotify({
+                                            title: response.TitleMsg,
+                                            text: response.Message,
+                                            type: response.MsgType,
+                                            delay: response.TimeOutMsg,
+                                            styling: 'bootstrap3'
+                                        });
+                                        console.log(response.Error);
+
+                                    }
+                                },
+                                complete: function (data) {
+                                    $("#loader").hide();
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    //$('#lblCommentsNotification').text("Error encountered while saving the comments.");
+                                }
+                            });
+                        }
+                        else {
+                            pnotifymsg("Please Enter Remarks");
+
+                        }
+                    }
+                }
+            })
+        });
+
+    };
+
+    var loadWorkOrderData = function () {
+        if (WorkOrderId != null && WorkOrderId != undefined && WorkOrderId != "") {
+            try {
+                $.ajax({
+                    url: "/WorkOrder/GetWorkOrderDataById",
+                    data: JSON.stringify({ "ID": WorkOrderId }),
+                    contentType: "application/json; charset=utf-8",
+                    type: "post",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $("#loader").show();
+                    },
+                    cache: false,
+                    success: function (response) {
+                        if (response.Success == true) {
+                            var result = response.Data;
+                            if (result != null && result != undefined && result != "") {
+
+
+                                var WorkOrderHdr = result.Data.WorkOrderHdr;
+                                var WorkOrderDtls = result.Data.WorkOrderDtls;
+                                var WorkOrderBankList = result.Data.WorkOrderBankList;
+
+                                $("#WorkOrderID").val(WorkOrderHdr.WorkOrderID);
+                                $('#ddlType').val(WorkOrderHdr.Type).trigger('change');
+                                $('#ddlWOStatus').val(WorkOrderHdr.WOStatus).trigger('change');
+
+                                Companytext = WorkOrderHdr.CompanyName;
+                                BindCompanyList();
+                                //$('#ddlCompanyname option:selected').val(WorkOrderHdr.CompanyName);
+                                $('#txtOwnerName').val(WorkOrderHdr.OwnerName);
+                                $('#txtAddress').val(WorkOrderHdr.Address);
+                                $('#txtGSTNo').val(WorkOrderHdr.GSTNO);
+                                $("#txtWorkOrderNo").val(WorkOrderHdr.WONo);
+                                $("#txtEmailID").val(WorkOrderHdr.EmailID);
+
+                                var RenewalDate;
+                                if (WorkOrderHdr.RenewalDate != null) {
+                                    RenewalDate = convertDate(new Date(parseInt(WorkOrderHdr.RenewalDate.substr(6))));
+                                    //RenewalDate = WorkOrderHdr.RenewalDate;
+                                }
+                                else {
+                                    RenewalDate = "";
+                                }
+
+                                var TodayDate;
+                                if (WorkOrderHdr.TodayDate != null) {
+                                    TodayDate = convertDate(new Date(parseInt(WorkOrderHdr.TodayDate.substr(6))));
+                                }
+                                else {
+                                    TodayDate = "";
+                                }
+
+                                $("#txtRenewalDate").val(RenewalDate);
+                                $("#txtTodayDate").val(TodayDate);
+                                $('#ddlPaymentMode').val(WorkOrderHdr.PaymentMode).trigger('change');
+
+                                $("#txtTotalDealBasicAmount").val(WorkOrderHdr.TotalDealBasicAmount);
+                                $("#txtTotalDealGSTAmount").val(WorkOrderHdr.TotalDealGSTAmount);
+                                $("#txtBasicAmountReceived").val(WorkOrderHdr.BasicAmountReceived);
+                                $("#txtGSTAmountReceived").val(WorkOrderHdr.GSTAmountReceived);
+                                $("#txtBalanceBasicAmount").val(WorkOrderHdr.BalanceBasicAmount);
+                                $("#txtBalanceGSTAmount").val(WorkOrderHdr.BalanceGSTAmount);
+                                $("#txtTotalAmountBalance").val(WorkOrderHdr.TotalAmountBalance);
+
+                                bindServicesData(WorkOrderDtls);
+
+                                bindBankData(WorkOrderBankList);
+
+                                $("#btnSubmit").html("Update");
+                                $('#lblHeader').html("UPDATE WorkOrder")
+                            }
+                        }
+                        else {
+                            new PNotify({
+                                title: response.TitleMsg,
+                                text: response.Message,
+                                type: response.MsgType,
+                                delay: response.TimeOutMsg,
+                                styling: 'bootstrap3'
+                            });
+                            console.log(response.Error);
+
+                        }
+                    },
+                    complete: function (data) {
+                        $("#loader").hide();
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        //$('#lblCommentsNotification').text("Error encountered while saving the comments.");
+                    }
+                });
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }
+    }
+
+    function bindBankData(data) {
+        $('#divtable').show();
+        $('#tblBankDetail').find('tbody').remove();
+        var arrayReturn = [];
+        var resultData = data;
+        for (var i = 0; i < resultData.length; i++) {
+            var result = resultData[i];
+            var Chk = "<tr><td><input type='checkbox' name='record'></td></tr>";
+
+            var ChequeDate;
+            if (result.ChequeDate != null) {
+                ChequeDate = convertDate(new Date(parseInt(result.ChequeDate.substr(6))));
+            }
+            else {
+                ChequeDate = "";
+            }
+
+            arrayReturn.push([Chk, result.BankName, result.ChequeNo, ChequeDate, result.Amount]);
+        }
+
+        var $datatable = $('#tblBankDetail');
+
+        $datatable.DataTable({
+            "bDestroy": true,
+            data: arrayReturn,
+            sort: [0, 'desc'],
+            "ordering": false,
+            'order': [[1, 'asc']],
+            'columnDefs': [
+                {
+                    orderable: false, targets: [1], "visible": true
+                },
+            ],
+            responsive: true,
+            dom: '<"toolbar">lfrtip',
+            "bLengthChange": false,
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            oLanguage: {
+                sLengthMenu: "Show _MENU_",
+            },
+        });
+    }
+
+    function convertDate(str) {
+        var date = new Date(str),
+            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+            day = ("0" + date.getDate()).slice(-2);
+        return [day, mnth, date.getFullYear()].join("/");
+    }
+
+    var GetServicesList = function () {
+
+        $.ajax({
+            url: "/WorkOrder/GetServicesList",
+            data: JSON.stringify({ "Str": '' }),
+            contentType: "application/json; charset=utf-8",
+            type: "post",
+            dataType: "json",
+            beforeSend: function () {
+                $("#loader").show();
+            },
+            cache: false,
+            success: function (response) {
+                if (response.Success == true) {
+                    bindServicesData(response.Data);
+                }
+                else {
+                    new PNotify({
+                        title: 'Error',
+                        text: response.Message,
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                    console.log(response.Error);
+                }
+            },
+            complete: function (data) {
+                $("#loader").hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+            }
+        });
+    }
+
+    function bindServicesData(data) {
+
+        console.log(data);
+
+        $('#tblServiceDescription').find('tbody').remove();
+        var arrayReturn = [];
+        var resultData = data;
+        var rowId = 1;
+        for (var i = 0; i < resultData.length; i++) {
+            var result = resultData[i];
+
+            var DeparmentName;
+            var IsCheck;
+            var Services;
+            var Qty;
+            var NoofYear;
+            var Rate;
+            var Amount;
+            var Remarks;
+
+            if (WorkOrderId != null) {
+
+                if (result.Amount > 0) {
+                    IsCheck = "<input type='checkbox' class='text-center chk' style='text-align: center;' name='record' checked>";
+                }
+                else {
+                    IsCheck = "<input type='checkbox' class='text-center chk' style='text-align: center;' name='record'>";
+                }
+                DeparmentName = result.Department;
+                Services = result.ServicesDescription;
+                Remarks = "<textarea type='text' style='width: 140px' class='form-control text-center' readonly>" + result.Remark + "</textarea>";
+                Qty = "<input type='text' value='" + result.Qty + "' class='form-control text-center txtqty numbers' readonly>";
+                NoofYear = "<input type='text' value='" + result.NoofYr + "' class='form-control text-center txt Yrnumbers' readonly>";
+                Rate = "<input type='text' value='" + result.Rate + "' style='width: 70px' class='form-control text-center txt numeric' readonly>";
+                Amount = "<input type='text' value='" + result.Amount + "' class='form-control text-center' readonly>";
+            }
+            else {
+                IsCheck = "<input type='checkbox' class='text-center chk' style='text-align: center;' name='record'>";
+                DeparmentName = result.Department;
+                Services = result.Services;
+                Remarks = "<textarea type='text' style='width: 140px' class='form-control text-center'>";
+                Qty = "<input type='text' value='1' class='form-control text-center txtqty numbers' readonly>";
+                NoofYear = "<input type='text' value='1' class='form-control text-center txt Yrnumbers' readonly>";
+                Rate = "<input type='text' value='" + result.Price + "' style='width: 70px' class='form-control text-center txt numeric' readonly>";
+                Amount = "<input type='text' value='0' class='form-control text-center' readonly>";
+            }
+
+            arrayReturn.push([IsCheck, DeparmentName, Services, Remarks, Qty, NoofYear, Rate, Amount]);//rowId,
+            rowId++;
+        }
+
+        var $datatable = $('#tblServiceDescription');
+
+        $datatable.DataTable({
+            "bDestroy": true,
+            searching: false, paging: false, info: false,
+            data: arrayReturn,
+            sort: [0, 'desc'],
+            "ordering": false,
+            'order': [[1, 'asc']],
+            'columnDefs': [
+                {
+                    type: 'checked-first',
+                    orderable: false, targets: [0], "visible": true
+                },
+            ],
+            responsive: true,
+            dom: '<"toolbar">lfrtip',
+            "bLengthChange": false,
+            oLanguage: {
+                sLengthMenu: "Show _MENU_",
+            },
+
+
+        });
+
+
+        $('#tblServiceDescription thead tr:first').find('th').each(function (index) {
+            if (index === 1 || index === 2) {
+                var title = $(this).text();
+                $(this).html('<input type="text" id="searchid" class="form-control searchkey" placeholder="Search ' + title + '" />');
+            }
+        });
+
+        // Update readonly and calculate sum
+        $("#tblServiceDescription tbody").find('input[name="record"]').each(function () {
+            if ($(this).is(":checked")) {
+                $(this).closest('tr').find("td:eq(3) textarea").attr('readonly', false);
+                $(this).closest('tr').find("td:eq(4) input").attr('readonly', false);
+                $(this).closest('tr').find("td:eq(5) input").attr('readonly', false);
+            } else {
+                $(this).closest('tr').find("td:eq(3) textarea").attr('readonly', true);
+                $(this).closest('tr').find("td:eq(4) input").attr('readonly', true);
+                $(this).closest('tr').find("td:eq(5) input").attr('readonly', true);
+                $(this).closest('tr').find("td:eq(3) textarea").val('');
+            }
+
+            // Recalculate sum for checked rows
+
+        });
+
+        // Update total sum
+        var sum = 0;
+        $("#tblServiceDescription tr").each(function () {
+            var get_textbox_value = $(this).closest('tr').find("td:eq(7) input").val();
+            if ($.isNumeric(get_textbox_value)) {
+                sum += parseFloat(get_textbox_value);
+            }
+        });
+        $('#ftTotal').text(sum);
+        $('#txtTotalDealBasicAmount').val(sum);
+    }
+
+
+    //------------------------------------------------------------------------------------
+    $('#tblServiceDescription').on('keyup', '.searchkey', function () {
+        var searchValue = $(this).val();
+        bindservicetable(searchValue);   // bind list by search words
+    });
+
+    function bindservicetable(searchValue) {        
+        var table = $('#tblServiceDescription').DataTable();
+        
+        if (searchValue.length >= 3) {
+
+   //-------------------------------checked and without checked data ---------------------------------------------------
+            var checkboxArray = document.querySelectorAll('.chk');
+            var checkedData = [];
+            var uncheckedData = [];
+            checkboxArray.forEach(function (checkbox, row) {        //checked and non checked Row checking       
+                if (checkbox.checked) {
+                    checkedData.push(row);
+                } else {
+                    uncheckedData.push(row);
+                }
+            });        
+            var reorderedData = checkedData.concat(uncheckedData);   //order by data on checked then unchecked
+            console.log(reorderedData);     // all least 
+            console.log(checkedData);         // only checked data
+
+            //-------------------------table data bind----------------------------------------------
+            var filteredData = table.rows().data().toArray();
+            var resultData = filteredData;
+
+        //-----------------------textarea reamrak data find and bind------------------------------------------------
+            var Remarks = [];
+
+            //var filtered=table.search(this.searchValue).draw();
+            //const includesValue = resultData.includes(searchValue)
+
+            var textAreaValues = [];
+            var tableRows = document.querySelectorAll('#tblServiceDescription tbody tr'); // Select all table rows
+
+            // Loop through each table row and get the value of the textarea in that row
+            tableRows.forEach(function (row) {
+                var textarea = row.querySelector('textarea'); // Select the textarea within the current row
+                textAreaValues.push(textarea.value); // Push the value of the textarea into the array
+            });
+
+            // Now textAreaValues array contains values of textareas within the datatable
+            console.log(textAreaValues);
+            //---------------------------- binding data to filds--------------------------------------------
+            var arrayReturn = [];
+            var rowId = 1;
+
+            for (var i = 0; i < resultData.length; i++) {
+                var result = resultData[i];
+                var IsCheck = "";
+
+
+
+                // Check if the index 'i' exists in the checkedData array
+
+                for (var j = 0; j < result.length; j++) {
+
+                    var tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = result[j];
+                    window['dept' + j] = result[j];
+                    var value = tempDiv.firstChild.value;
+                    window['input' + j] = value;
+                }    // single row data separaton and convert data html to words
+
+                var DeparmentName = dept1;
+                var Services = dept2;
+                var Qty = input4;
+                var NoofYear = input5;
+                var Rate = input6;
+                var Amount = "";
+                var Remarks = "";
+                if (checkedData.includes(i)) {        //set checked check box and amount
+                    IsCheck = "<input type='checkbox' class='text-center chk' style='text-align: center;' name='record' checked>";
+                    Amount = (parseFloat(Qty) * parseFloat(NoofYear)) * parseFloat(Rate);
+                } else {
+                    IsCheck = "<input type='checkbox' class='text-center chk' style='text-align: center;' name='record'>";
+                    Amount = "0";
+                }
+
+                if (textAreaValues[i] !== undefined && textAreaValues[i] !== null) {
+                    Remarks = "<textarea type='text' style='width: 140px' class='form-control text-center'>" + textAreaValues[i] + "</textarea>";
+
+
+                } else {
+                    Remarks = "<textarea type='text' style='width: 140px' class='form-control text-center' readonly>";
+                }
+                //Remarks = "<textarea type='text' style='width: 140px' class='form-control text-center'>" + textareaValue + "</textarea>";
+                Qty = "<input type='text' value='" + Qty + "' class='form-control text-center txtqty numbers' readonly>";
+                NoofYear = "<input type='text' value='" + NoofYear + "' class='form-control text-center txt Yrnumbers' readonly>";
+                Rate = "<input type='text' value='" + Rate + "' style='width: 70px' class='form-control text-center txt numeric' readonly>";
+                Amount = "<input type='text' value='" + Amount + "' class='form-control text-center' readonly>";
+
+
+                // Check if Amount is greater than 0 and update IsCheck accordingly
+                if (parseFloat(result[7]) > 0) {
+                    IsCheck = "<input type='checkbox' class='text-center chk' style='text-align: center;' name='record' checked>";
+                }
+
+                arrayReturn.push([IsCheck, DeparmentName, Services, Remarks, Qty, NoofYear, Rate, Amount]);
+            }
+
+            console.log(arrayReturn);
+            //------------------------------search data and order by array list---------------------------------------------------------
+            var dataArray = arrayReturn;
+            function searchArray(searchValue, dataArray) {
+                var searchResults = [];
+                var nonMatchingResults = [];
+
+                for (var i = 0; i < dataArray.length; i++) {
+                    var rowData = dataArray[i];
+                    var foundInRow = false;
+
+                    for (var j = 0; j < rowData.length; j++) {
+                        var text = extractTextFromHTML(rowData[j]);
+                        if (text.toLowerCase().indexOf(searchValue.toLowerCase()) !== -1) {
+                            searchResults.push(rowData);
+                            foundInRow = true;
+                            break;0
+                        }
+                    }
+
+                    if (!foundInRow) {
+                        nonMatchingResults.push(rowData);
+                    }
+                }
+
+                return searchResults.concat(nonMatchingResults);
+            }
+          
+            // Function to extract text from HTML content
+            function extractTextFromHTML(html) {
+                var tempElement = document.createElement('div');
+                tempElement.innerHTML = html;
+                return tempElement.textContent || tempElement.innerText || '';
+            }
+
+            var searchResults = searchArray(searchValue, dataArray);  //search method call
+            console.log(searchResults);  
+            //var orderedRows = [];
+            //reorderedData.forEach(function (index) {         //set data order by using arraylist
+            //    orderedRows.push(arrayReturn[index]);
+            //});
+         
+
+            $('#tblServiceDescription').find('tbody').remove();   //remove table data
+            var $datatable = $('#tblServiceDescription');  //add new data to datatable
+
+            $datatable.DataTable({
+                "bDestroy": true,
+                searching: false,
+                paging: false,
+                info: false,
+                data: searchResults,
+                ordering: false,
+                responsive: true,
+                dom: '<"toolbar">lfrtip',
+                "bLengthChange": false,
+                oLanguage: {
+                    sLengthMenu: "Show _MENU_",
+                },
+            });
+        }
+        
+        // Update readonly and calculate sum
+        $("#tblServiceDescription tbody").find('input[name="record"]').each(function () {
+            if ($(this).is(":checked")) {
+                $(this).closest('tr').find("td:eq(3) textarea").attr('readonly', false);
+                $(this).closest('tr').find("td:eq(4) input").attr('readonly', false);
+                $(this).closest('tr').find("td:eq(5) input").attr('readonly', false);
+            } else {
+                $(this).closest('tr').find("td:eq(3) textarea").attr('readonly', true);
+                $(this).closest('tr').find("td:eq(4) input").attr('readonly', true);
+                $(this).closest('tr').find("td:eq(5) input").attr('readonly', true);
+                $(this).closest('tr').find("td:eq(3) textarea").val('');
+            }
+
+            // Recalculate sum for checked rows
+            var get_textbox_value = $(this).closest('tr').find("td:eq(7) input").val();
+            if ($.isNumeric(get_textbox_value)) {
+                sum += parseFloat(get_textbox_value);
+            }
+        });
+
+        // Update total sum
+        $('#ftTotal').text(sum);
+        $('#txtTotalDealBasicAmount').val(sum);
+        $('#searchid').focus();
+    }
+    //-------------------------------------------------------------------------------------
+
+
+    $('#tblServiceDescription').on('change', '.chk', function () {
+
+        if ($('#ddlCompanyname option:selected').text() == '-- Select Company --') {
+            pnotifymsg('Please select company first');
+        }
+        else {
+            $("#tblServiceDescription tbody").find('input[name="record"]').each(function () {
+                if ($(this).is(":checked")) {
+                    $(this).closest('tr').find("td:eq(3) textarea").attr('readonly', false);
+                    $(this).closest('tr').find("td:eq(4) input").attr('readonly', false);
+                    $(this).closest('tr').find("td:eq(5) input").attr('readonly', false);
+
+                    var Qty = $(this).closest('tr').find("td:eq(4) input").val();
+                    var rate = $(this).closest('tr').find("td:eq(6) input").val();
+
+                    var totalamt = parseFloat(Qty) * parseFloat(rate);
+
+                    $(this).closest('tr').find("td:eq(7) input").val(totalamt);
+
+
+                }
+                else {
+                    $(this).closest('tr').find("td:eq(3) textarea").attr('readonly', true);
+                    $(this).closest('tr').find("td:eq(4) input").attr('readonly', true);
+                    $(this).closest('tr').find("td:eq(5) input").attr('readonly', true);
+
+                    $(this).closest('tr').find("td:eq(4) input").val("1");
+                    $(this).closest('tr').find("td:eq(5) input").val("1");
+                    $(this).closest('tr').find("td:eq(7) input").val("0");
+
+                }
+            });
+        }
+
+        var sum = 0;
+        $("#tblServiceDescription tr").each(function () {
+            var get_textbox_value = $(this).closest('tr').find("td:eq(7) input").val();
+            if ($.isNumeric(get_textbox_value)) {
+                sum += parseFloat(get_textbox_value);
+            }
+        });
+        $('#ftTotal').text(sum);
+        $('#txtTotalDealBasicAmount').val(sum);
+        var TotalDealBasicAmount = $('#txtTotalDealBasicAmount').val();
+        var gstper = $('#spnGSTper').text();
+        var gstamount = (parseFloat(TotalDealBasicAmount) * gstper / 100).toFixed(2);
+        $('#txtTotalDealGSTAmount').val(gstamount);
+    });
+
+    $('#tblServiceDescription').on('change', '.txtqty', function () {
+
+        $("#tblServiceDescription tbody").find('input[name="record"]').each(function () {
+            if ($(this).is(":checked")) {
+                $(this).closest('tr').find("td:eq(3) input").attr('readonly', false);
+                $(this).closest('tr').find("td:eq(4) input").attr('readonly', false);
+
+                var Qty = $(this).closest('tr').find("td:eq(4) input").val();
+                var Year = $(this).closest('tr').find("td:eq(5) input").val();
+                var rate = $(this).closest('tr').find("td:eq(6) input").val();
+
+                var totalamt = (parseFloat(Qty) * parseFloat(Year)) * parseFloat(rate);
+
+                $(this).closest('tr').find("td:eq(7) input").val(totalamt);
+            }
+            else {
+                $(this).closest('tr').find("td:eq(4) input").attr('readonly', true);
+                $(this).closest('tr').find("td:eq(5) input").attr('readonly', true);
+
+                $(this).closest('tr').find("td:eq(4) input").val("1");
+                $(this).closest('tr').find("td:eq(5) input").val("1");
+            }
+        });
+
+        var sum = 0;
+        $("#tblServiceDescription tr").each(function () {
+            var get_textbox_value = $(this).closest('tr').find("td:eq(7) input").val();
+            if ($.isNumeric(get_textbox_value)) {
+                sum += parseFloat(get_textbox_value);
+            }
+        });
+
+        $('#ftTotal').text(sum);
+        $('#txtTotalDealBasicAmount').val(sum);
+    });
+
+    $('#tblServiceDescription').on('change', '.Yrnumbers', function () {
+
+        $("#tblServiceDescription tbody").find('input[name="record"]').each(function () {
+            if ($(this).is(":checked")) {
+                $(this).closest('tr').find("td:eq(4) input").attr('readonly', false);
+                $(this).closest('tr').find("td:eq(5) input").attr('readonly', false);
+
+                var Qty = $(this).closest('tr').find("td:eq(4) input").val();
+                var Year = $(this).closest('tr').find("td:eq(5) input").val();
+                var rate = $(this).closest('tr').find("td:eq(6) input").val();
+
+                var totalamt = (parseFloat(Qty) * parseFloat(Year)) * parseFloat(rate);
+
+                $(this).closest('tr').find("td:eq(7) input").val(totalamt);
+            }
+            else {
+                $(this).closest('tr').find("td:eq(4) input").attr('readonly', true);
+                $(this).closest('tr').find("td:eq(5) input").attr('readonly', true);
+
+                $(this).closest('tr').find("td:eq(4) input").val("1");
+                $(this).closest('tr').find("td:eq(5) input").val("1");
+            }
+        });
+
+        var sum = 0;
+        $("#tblServiceDescription tr").each(function () {
+            var get_textbox_value = $(this).closest('tr').find("td:eq(7) input").val();
+            if ($.isNumeric(get_textbox_value)) {
+                sum += parseFloat(get_textbox_value);
+            }
+        });
+
+        $('#ftTotal').text(sum);
+        $('#txtTotalDealBasicAmount').val(sum);
+    });
+
+    $('#txtTotalDealBasicAmount').change(function () {
+        var TotalDealBasicAmount = $('#txtTotalDealBasicAmount').val();
+        var gstper = $('#spnGSTper').text();
+
+        var gstamount = (parseFloat(TotalDealBasicAmount) * gstper / 100).toFixed(2);
+        $('#txtTotalDealGSTAmount').val(gstamount);
+    });
+
+    $('#txtBasicAmountReceived').change(function () {
+        var BasicAmountReceived = $('#txtBasicAmountReceived').val();
+        var TotalDealBasicAmount = $('#txtTotalDealBasicAmount').val();
+
+        var BalanceBasicAmount = (parseFloat(TotalDealBasicAmount) - parseFloat(BasicAmountReceived)).toFixed(2);
+
+        $('#txtBalanceBasicAmount').val(BalanceBasicAmount);
+
+
+        var BalanceBasicAmount = $('#txtBalanceBasicAmount').val();
+        var BalanceGSTAmount = $('#txtBalanceGSTAmount').val();
+        var TotalDealGSTAmount = $('#txtTotalDealGSTAmount').val();
+        if (BalanceGSTAmount == 0) {
+            var GST = TotalDealGSTAmount;
+        }
+        else {
+            var GST = BalanceGSTAmount
+        }
+        var Total = (parseFloat(BalanceBasicAmount) + parseFloat(GST)).toFixed(2);
+
+        $('#txtTotalAmountBalance').val(Total);
+    });
+
+    $('#txtGSTAmountReceived').change(function () {
+        var GSTAmountReceived = $('#txtGSTAmountReceived').val();
+        var TotalDealGSTAmount = $('#txtTotalDealGSTAmount').val();
+
+        var BalanceGSTAmount = (parseFloat(TotalDealGSTAmount) - parseFloat(GSTAmountReceived)).toFixed(2);
+
+        $('#txtBalanceGSTAmount').val(BalanceGSTAmount);
+        var BalanceBasicAmount = $('#txtBalanceBasicAmount').val();
+        var BalanceGSTAmount = $('#txtBalanceGSTAmount').val();
+        var Total = (parseFloat(BalanceBasicAmount) + parseFloat(BalanceGSTAmount)).toFixed(2);
+
+        $('#txtTotalAmountBalance').val(Total);
+    });
+
+    //datatable input number only
+
+    $('#tblServiceDescription').on('keyup', '.numbers', function () {
+        var beforeDecimal = 2;
+        var afterDecimal = 0;
+        this.value = this.value
+            .replace(/[^\d]/g, '')
+            .replace(new RegExp("(^[\\d]{" + beforeDecimal + "})[\\d]", "g"), '$1')
+            .replace(/(\..*)\./g, '$1');
+    });
+
+    $('#tblServiceDescription').on('keyup', '.Yrnumbers', function () {
+        var beforeDecimal = 2;
+        var afterDecimal = 2;
+        this.value = this.value
+            .replace(/[^\d.]/g, '')
+            .replace(new RegExp("(^[\\d]{" + beforeDecimal + "})[\\d]", "g"), '$1')
+            .replace(/(\..*)\./g, '$1')
+            .replace(new RegExp("(\\.[\\d]{" + afterDecimal + "}).", "g"), '$1');
+    });
+
+    $('#ddlType').change(function () {
+
+        if ($('#ddlType option:selected').val() == "WLSPL") {
+            $('#spnGSTper').text('18');
+            $('#trTotalDealGSTAmount').show();
+            $('#trGSTAmountReceived').show();
+            $('#trBalanceGSTAmount').show();
+        }
+        else {
+            $('#spnGSTper').text('0');
+            $('#txtGSTAmountReceived').prop('readonly', true);
+            $('#trTotalDealGSTAmount').hide();
+            $('#trGSTAmountReceived').hide();
+            $('#trBalanceGSTAmount').hide();
+        }
+    });
+
+    //input number only
+    $('.numeric').keyup(function () {
+        var val = $(this).val();
+        if (isNaN(val)) {
+            val = val.replace(/[^0-9\.]/g, '');
+            if (val.split('.').length > 2)
+                val = val.replace(/\.+$/, "");
+        }
+        $(this).val(val);
+    });
+
+    var validate = function () {
+
+        var cnt = 0;
+        $("#tblServiceDescription tbody").find('input[name="record"]').each(function () {
+            if ($(this).is(":checked")) {
+                cnt++;
+            }
+        });
+
+        var rowCount = $('#tblBankDetail >tbody >tr').length;
+        if (rowCount <= 0) {
+            pnotifymsg("Please Add Bank Details");
+            return false;
+        }
+        else if (cnt <= 0) {
+            pnotifymsg("Please select atleaset one service");
+            return false;
+        }
+        else
+            return true;
+    }
+
+    return {
+        init: function () {
+            $('.Date').datepicker({
+                todayHighlight: true,
+                format: 'dd/mm/yyyy',
+                startDate: '-30d',
+                autoclose: true,
+                orientation: "top left",
+                clearBtn: true
+            });
+            $('.Date').datepicker('setDate', 'today');
+            $("#txtTodayDate").attr('disabled', 'disabled');
+
+
+            if (WorkOrderId != null && WorkOrderId != undefined && WorkOrderId != "") {
+                loadWorkOrderData();
+            }
+            else {
+                GenerateWONo();
+                GetServicesList();
+            }
+            formValidator();
+            BindCompanyList();
+            AddDeleteRow();
+        }
+    };
+}();

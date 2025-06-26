@@ -1,0 +1,531 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data.SqlClient;
+using System.Configuration;
+using System.Data;
+using System.IO;
+using System.Text;
+using System.Security.Cryptography;
+using System.Net.Mail;
+
+public partial class Sales_GetUpdationCompany : System.Web.UI.Page
+{
+    SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (Session["adminempcode"] == null || Session["adminempcode"] == null)
+        {
+            Response.Redirect("../Login.aspx");
+        }
+        else
+        {
+            if (!IsPostBack)
+            {
+                BindDdl_Username();
+                Gvbind();
+                Getmanger();
+            }
+        }
+    }
+
+    private void BindDdl_Username()
+    {
+        try
+        {
+            #region This Code is For Sale Module 
+            //string CurrentUser = Session["salesempcode"].ToString();
+            //// Create a DataTable to store the distinct user names
+            //DataTable dtDistinctUsers = new DataTable();
+            //dtDistinctUsers.Columns.Add("empcode", typeof(string));
+            //dtDistinctUsers.Columns.Add("name", typeof(string));
+            //// Create a list to keep track of selected user names to prevent duplicates
+            //List<string> selectedUserNames = new List<string>();
+            //DataRow currentUserRow = dtDistinctUsers.NewRow();
+            //currentUserRow["empcode"] = CurrentUser;
+            ////currentUserRow["name"] = "Current User";
+            //currentUserRow["name"] = Session["salesname"].ToString();
+            //dtDistinctUsers.Rows.Add(currentUserRow);
+            //con.Open();
+            //using (SqlCommand cmd = new SqlCommand("SELECT * FROM [dbo].[employees] WHERE  TL_Manager = @CurrentUser", con))
+            //{
+            //    cmd.Parameters.AddWithValue("@CurrentUser", CurrentUser);
+            //    SqlDataReader reader = cmd.ExecuteReader();
+            //    while (reader.Read())
+            //    {
+            //        string empcode = reader["empcode"].ToString();
+            //        string name = reader["name"].ToString();
+            //        // string Isactive= reader["name"].ToString();
+
+            //        // Check if the name is not already selected
+            //        if (!selectedUserNames.Contains(name))
+            //        {
+            //            selectedUserNames.Add(name);
+            //            dtDistinctUsers.Rows.Add(empcode, name);
+            //        }
+            //    }
+            //    reader.Close();
+            //}
+            //if (dtDistinctUsers.Rows.Count <= 1)
+            //{
+            //    divuserstatus.Visible = false;
+            //    divblank.Visible = true;
+            //}
+            //ddlTeamuser.DataValueField = "empcode";
+            //ddlTeamuser.DataTextField = "name";
+            //ddlTeamuser.DataSource = dtDistinctUsers;
+            //ddlTeamuser.DataBind();
+            ////ddlTeamuser.Items.Insert(0, new System.Web.UI.WebControls.ListItem("--Select--", "0"));
+            #endregion
+            string Query = string.Empty;
+            #region This Code is For Admin & SubAdmin Module 
+            string CurrentUserr = Session["adminempcode"].ToString();
+            DataTable dtUsers = new DataTable();
+            if (ddluserstatus.SelectedValue == "2")
+            {
+                Query = "SELECT * FROM [dbo].[employees] WHERE IsDeleted=0";
+            }
+            else
+            if (ddluserstatus.SelectedValue == "1")
+            {
+                Query = "SELECT * FROM [dbo].[employees] WHERE Status=1 AND IsDeleted=0 ";
+            }
+            else
+            {
+                Query = "SELECT * FROM [dbo].[employees] WHERE Status=0  ";
+            }
+            SqlDataAdapter sadusers = new SqlDataAdapter(Query, con);
+            sadusers.Fill(dtUsers);
+            ddlTeamuser.DataValueField = "empcode";
+            ddlTeamuser.DataTextField = "name";
+            ddlTeamuser.DataSource = dtUsers;
+            ddlTeamuser.DataBind();
+            ddlTeamuser.Items.Insert(0, new System.Web.UI.WebControls.ListItem("--Select --", "0"));
+            #endregion       
+        }
+        catch (Exception ex)
+        {
+            string errorMsg = "An error occurred : " + ex.Message;
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('" + errorMsg + "') ", true);
+        }
+    }
+
+    protected void ddluserstatus_TextChanged(object sender, EventArgs e)
+    {
+        BindDdl_Username();
+        Gvbind();
+        Getmanger();
+    }
+    protected void ddldaysfilter_TextChanged(object sender, EventArgs e)
+    {
+        Gvbind();
+        Getmanger();
+    }
+    private void Gvbind()
+    {
+        Dvapprove.Visible = false;
+        SqlDataAdapter ad = new SqlDataAdapter();
+        SqlCommand cmd = new SqlCommand("[stswlspl].[GetNotUpdatedCompany]", con);
+        //cmd.Parameters.Add(new SqlParameter("@DaysFilter", ddldaysfilter.SelectedValue));
+        if (ddluserstatus.SelectedItem.Text == "--All Users--")
+            cmd.Parameters.Add(new SqlParameter("@Type", DBNull.Value));
+        else
+            cmd.Parameters.Add(new SqlParameter("@Type", ddluserstatus.SelectedValue));
+
+        if (ddlTeamuser.SelectedItem.Text == "--Select --")
+            cmd.Parameters.Add(new SqlParameter("@Users", DBNull.Value));
+        else
+            cmd.Parameters.Add(new SqlParameter("@Users", ddlTeamuser.SelectedValue));
+
+        if (txtcnamefilter.Text == "" || txtcnamefilter.Text == null)
+            cmd.Parameters.Add(new SqlParameter("@Company", DBNull.Value));
+        else
+            cmd.Parameters.Add(new SqlParameter("@Company", txtcnamefilter.Text));
+
+        cmd.Parameters.Add(new SqlParameter("@DaysFilter", Convert.ToInt32(ddldaysfilter.SelectedValue)));
+        cmd.Parameters.Add(new SqlParameter("@Mode", "GetAdmindata"));
+        cmd.CommandType = CommandType.StoredProcedure;
+        ad.SelectCommand = cmd;
+        ad.SelectCommand.CommandTimeout = 60;
+        DataTable dt = new DataTable();
+        ad.Fill(dt);
+        if (dt.Rows.Count > 0)
+        {
+            GvCompany.DataSource = dt;
+            GvCompany.DataBind();
+            lblnodatafoundComp.Visible = false;
+            Getmanger();
+
+        }
+        else
+        {
+            GvCompany.DataSource = null;
+            GvCompany.DataBind();
+            lblnodatafoundComp.Text = "No Company Data Found !! ";
+            lblnodatafoundComp.Visible = true;
+            lblnodatafoundComp.ForeColor = System.Drawing.Color.Red;
+        }
+
+    }
+    protected void chkRow_CheckedChanged(object sender, EventArgs e)
+    {
+        Dvapprove.Visible = true;
+        int selectedCount = 0;
+        foreach (GridViewRow row in GvCompany.Rows)
+        {
+            CheckBox selectedchk = (CheckBox)row.FindControl("chkRow");
+            DropDownList ddlmanager = (DropDownList)row.FindControl("ddlTransferTo");
+            if (selectedchk != null && selectedchk.Checked)
+            {
+                selectedCount++;
+                // row.BackColor = System.Drawing.ColorTranslator.FromHtml("#FF9933");
+            }
+            else
+            {
+                ddlmanager.Text = "--Select--";
+                ddlmanager.Enabled = true;
+                selectedchk.Visible = false;
+                row.BackColor = System.Drawing.Color.White;
+
+            }
+        }
+        if (selectedCount > 0)
+        {
+            Dvapprove.Visible = true;
+        }
+        else
+        {
+            Dvapprove.Visible = false;
+        }
+        string message = Convert.ToString(selectedCount);
+        btntransfer.Text = " Total Transfer=" + " " + message;
+        btntransfer.Visible = true;
+    }
+    protected void Getmanger()
+    {
+        GridView gridView = GvCompany;
+        foreach (GridViewRow row in gridView.Rows)
+        {
+            DropDownList ddlTransferTo = (DropDownList)row.FindControl("ddlTransferTo");
+
+            if (ddlTransferTo != null)
+            {
+
+                GetSalesmanager(ddlTransferTo);
+            }
+            //else
+            //{
+            //    Salesmanger((ddlTransferTo));
+            //}
+        }
+    }
+    protected void GvCompany_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        ViewState["CompRowId"] = e.CommandArgument.ToString();
+
+    }
+    protected void GvCompany_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    {
+        GvCompany.PageIndex = e.NewPageIndex;
+        Gvbind();
+        Getmanger();
+    }
+
+    static string Updatemsg = string.Empty;
+    protected void btntransfer_Click(object sender, EventArgs e)
+    {
+        try
+        {
+
+            foreach (GridViewRow GV in GvCompany.Rows)
+            {
+                DropDownList ddl = GV.FindControl("ddlTransferTo") as DropDownList;
+                string selectedValue = ddl.SelectedValue;
+                string selectedtext = ddl.SelectedItem.Text;
+                string ccode = (GV.FindControl("lblccode") as Label).Text;
+                string cname = (GV.FindControl("lblcname") as Label).Text;
+                string empcode = (GV.FindControl("lblempcode") as Label).Text;
+                string bde = (GV.FindControl("lblname") as Label).Text;
+                bool pageChk = (GV.FindControl("chkRow") as CheckBox).Checked;
+                if (pageChk == true)
+                {
+
+                    Updatemsg = "BDE/TME Person has been changed from '" + bde + "' to '" + selectedtext + "' ";
+                    BulkUpdate(selectedValue, ccode, Updatemsg, cname, empcode);
+                    //Response.Redirect("GetUpdationCompany.aspx");
+                    string script = "alert('Sales Person has been changed successfully!'); window.location.href='GetUpdationCompany.aspx';";
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "Success", script, true);
+
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            string errorMsg = "An error occurred : " + ex.Message;
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('" + errorMsg + "') ", true);
+        }
+
+    }
+    protected void ddlTransferTo_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        int selectedCount = 0;
+        foreach (GridViewRow row in GvCompany.Rows)
+        {
+            CheckBox selectedchk = (CheckBox)row.FindControl("chkRow");
+            DropDownList ddl = (DropDownList)row.FindControl("ddlTransferTo");
+
+            if (ddl.SelectedItem.Text != "--Select--")
+            {
+                selectedchk.Visible = true;
+                selectedchk.Checked = true;
+                Dvapprove.Visible = true;
+            }
+            DropDownList ddlmanager = (DropDownList)row.FindControl("ddlTransferTo");
+            if (selectedchk != null && selectedchk.Checked)
+            {
+
+                ddlmanager.Enabled = true;
+                selectedCount++;
+                row.BackColor = System.Drawing.ColorTranslator.FromHtml("#ffb366");
+
+            }
+            else
+            {
+                ddlmanager.Enabled = true;
+                row.BackColor = System.Drawing.Color.White;
+
+            }
+        }
+        string message = Convert.ToString(selectedCount);
+        btntransfer.Text = " Total Transfer=" + " " + message;
+        btntransfer.Visible = true;
+    }
+    public void BulkUpdate(string Salescode, string Compcode, string Updatemsg, string cname, string empcode)
+    {
+        try
+        {
+
+            using (SqlCommand cmm = new SqlCommand())
+            {
+                //Update company Session name 
+                cmm.Connection = con;
+                cmm.CommandType = CommandType.Text;
+                cmm.CommandText = "Update [Company] set [sessionname]='" + Salescode + "',[BDE]='" + Salescode + "' where [ccode]='" + Compcode + "'";
+                cmm.Connection.Open();
+                int a = 0;
+                a = cmm.ExecuteNonQuery();
+                cmm.Connection.Close();
+                if (a > 0)
+                {
+                    // inseart data in company history
+                    SqlCommand cmd = new SqlCommand("SP_CompanyHistory", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Action", "Insert");
+                    cmd.Parameters.AddWithValue("@sessionname", empcode);
+                    cmd.Parameters.AddWithValue("@ccode", Compcode);
+                    cmd.Parameters.AddWithValue("@message", Updatemsg);
+                    cmd.Connection.Open();
+                    int b = 0;
+                    b = cmd.ExecuteNonQuery();
+                    cmd.Connection.Close();
+                    if (b > 0)
+                    {
+                        //send mail to transfer sales person
+                        mailsendforSalesChange(Salescode, cname, empcode);
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "Sucess", "alert('Sales Person has been changed successfully!');", true);
+                    }
+
+                }
+                else
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Alert", "alert('Not Updated !!');", true);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            string errorMsg = "An error occurred : " + ex.Message;
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('" + errorMsg + "') ", true);
+        }
+
+    }
+    private void mailsendforSalesChange(string Salescode, string cname, string empcode)
+    {
+        string MailTo = string.Empty;
+        DataTable dt = new DataTable();
+        SqlDataAdapter sad = new SqlDataAdapter("select * from employees where empcode='" + Salescode + "'", con);
+        sad.Fill(dt);
+        if (dt.Rows.Count > 0)
+        {
+            //Transfer Person Mail
+            MailTo = dt.Rows[0]["email"].ToString();
+
+        }
+
+        string mailTo = string.Empty;
+
+        if (!string.IsNullOrEmpty(MailTo))
+        {
+            mailTo = MailTo.Trim().ToLower();// Sales both
+
+        }
+        else
+        {
+            mailTo = ConfigurationManager.AppSettings["AdminMailBcc"];
+        }
+        //string fromMailID = Session["adminemail"].ToString().Trim().ToLower();
+        string fromMailID = "enquiry@weblinkservices.net";
+        MailMessage mm = new MailMessage();
+        MailMessage mm1 = new MailMessage();
+        mm.From = new MailAddress(fromMailID);
+        mm1.From = new MailAddress(fromMailID);
+        //check login user and old company bde same or not
+
+        //Old sales person mail 
+        string mailTo1 = string.Empty;
+        DataTable dt1 = new DataTable();
+        SqlDataAdapter sad1 = new SqlDataAdapter("select * from employees where empcode='" + empcode + "'", con);
+        sad1.Fill(dt1);
+        if (dt1.Rows.Count > 0)
+        {
+            mailTo1 = dt1.Rows[0]["email"].ToString();
+        }
+        mm1.Subject = cname + " - Sales Person Changed";
+        mm1.To.Add(mailTo1);
+
+        mm.Subject = cname + " - Sales Person Changed";
+        //mm.To.Add(mailTo);
+        mm.To.Add(mailTo);
+        //mm.To.Add("shubhpawar59@gmail.com");
+
+        con.Open();
+        //get cc in transfer salse person team leader
+        SqlCommand cmdTL_Manager = new SqlCommand("select TL_Manager from employees where empcode= '" + Salescode.ToString().Trim().ToLower() + "'", con);
+        Object F_TL_Manager = cmdTL_Manager.ExecuteScalar();
+        string TL_Manager = F_TL_Manager.ToString() == "" ? "" : F_TL_Manager.ToString();
+
+        SqlCommand cmdemail = new SqlCommand("select email from employees where empcode= '" + TL_Manager + "'", con);
+        Object F_email = cmdemail.ExecuteScalar();
+        string TL_email = F_email.ToString() == "" ? "" : F_email.ToString();
+        mm.CC.Add(TL_email);
+
+
+        mm1.CC.Add(TL_email);
+
+        //get cc in  bde salse person team leader
+        SqlCommand cmdTL_Manager2 = new SqlCommand("select TL_Manager from employees where empcode= '" + empcode.ToString().Trim().ToLower() + "'", con);
+        Object F_TL_Manager2 = cmdTL_Manager2.ExecuteScalar();
+        string TL_Manager2 = F_TL_Manager2.ToString() == "" ? "" : F_TL_Manager2.ToString();
+
+        SqlCommand cmdemail2 = new SqlCommand("select email from employees where empcode= '" + TL_Manager + "'", con);
+        Object F_email2 = cmdemail2.ExecuteScalar();
+        string TL_email2 = F_email2.ToString() == "" ? "" : F_email2.ToString();
+        mm.CC.Add(TL_email2);
+        mm1.CC.Add(TL_email2);
+
+
+        con.Close();
+        StreamReader reader = new StreamReader(Server.MapPath("~/CommentPage_templet.html"));
+        string readFile = reader.ReadToEnd();
+        string myString = "";
+        myString = readFile;
+
+        //string DomainName = ConfigurationManager.AppSettings["DomainName"];
+        myString = myString.Replace("$Comment$", cname + "'s " + Updatemsg + " by the " + Session["adminname"].ToString());
+
+        mm.Body = myString.ToString();
+        mm1.Body = myString.ToString();
+
+        mm.IsBodyHtml = true;
+        mm1.IsBodyHtml = true;
+        //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        SmtpClient smtp = new SmtpClient();
+        smtp.Host = ConfigurationManager.AppSettings["Host"];
+        //smtp.Host = "smtp.gmail.com";
+        smtp.EnableSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["EnableSsl"]);
+        //smtp.EnableSsl = true;
+        System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
+        NetworkCred.UserName = ConfigurationManager.AppSettings["mailUserName"].ToLower();
+        NetworkCred.Password = ConfigurationManager.AppSettings["mailUserPass"].ToLower();
+
+        smtp.UseDefaultCredentials = false;
+        smtp.Credentials = NetworkCred;
+        smtp.Port = int.Parse(ConfigurationManager.AppSettings["Port"]);
+        System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate (object s, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
+        };
+
+        smtp.Send(mm);  //send mail to transfer sales person
+        smtp.Send(mm1); //send mail to old bde sales person
+
+
+    }
+    public void GetSalesmanager(DropDownList ddlTransferTo)
+    {
+        SqlDataAdapter ad = new SqlDataAdapter();
+        SqlCommand cmd = new SqlCommand("[stswlspl].SP_NotUpdatedcompanyForadmin", con);
+        cmd.Parameters.Add(new SqlParameter("@ACtion", "Getsalesmanager"));
+        cmd.CommandType = CommandType.StoredProcedure;
+        ad.SelectCommand = cmd;
+        ad.SelectCommand.CommandTimeout = 60;
+        DataTable dt = new DataTable();
+        ad.Fill(dt);
+        if (dt.Rows.Count > 0)
+        {
+            ddlTransferTo.DataSource = dt;
+            ddlTransferTo.DataValueField = "empcode";
+            ddlTransferTo.DataTextField = "Manager";
+            ddlTransferTo.DataBind();
+            ddlTransferTo.Items.Insert(0, "--Select--");
+        }
+    }
+    protected void ddlTeamuser_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        Gvbind();
+        Getmanger();
+    }
+
+    [System.Web.Script.Services.ScriptMethod()]
+    [System.Web.Services.WebMethod]
+    public static List<string> GetCompanyList(string prefixText, int count)
+    {
+        return AutoFillCompanyName(prefixText);
+    }
+
+    public static List<string> AutoFillCompanyName(string prefixText)
+    {
+        using (SqlConnection con = new SqlConnection())
+        {
+            con.ConnectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
+
+            using (SqlCommand com = new SqlCommand())
+            {
+                com.CommandText = "Select DISTINCT [cname] from [Company] where " + "cname like '%'+ @Search + '%' and status=1";
+
+                com.Parameters.AddWithValue("@Search", prefixText);
+                com.Connection = con;
+                con.Open();
+                List<string> countryNames = new List<string>();
+                using (SqlDataReader sdr = com.ExecuteReader())
+                {
+                    while (sdr.Read())
+                    {
+                        countryNames.Add(sdr["cname"].ToString());
+                    }
+                }
+                con.Close();
+                return countryNames;
+            }
+        }
+    }
+
+    protected void txtcnamefilter_TextChanged(object sender, EventArgs e)
+    {
+        Gvbind();
+
+    }
+}
