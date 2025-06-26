@@ -4,7 +4,11 @@
 <%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="../Content/css/Griddiv.css" rel="stylesheet" />
-
+      <script>
+          window.addEventListener('DOMContentLoaded', function () {
+              document.body.classList.add('sb-sidenav-toggled');
+          });
+      </script>
     <style>
         .spancls {
             color: #5d5656 !important;
@@ -175,9 +179,9 @@
                                             <asp:Label ID="lbltype" runat="server" Font-Bold="true" Text="Type :"></asp:Label>
                                             <%--<asp:TextBox ID="ddltype" runat="server" CssClass="form-control" Width="100%" Text="SALE" ReadOnly="true"></asp:TextBox>--%>
                                             <asp:DropDownList runat="server" CssClass="form-control" ID="ddltype" OnTextChanged="ddltype_TextChanged" AutoPostBack="true">
-                                                <%-- <asp:ListItem Value="0">Select</asp:ListItem>--%>
+                                                <asp:ListItem Value="0">Select</asp:ListItem>
                                                 <asp:ListItem>SALE</asp:ListItem>
-                                                <%--  <asp:ListItem>PURCHASE</asp:ListItem>--%>
+                                                <asp:ListItem>PURCHASE</asp:ListItem>
                                             </asp:DropDownList>
                                             <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" Display="Dynamic" ErrorMessage="Please Select Type"
                                                 ControlToValidate="ddltype" ValidationGroup="form1" InitialValue="0" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
@@ -185,19 +189,17 @@
                                         <div class="col-xl-3 col-md-3">
                                             <asp:Label ID="lblpartyname" runat="server" Font-Bold="true" Text="Party Name:"></asp:Label>
                                             <asp:TextBox ID="txtPartyName" runat="server" CssClass="form-control" placeholder="Party Name" Width="100%" OnTextChanged="txtPartyName_TextChanged" AutoPostBack="true"></asp:TextBox>
-                                            <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" Display="Dynamic" ErrorMessage="Please Enter Party Name"
-                                                ControlToValidate="txtPartyName" ValidationGroup="form1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
                                             <asp:AutoCompleteExtender ID="AutoCompleteExtender1" runat="server" CompletionListCssClass="completionList"
                                                 CompletionListHighlightedItemCssClass="itemHighlighted" CompletionListItemCssClass="listItem"
                                                 CompletionInterval="10" MinimumPrefixLength="1" ServiceMethod="GetCustomerList"
                                                 TargetControlID="txtPartyName">
                                             </asp:AutoCompleteExtender>
 
-                                            <%--                                            <asp:AutoCompleteExtender ID="AutoCompleteExtender2" runat="server" CompletionListCssClass="completionList"
+                                            <asp:AutoCompleteExtender ID="AutoCompleteExtender2" runat="server" CompletionListCssClass="completionList"
                                                 CompletionListHighlightedItemCssClass="itemHighlighted" CompletionListItemCssClass="listItem"
                                                 CompletionInterval="10" MinimumPrefixLength="1" ServiceMethod="GetSupplierList"
                                                 TargetControlID="txtPartyName">
-                                            </asp:AutoCompleteExtender>--%>
+                                            </asp:AutoCompleteExtender>
                                         </div>
                                         <div class="col-xl-3 col-md-3">
                                             <asp:Label ID="lblFromdate" runat="server" Font-Bold="true" Text="From Date :"></asp:Label>

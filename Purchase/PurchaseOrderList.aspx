@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Admin/WLSPLMaster.master" AutoEventWireup="true" CodeFile="PurchaseOrderList.aspx.cs" Inherits="Purchase_PurchaseOrderList" %>
+
 <%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
@@ -143,7 +144,7 @@
     <asp:UpdatePanel ID="UpdatePanel2" runat="server">
         <ContentTemplate>
             <div class="container-fluid px-4">
-                <div class="col-md-12">                 
+                <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-10">
                             <h4 class="mt-4">&nbsp <b>PURCHASE ORDER LIST</b></h4>
@@ -156,7 +157,7 @@
                     </div>
                     <hr />
                 </div>
-               
+
                 <div class="row">
                     <div class="col-xl-3 col-md-3">
                         <asp:TextBox ID="txtcnamefilter" runat="server" CssClass="form-control" placeholder="Supplier name" Width="100%" OnTextChanged="txtcnamefilter_TextChanged" AutoPostBack="true"></asp:TextBox>
@@ -210,11 +211,6 @@
                                 </ItemTemplate>
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="PO Date" HeaderStyle-CssClass="gvhead">
-                                <ItemTemplate>
-                                    <asp:Label ID="lblPODate" runat="server" Text='<%# Convert.ToDateTime(Eval("PODate")).ToString("dd-MM-yyyy").TrimEnd("0:0".ToCharArray()) %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Delivery Date" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="gvhead">
                                 <ItemTemplate>
@@ -252,7 +248,7 @@
                                     <asp:LinkButton ID="btnEdit" runat="server" CommandName="RowEdit" CommandArgument='<%# Eval("Id") %>' ToolTip="Edit"><i class="fa fa-edit" style="font-size:24px;color:black;"></i></asp:LinkButton>
                                     <asp:LinkButton ID="btnPDF" runat="server" CommandName="DownloadPDF" CommandArgument='<%# Eval("Id") %>' ToolTip="Download"><i class="fa fa-file-pdf" style="font-size:24px;color:red;"></i></asp:LinkButton>
                                     <asp:LinkButton ID="btnDelete" runat="server" CommandName="RowDelete" CommandArgument='<%# Eval("id") %>' ToolTip="Delete" OnClientClick="Javascript:return confirm('Are you sure to Delete?')"><i class="fa fa-trash" aria-hidden="true" style="font-size:24px;"></i></asp:LinkButton>
-
+                                    <asp:LinkButton runat="server" ID="btnNewPO" ToolTip="New PO" CommandName="RowNew" CommandArgument='<%# Eval("Id") %>'><i class="fas fa-plane"  style="font-size: 26px; color:red; "></i></i></asp:LinkButton>
 
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -263,7 +259,7 @@
 
                 </div>
             </div>
-             <rsweb:ReportViewer ID="ReportViewer1" runat="server" Visible="false"></rsweb:ReportViewer>
+            <rsweb:ReportViewer ID="ReportViewer1" runat="server" Visible="false"></rsweb:ReportViewer>
         </ContentTemplate>
     </asp:UpdatePanel>
 </asp:Content>

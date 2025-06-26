@@ -1,4 +1,5 @@
 ﻿
+using DocumentFormat.OpenXml.Spreadsheet;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.Reporting.WebForms;
@@ -8,7 +9,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
@@ -32,7 +32,9 @@ public partial class Account_WarehouseInvoiceList : System.Web.UI.Page
         {
             if (!IsPostBack)
             {
+
                 FillGrid();
+
             }
         }
     }
@@ -252,8 +254,38 @@ public partial class Account_WarehouseInvoiceList : System.Web.UI.Page
             }
             if (e.CommandName == "RowEdit")
             {
-                Response.Redirect("OutComponentEntry.aspx?Id=" + encrypt(e.CommandArgument.ToString()) + " ");
+                if (!string.IsNullOrEmpty(e.CommandArgument.ToString()))
+                {
+                    con.Open();
+                    SqlCommand cmdQrdtl = new SqlCommand("select top 1 * from tbl_OutwardEntryHdr where invoiceno='" + e.CommandArgument.ToString() + "'", con);
+                    Object IsEdited = cmdQrdtl.ExecuteScalar();
+                    con.Close();
+                    if (IsEdited == null || IsEdited == DBNull.Value || IsEdited == "")
+                    {
+                        Response.Redirect("OutComponentEntry.aspx?Id=" + encrypt(e.CommandArgument.ToString()) + " ");
 
+                    }
+                    else
+                    {
+                        DataTable Dt = Cls_Main.Read_Table("SELECT * FROM [tbl_OutwardEntryHdr] WHERE invoiceno='" + e.CommandArgument.ToString() + "' ");
+                        if (Dt.Rows.Count > 0)
+                        {
+                            string IsEditApproval = Dt.Rows[0]["IsEditApproval"].ToString();
+                            if (IsEditApproval == "2")
+                            {
+                                Response.Redirect("OutComponentEntry.aspx?Id=" + encrypt(e.CommandArgument.ToString()) + " ");
+                            }
+                            else
+                            {
+                                lblcompanynamepop.Text = Dt.Rows[0]["Companyname"].ToString();
+                                lblinvoicename.Text = Dt.Rows[0]["InvoiceNo"].ToString();
+                                this.ModalPopupHistory.Show();
+                            }
+
+                        }
+
+                    }
+                }
             }
             if (e.CommandName == "Showcomponent")
             {
@@ -267,7 +299,6 @@ public partial class Account_WarehouseInvoiceList : System.Web.UI.Page
     }
 
     public void ToApprove(string invoiceNo)
-
     {
         Cls_Main.Conn_Open();
         SqlCommand Cmd = new SqlCommand("UPDATE [TblTaxinvoiceHdr] SET IsApprove=@IsApprove WHERE invoiceNo=@invoiceNo", Cls_Main.Conn);
@@ -465,7 +496,7 @@ public partial class Account_WarehouseInvoiceList : System.Web.UI.Page
         //Authorization
         if (e.Row.RowType == DataControlRowType.DataRow)
         {
-            LinkButton btnEdit = e.Row.FindControl("btnEdit") as LinkButton;
+            LinkButton btnEdit = e.Row.FindControl("lnkEdit") as LinkButton;
             LinkButton btnDelete = e.Row.FindControl("btnDelete") as LinkButton;
 
             string empcode = Session["UserCode"].ToString();
@@ -527,10 +558,31 @@ public partial class Account_WarehouseInvoiceList : System.Web.UI.Page
             }
 
 
-
         }
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            LinkButton btnEdit = e.Row.FindControl("lnkEdit") as LinkButton;
+            LinkButton lnkComponent = e.Row.FindControl("lnkComponent") as LinkButton;
+            Label Invoiceno = (Label)e.Row.FindControl("Invoiceno");
 
-
+            DataTable Dt2 = new DataTable();
+            SqlDataAdapter Sd2 = new SqlDataAdapter("select IsEditApproval from tbl_OutwardEntryHdr where InvoiceNo='" + Invoiceno.Text + "'", con);
+            Sd2.Fill(Dt2);
+            if (Dt2.Rows.Count > 0)
+            {
+                string IsEditApproval = Dt2.Rows[0]["IsEditApproval"].ToString();
+                if (IsEditApproval == "1")
+                {
+                    btnEdit.Visible = false;
+                    e.Row.BackColor = System.Drawing.Color.LightSkyBlue;
+                }
+                if (IsEditApproval == "2")
+                {
+                    btnEdit.Visible = true;
+                    e.Row.BackColor = System.Drawing.Color.LimeGreen;
+                }
+            }
+        }
     }
 
     protected void Button2_Click(object sender, EventArgs e)
@@ -1002,7 +1054,7 @@ public partial class Account_WarehouseInvoiceList : System.Web.UI.Page
 
             using (SqlCommand com = new SqlCommand())
             {
-                com.CommandText = "select DISTINCT companyname from tbl_OutwardEntryHdr where  " + "companyname like @Search + '%' and IsDeleted=0";
+                com.CommandText = "select DISTINCT BillingCustomer from tblTaxInvoiceHdr where  " + "BillingCustomer like @Search + '%' and IsDeleted=0";
 
                 com.Parameters.AddWithValue("@Search", prefixText);
                 com.Connection = con;
@@ -1012,7 +1064,7 @@ public partial class Account_WarehouseInvoiceList : System.Web.UI.Page
                 {
                     while (sdr.Read())
                     {
-                        countryNames.Add(sdr["companyname"].ToString());
+                        countryNames.Add(sdr["BillingCustomer"].ToString());
                     }
                 }
                 con.Close();
@@ -1036,9 +1088,24 @@ public partial class Account_WarehouseInvoiceList : System.Web.UI.Page
         Response.Redirect(Request.RawUrl);
     }
 
-
     protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
     {
+        FillGrid();
+    }
+
+    protected void btnsave_Click(object sender, EventArgs e)
+    {
+        Cls_Main.Conn_Open();
+        SqlCommand Cmd = new SqlCommand("UPDATE [tbl_OutwardEntryHdr] SET IsEdited=@IsEdited,EditedBy=@EditedBy,Editedate=@Editeddate,Remark=@Remark,IsEditApproval=@IsEditApproval WHERE invoiceNo=@invoiceNo", Cls_Main.Conn);
+        Cmd.Parameters.AddWithValue("@IsEdited", 1);
+        Cmd.Parameters.AddWithValue("@IsEditApproval", 1);
+        Cmd.Parameters.AddWithValue("@invoiceNo", lblinvoicename.Text);
+        Cmd.Parameters.AddWithValue("@EditedBy", Session["Username"].ToString());
+        Cmd.Parameters.AddWithValue("@Editeddate", DateTime.Now);
+        Cmd.Parameters.AddWithValue("@Remark", txtremark.Text);
+        Cmd.ExecuteNonQuery();
+        Cls_Main.Conn_Close();
+        ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('Request send Successfully..!!')", true);
         FillGrid();
     }
 }

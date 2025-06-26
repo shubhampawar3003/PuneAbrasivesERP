@@ -161,69 +161,13 @@
         }
     </script>
 
-    <style>
-        /* Loader CSS */
-        .loader-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            /* Ensure it appears above other content */
-            display: none;
-            /* Hidden by default */
-        }
-
-        .loader {
-            border: 8px solid #f3f3f3;
-            /* Light grey */
-            border-top: 8px solid #3498db;
-            /* Blue */
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
-    <script type="text/javascript">
-        function showLoader() {
-            document.getElementById('loader').style.display = 'flex';
-        }
-
-        function hideLoader() {
-            document.getElementById('loader').style.display = 'none';
-        }
-
-        document.onreadystatechange = function () {
-            if (document.readyState === "complete") {
-                hideLoader();
-            }
-        };
-    </script>
+   
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <asp:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server"></asp:ToolkitScriptManager>
     <asp:UpdatePanel ID="updatepnl" runat="server">
-        <ContentTemplate>
-            <div id="loader" class="loader-wrapper">
-                <div class="loader"></div>
-            </div>
+        <ContentTemplate>           
             <div class="page-wrapper">
                 <div class="page-body">
                     <div class="col-md-12 card-header">
@@ -267,15 +211,18 @@
                                                         <asp:DropDownList runat="server" ID="ddlKindAtt" CssClass="form-control"></asp:DropDownList>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-2 spancls"><b>PO No:</b></div>
-                                                    <div class="col-md-4">
+                                                <div class="row" >
+                                                    <div  runat="server" visible="false" class="col-md-2 spancls"><b>PO No:</b></div>
+                                                    <div  runat="server" visible="false" class="col-md-4">
                                                         <asp:TextBox ID="txtPONo" CssClass="form-control" runat="server" Width="100%" ReadOnly="true"></asp:TextBox>
                                                     </div>
-                                                    <div class="col-md-2 spancls"><b>PO Date:</b></div>
+                                                    <div class="col-md-2 spancls"><b>PO Date:<i class="reqcls">*&nbsp;</i></b></div>
                                                     <div class="col-md-4">
                                                         <asp:TextBox ID="txtPodate" CssClass="form-control" TextMode="Date" runat="server" Width="100%" AutoComplete="off"></asp:TextBox>
-                                                    </div>
+                                                          <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" Display="Dynamic" ErrorMessage="Please Select Delivery Date"
+                                                            ControlToValidate="txtPodate" ValidationGroup="form1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
+                                                 
+                                                        </div>
                                                 </div>
 
                                                 <div class="row">
@@ -391,10 +338,10 @@
                                                                     <thead>
                                                                         <tr class="gvhead">
                                                                             <td>Component</td>
+                                                                            <td>Particular</td>
                                                                             <td>HSN / SAC</td>
                                                                             <td>Quantity</td>
                                                                             <td>Unit</td>
-                                                                            <td>Rate</td>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -402,7 +349,9 @@
                                                                             <td>
                                                                                 <asp:DropDownList ID="ddlcomponent" Width="230px" OnTextChanged="ddlcomponent_TextChanged" CssClass="form-control" AutoPostBack="true" runat="server"></asp:DropDownList>
                                                                             </td>
-
+                                                                            <td>
+                                                                                <asp:TextBox ID="txtProduct" TextMode="MultiLine" Width="100px" runat="server"></asp:TextBox>
+                                                                            </td>
                                                                             <td>
                                                                                 <asp:TextBox ID="txtHSN" Width="100px" runat="server" ReadOnly="true"></asp:TextBox>
                                                                             </td>
@@ -412,22 +361,23 @@
                                                                             <td>
                                                                                 <asp:TextBox ID="txtUOM" Width="50px" runat="server"></asp:TextBox>
                                                                             </td>
-                                                                            <td>
-                                                                                <asp:TextBox ID="txtRate" Width="100px" runat="server" AutoPostBack="true" OnTextChanged="txtRate_TextChanged"></asp:TextBox>
-                                                                            </td>
+
                                                                         </tr>
                                                                     </tbody>
                                                                     <thead>
                                                                         <tr class="gvhead">
+                                                                            <td>Rate</td>
                                                                             <td>Disc(%)</td>
                                                                             <td>Amount</td>
                                                                             <td>CGST</td>
-                                                                            <td>SGST</td>
+
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         <tr>
-
+                                                                            <td>
+                                                                                <asp:TextBox ID="txtRate" Width="100px" runat="server" AutoPostBack="true" OnTextChanged="txtRate_TextChanged"></asp:TextBox>
+                                                                            </td>
                                                                             <td>
                                                                                 <asp:TextBox ID="txtDisc" Width="100px" runat="server" AutoPostBack="true" Text="0" OnTextChanged="txtDisc_TextChanged"></asp:TextBox>
                                                                             </td>
@@ -435,18 +385,16 @@
                                                                                 <asp:TextBox ID="txtAmountt" Width="100px" runat="server"></asp:TextBox>
                                                                             </td>
                                                                             <td>
-                                                                                <asp:TextBox ID="CGSTPer" Width="50px" runat="server" AutoPostBack="true" OnTextChanged="CGSTPer_TextChanged" placeholder="%"></asp:TextBox>
+                                                                                <asp:TextBox ID="CGSTPer" Width="50px" runat="server" Text="0" AutoPostBack="true" OnTextChanged="CGSTPer_TextChanged" placeholder="%"></asp:TextBox>
                                                                                 <asp:TextBox ID="CGSTAmt" Width="100px" runat="server" ReadOnly="true" placeholder="CGSTAmt"></asp:TextBox>
                                                                             </td>
-                                                                            <td>
-                                                                                <asp:TextBox ID="SGSTPer" Width="50px" runat="server" AutoPostBack="true" OnTextChanged="SGSTPer_TextChanged" placeholder="%"></asp:TextBox>
-                                                                                <asp:TextBox ID="SGSTAmt" Width="100px" runat="server" ReadOnly="true" placeholder="SGSTAmt"></asp:TextBox>
-                                                                            </td>
+
+
                                                                         </tr>
                                                                     </tbody>
                                                                     <thead>
                                                                         <tr class="gvhead">
-
+                                                                            <td>SGST</td>
                                                                             <td>IGST</td>
                                                                             <td>Total Amount</td>
                                                                             <td>Description</td>
@@ -455,9 +403,12 @@
                                                                     </thead>
                                                                     <tbody>
                                                                         <tr>
-
                                                                             <td>
-                                                                                <asp:TextBox ID="IGSTPer" Width="50px" runat="server" AutoPostBack="true" OnTextChanged="IGSTPer_TextChanged" placeholder="%"></asp:TextBox>
+                                                                                <asp:TextBox ID="SGSTPer" Width="50px" runat="server" Text="0" AutoPostBack="true" OnTextChanged="SGSTPer_TextChanged" placeholder="%"></asp:TextBox>
+                                                                                <asp:TextBox ID="SGSTAmt" Width="100px" runat="server" ReadOnly="true" placeholder="SGSTAmt"></asp:TextBox>
+                                                                            </td>
+                                                                            <td>
+                                                                                <asp:TextBox ID="IGSTPer" Width="50px" runat="server" Text="0" AutoPostBack="true" OnTextChanged="IGSTPer_TextChanged" placeholder="%"></asp:TextBox>
                                                                                 <asp:TextBox ID="IGSTAmt" Width="100px" runat="server" ReadOnly="true" placeholder="IGSTAmt"></asp:TextBox>
                                                                             </td>
                                                                             <td>
@@ -490,12 +441,20 @@
                                                                                         <asp:Label ID="lblid" runat="Server" Text='<%# Eval("id") %>' Visible="false" />
                                                                                     </ItemTemplate>
                                                                                 </asp:TemplateField>
-                                                                                <asp:TemplateField HeaderText="Particulars" ItemStyle-Width="120" ItemStyle-HorizontalAlign="Center">
+                                                                                <asp:TemplateField HeaderText="Component" ItemStyle-Width="120" ItemStyle-HorizontalAlign="Center">
                                                                                     <%-- <EditItemTemplate>
-                                                                                <asp:TextBox Text='<%# Eval("Particulars") %>' ID="txtParticulars" runat="server"></asp:TextBox>
-                                                                            </EditItemTemplate>--%>
+                                                                                        <asp:TextBox Text='<%# Eval("Particulars") %>' ID="txtParticulars" runat="server"></asp:TextBox>
+                                                                                    </EditItemTemplate>--%>
                                                                                     <ItemTemplate>
                                                                                         <asp:Label ID="lblParticulars" runat="Server" Text='<%# Eval("Particulars") %>' />
+                                                                                    </ItemTemplate>
+                                                                                </asp:TemplateField>
+                                                                                <asp:TemplateField HeaderText="Particulars" ItemStyle-Width="120" ItemStyle-HorizontalAlign="Center">
+                                                                                    <EditItemTemplate>
+                                                                                        <asp:TextBox Text='<%# Eval("Product") %>' ID="txtProduct" runat="server"></asp:TextBox>
+                                                                                    </EditItemTemplate>
+                                                                                    <ItemTemplate>
+                                                                                        <asp:Label ID="lblProduct" runat="Server" Text='<%# Eval("Product") %>' />
                                                                                     </ItemTemplate>
                                                                                 </asp:TemplateField>
                                                                                 <asp:TemplateField HeaderText="HSN" ItemStyle-Width="120" ItemStyle-HorizontalAlign="Center">
@@ -632,7 +591,7 @@
                                                                                     <ItemTemplate>
                                                                                         <asp:LinkButton Text="Edit" runat="server" CommandName="Edit" ToolTip="Edit"><i class="fa fa-edit" style="font-size:28px;color:blue;"></i></asp:LinkButton>
                                                                                         | 
-                                                                            <asp:LinkButton ID="lnkDelete" runat="server" CommandArgument='<%# Eval("id") %>' OnClick="lnkDelete_Click" ToolTip="Delete"><i class="fa fa-trash-o" style="font-size:28px;color:red"></i></asp:LinkButton>
+                                                                            <asp:LinkButton ID="lnkDelete" runat="server" CommandArgument='<%# Eval("id") %>' OnClick="lnkDelete_Click" ToolTip="Delete"><i class="fa fa-trash" style="font-size:28px;color:red"></i></asp:LinkButton>
                                                                                     </ItemTemplate>
                                                                                 </asp:TemplateField>
                                                                             </Columns>
@@ -708,11 +667,16 @@
                             </div>
                         </div>
                         <div class="col-md-12" style="text-align: center">
-
+                            <div class="row" id="divcheckamend" runat="server">                               
+                                <div class="col-md-2">
+                                    <asp:CheckBox ID="chkAmended" runat="server" />
+                                    <asp:Label ID="lblAmended" runat="server" Font-Bold="true" ForeColor="Green">Amended</asp:Label>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-4"></div>
                                 <div class="col-md-2">
-                                    <asp:Button ID="btnadd" runat="server" OnClientClick="showLoader();" ValidationGroup="form1" CssClass="btn btn-primary" Width="100%" Text="Add PO" OnClick="btnadd_Click" />
+                                    <asp:Button ID="btnadd" runat="server" ValidationGroup="form1" CssClass="btn btn-primary" Width="100%" Text="Add PO" OnClick="btnadd_Click" />
                                 </div>
                                 <div class="col-md-2">
                                     <asp:Button ID="btnreset" runat="server" CssClass="btn btn-danger" Width="100%" Text="Reset" OnClick="btnreset_Click" />

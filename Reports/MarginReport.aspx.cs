@@ -25,7 +25,7 @@ public partial class Reports_MarginReport : System.Web.UI.Page
             if (!IsPostBack)
             {
                 GridView();
-            
+
             }
         }
     }
@@ -36,10 +36,10 @@ public partial class Reports_MarginReport : System.Web.UI.Page
         {
             SqlCommand cmd = new SqlCommand("SP_Reports", con);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@Action", "GetMarginReportlist");       
+            cmd.Parameters.AddWithValue("@Action", "GetMarginReportlist");
             cmd.Parameters.AddWithValue("@CompanyName", txtCustomerName.Text);
             cmd.Parameters.AddWithValue("@FromDate", txtfromdate.Text);
-            cmd.Parameters.AddWithValue("@ToDate", txttodate.Text);        
+            cmd.Parameters.AddWithValue("@ToDate", txttodate.Text);
             SqlDataAdapter sda = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
             sda.Fill(ds);
@@ -65,7 +65,7 @@ public partial class Reports_MarginReport : System.Web.UI.Page
             //ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('" + errorMsg + "') ", true);
         }
     }
-    
+
 
     protected void btnSearchData_Click(object sender, EventArgs e)
     {
@@ -76,7 +76,7 @@ public partial class Reports_MarginReport : System.Web.UI.Page
     {
         Response.Redirect(Request.RawUrl);
     }
-    
+
     protected void btnDownload_Click(object sender, EventArgs e)
     {
         Report("EXCEL");
@@ -119,9 +119,9 @@ public partial class Reports_MarginReport : System.Web.UI.Page
             {
                 if (Dtt.Tables[0].Rows.Count > 0)
                 {
-                    ReportDataSource obj1 = new ReportDataSource("DataSet1", Dtt.Tables[0]);                   
-                    ReportDataSource obj2 = new ReportDataSource("DataSet2", Dtt.Tables[1]);                   
-                    ReportDataSource obj3 = new ReportDataSource("DataSet3", Dtt.Tables[2]);                   
+                    ReportDataSource obj1 = new ReportDataSource("DataSet1", Dtt.Tables[0]);
+                    ReportDataSource obj2 = new ReportDataSource("DataSet2", Dtt.Tables[1]);
+                    ReportDataSource obj3 = new ReportDataSource("DataSet3", Dtt.Tables[2]);
                     ReportViewer1.LocalReport.DataSources.Add(obj1);
                     ReportViewer1.LocalReport.DataSources.Add(obj2);
                     ReportViewer1.LocalReport.DataSources.Add(obj3);
@@ -160,7 +160,7 @@ public partial class Reports_MarginReport : System.Web.UI.Page
                 }
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw ex;
         }
@@ -170,6 +170,37 @@ public partial class Reports_MarginReport : System.Web.UI.Page
     {
         if (e.Row.RowType == DataControlRowType.Footer)
         {
+            //     Int64 Quantity = 0;
+            //     decimal SalePrice = 0;
+            //     decimal PurchasePrice = 0;
+            //     decimal Sales = 0;
+            //     decimal Consumtion = 0;
+
+            //     // Loop through the data rows to calculate the totals
+            //     foreach (GridViewRow row in GVfollowup.Rows)
+            //     {
+            //         if (row.RowType == DataControlRowType.DataRow)
+            //         {
+            //             // Calculate the total for each column
+            //             Quantity += Convert.ToInt64((row.FindControl("lblQty") as Label).Text);
+            //             SalePrice += Convert.ToDecimal((row.FindControl("lblSalePrice") as Label).Text);
+            //             PurchasePrice += Convert.ToDecimal((row.FindControl("lblPurchasePrice") as Label).Text);
+            //             Sales += Convert.ToDecimal((row.FindControl("lblSales") as Label).Text);
+            //             Consumtion += Convert.ToDecimal((row.FindControl("lblConsumtion") as Label).Text);
+            //         }
+            //     }
+
+            //     decimal margin = Sales - Consumtion;
+            //     decimal addition = margin / Sales;
+            //     Int32 total = Convert.ToInt32(addition * 100);
+            //// Display the totals in the footer labels
+            //(e.Row.FindControl("lblTotalQuantity") as Label).Text = Quantity.ToString()+" Kg";
+            //     (e.Row.FindControl("lblTotalSalePrice") as Label).Text = SalePrice.ToString();
+            //     (e.Row.FindControl("lblTotalPurchasePrice") as Label).Text = PurchasePrice.ToString();
+            //     (e.Row.FindControl("lblTotalSalesPrice") as Label).Text = Sales.ToString();
+            //     (e.Row.FindControl("lblTotalConsumtion") as Label).Text = Consumtion.ToString();
+            //     (e.Row.FindControl("lblTotalMargin") as Label).Text = total.ToString()+" %";
+            // }
             Int64 Quantity = 0;
             decimal SalePrice = 0;
             decimal PurchasePrice = 0;
@@ -181,26 +212,61 @@ public partial class Reports_MarginReport : System.Web.UI.Page
             {
                 if (row.RowType == DataControlRowType.DataRow)
                 {
-                    // Calculate the total for each column
-                    Quantity += Convert.ToInt64((row.FindControl("lblQty") as Label).Text);
-                    SalePrice += Convert.ToDecimal((row.FindControl("lblSalePrice") as Label).Text);
-                    PurchasePrice += Convert.ToDecimal((row.FindControl("lblPurchasePrice") as Label).Text);
-                    Sales += Convert.ToDecimal((row.FindControl("lblSales") as Label).Text);
-                    Consumtion += Convert.ToDecimal((row.FindControl("lblConsumtion") as Label).Text);
+                    Label lblQty = row.FindControl("lblQty") as Label;
+                    Label lblSalePrice = row.FindControl("lblSalePrice") as Label;
+                    Label lblPurchasePrice = row.FindControl("lblPurchasePrice") as Label;
+                    Label lblSales = row.FindControl("lblSales") as Label;
+                    Label lblConsumtion = row.FindControl("lblConsumtion") as Label;
+
+                    long qty = 0;
+                    if (lblQty != null && !string.IsNullOrWhiteSpace(lblQty.Text))
+                        Int64.TryParse(lblQty.Text, out qty);
+                    Quantity += qty;
+
+                    decimal sp = 0;
+                    if (lblSalePrice != null && !string.IsNullOrWhiteSpace(lblSalePrice.Text))
+                        Decimal.TryParse(lblSalePrice.Text, out sp);
+                    SalePrice += sp;
+
+                    decimal pp = 0;
+                    if (lblPurchasePrice != null && !string.IsNullOrWhiteSpace(lblPurchasePrice.Text))
+                        Decimal.TryParse(lblPurchasePrice.Text, out pp);
+                    PurchasePrice += pp;
+
+                    decimal s = 0;
+                    if (lblSales != null && !string.IsNullOrWhiteSpace(lblSales.Text))
+                        Decimal.TryParse(lblSales.Text, out s);
+                    Sales += s;
+
+                    decimal c = 0;
+                    if (lblConsumtion != null && !string.IsNullOrWhiteSpace(lblConsumtion.Text))
+                        Decimal.TryParse(lblConsumtion.Text, out c);
+                    Consumtion += c;
                 }
             }
-            
+
+            // Safely calculate margin and percentage
             decimal margin = Sales - Consumtion;
-            decimal addition = margin / Sales;
-            Int32 total = Convert.ToInt32(addition * 100);
-       // Display the totals in the footer labels
-       (e.Row.FindControl("lblTotalQuantity") as Label).Text = Quantity.ToString()+" Kg";
-            (e.Row.FindControl("lblTotalSalePrice") as Label).Text = SalePrice.ToString();
-            (e.Row.FindControl("lblTotalPurchasePrice") as Label).Text = PurchasePrice.ToString();
-            (e.Row.FindControl("lblTotalSalesPrice") as Label).Text = Sales.ToString();
-            (e.Row.FindControl("lblTotalConsumtion") as Label).Text = Consumtion.ToString();
-            (e.Row.FindControl("lblTotalMargin") as Label).Text = total.ToString()+" %";
+            decimal addition = Sales != 0 ? margin / Sales : 0;
+            int total = Convert.ToInt32(addition * 100);
+
+            // Display the totals in the footer row
+            Label lblTotalQty = e.Row.FindControl("lblTotalQuantity") as Label;
+            Label lblTotalSale = e.Row.FindControl("lblTotalSalePrice") as Label;
+            Label lblTotalPurchase = e.Row.FindControl("lblTotalPurchasePrice") as Label;
+            Label lblTotalSales = e.Row.FindControl("lblTotalSalesPrice") as Label;
+            Label lblTotalConsumtion = e.Row.FindControl("lblTotalConsumtion") as Label;
+            Label lblTotalMargin = e.Row.FindControl("lblTotalMargin") as Label;
+
+            if (lblTotalQty != null) lblTotalQty.Text = Quantity.ToString() + " Kg";
+            if (lblTotalSale != null) lblTotalSale.Text = SalePrice.ToString("N2");
+            if (lblTotalPurchase != null) lblTotalPurchase.Text = PurchasePrice.ToString("N2");
+            if (lblTotalSales != null) lblTotalSales.Text = Sales.ToString("N2");
+            if (lblTotalConsumtion != null) lblTotalConsumtion.Text = Consumtion.ToString("N2");
+            if (lblTotalMargin != null) lblTotalMargin.Text = total.ToString() + " %";
         }
+
+
     }
 
     //Search Customers methods
@@ -250,7 +316,7 @@ public partial class Reports_MarginReport : System.Web.UI.Page
         {
             Int64 Quantity = 0;
             decimal SalePrice = 0;
-            decimal PurchasePrice = 0;       
+            decimal PurchasePrice = 0;
 
             // Loop through the data rows to calculate the totals
             foreach (GridViewRow row in GvTotalSummary.Rows)
@@ -260,7 +326,7 @@ public partial class Reports_MarginReport : System.Web.UI.Page
                     // Calculate the total for each column
                     Quantity += Convert.ToInt64((row.FindControl("lblQty") as Label).Text);
                     SalePrice += Convert.ToDecimal((row.FindControl("lblSales") as Label).Text);
-                    PurchasePrice += Convert.ToDecimal((row.FindControl("lblConsumption") as Label).Text);                
+                    PurchasePrice += Convert.ToDecimal((row.FindControl("lblConsumption") as Label).Text);
                 }
             }
 
@@ -270,7 +336,7 @@ public partial class Reports_MarginReport : System.Web.UI.Page
             // Display the totals in the footer labels
             (e.Row.FindControl("lblTotalQuantity") as Label).Text = Quantity.ToString() + " Kg";
             (e.Row.FindControl("lblTotalSales") as Label).Text = SalePrice.ToString();
-            (e.Row.FindControl("lblTotalConsumption") as Label).Text = PurchasePrice.ToString();      
+            (e.Row.FindControl("lblTotalConsumption") as Label).Text = PurchasePrice.ToString();
             (e.Row.FindControl("lblTotalMargin") as Label).Text = total.ToString() + " %";
         }
     }

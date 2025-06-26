@@ -88,7 +88,7 @@ public partial class Purchase_PaymentList : System.Web.UI.Page
     {
         using (SqlConnection con = new SqlConnection())
         {
-            con.ConnectionString = ConfigurationManager.ConnectionStrings["connectionString"].ConnectionString;
+            con.ConnectionString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
 
             using (SqlCommand com = new SqlCommand())
             {
@@ -182,16 +182,16 @@ public partial class Purchase_PaymentList : System.Web.UI.Page
     {
         try
         {
-            //if (e.Row.RowType == DataControlRowType.DataRow)
-            //{
-            //    con.Open();
-            //    int id = Convert.ToInt32(GvPayment.DataKeys[e.Row.RowIndex].Values[0]);
-            //    SqlCommand cmd = new SqlCommand("select sum(CAST(Total as float)) from tblPaymentDtls where HeaderID='" + id + "'", con);
-            //    Object Procnt = cmd.ExecuteScalar();
-            //    Label lblAmount = (Label)e.Row.FindControl("lblAmount");
-            //    lblAmount.Text = Procnt == null ? "0" : Procnt.ToString();
-            //    con.Close();
-            //}
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                con.Open();
+                int id = Convert.ToInt32(GvPayment.DataKeys[e.Row.RowIndex].Values[0]);
+                SqlCommand cmd = new SqlCommand("select sum(CAST(Total as float)) from tblPaymentDtls where HeaderID='" + id + "'", con);
+                Object Procnt = cmd.ExecuteScalar();
+                Label lblAmount = (Label)e.Row.FindControl("lblAmount");
+                lblAmount.Text = Procnt == null ? "0" : Procnt.ToString();
+                con.Close();
+            }
 
             if (e.Row.RowType == DataControlRowType.DataRow)
             {

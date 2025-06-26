@@ -75,10 +75,13 @@ public partial class Purchase_Payment : System.Web.UI.Page
                 txtremark.Text = dt.Rows[0]["TransactionRemark"].ToString();
                 txttds.Text = dt.Rows[0]["ApplyTDS"].ToString();
                 txtbasic.Text = dt.Rows[0]["Basic"].ToString();
-                if (ddlAgainst.Text == "Invoice Bill")
+                if (ddlAgainst.Text == "Purchase Bill")
                 {
                     BillDetailsload();
                     Session["Adv"] = "0";
+                }else  if (ddlAgainst.Text == "Expenses")
+                {
+                    rowtype.Visible = true;
                 }
                 else
                 {
@@ -225,7 +228,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
         {
             if (!string.IsNullOrEmpty(txtPartyName.Text))
             {
-                if (ddlAgainst.Text == "Invoice Bill")
+                if (ddlAgainst.Text == "Purchase Bill")
                 {
                     Gvpayment.Visible = true;
                     DataTable dtagainst = new DataTable();
@@ -246,9 +249,16 @@ public partial class Purchase_Payment : System.Web.UI.Page
                     }
                     lblshowmsg.Visible = false;
                     Session["Adv"] = "1";
+                    rowtype.Visible = false;
+                }
+                else
+                if (ddlAgainst.Text == "Expenses")
+                {
+                    rowtype.Visible = true;
                 }
                 else
                 {
+                    rowtype.Visible = false;
                     lblshowmsg.Visible = true;
                     Gvpayment.Visible = false;
                     lblshowmsg.Text = "No Information Found";
@@ -481,6 +491,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
                         cmd.Parameters.AddWithValue("@TransactionMode", ddltransactionmode.Text);
                         cmd.Parameters.AddWithValue("@ModeDescription", txtmodedescription.Text);
                         cmd.Parameters.AddWithValue("@PostDate", txtdate.Text);
+                        cmd.Parameters.AddWithValue("@Type", ddltype.SelectedItem.Text);
 
                         cmd.Parameters.AddWithValue("@Against", ddlAgainst.Text);
                         cmd.Parameters.AddWithValue("@Id", hidden1.Value);
@@ -505,7 +516,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
                         CmdDelete.ExecuteNonQuery();
                         con.Close();
 
-                        if (ddlAgainst.Text == "Invoice Bill")
+                        if (ddlAgainst.Text == "Purchase Bill")
                         {
                             foreach (GridViewRow g1 in Gvpayment.Rows)
                             {
@@ -622,7 +633,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
                     cmd.ExecuteNonQuery();
                     con.Close();
                     //id = Convert.ToInt32(cmd.Parameters["@Idd"].Value);
-                    if (ddlAgainst.Text == "Invoice Bill")
+                    if (ddlAgainst.Text == "Purchase Bill")
                     {
                         foreach (GridViewRow g1 in Gvpayment.Rows)
                         {
@@ -736,6 +747,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
             cmd.Parameters.AddWithValue("@PostDate", txtdate.Text.Trim());
             cmd.Parameters.AddWithValue("@Against", ddlAgainst.Text);
             cmd.Parameters.AddWithValue("@Amount", txtamount.Text);
+            cmd.Parameters.AddWithValue("@Type", ddltype.SelectedItem.Text);
             cmd.Parameters.AddWithValue("@TransactionRemark", txtremark.Text);
             cmd.Parameters.AddWithValue("@ApplyTDS", txttds.Text);
             cmd.Parameters.AddWithValue("@Basic", txtbasic.Text);
@@ -749,7 +761,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
             cmd.ExecuteNonQuery();
             con.Close();
             id = Convert.ToInt32(cmd.Parameters["@Idd"].Value);
-            if (ddlAgainst.Text == "Invoice Bill")
+            if (ddlAgainst.Text == "Purchase Bill")
             {
                 foreach (GridViewRow g1 in Gvpayment.Rows)
                 {
@@ -846,8 +858,8 @@ public partial class Purchase_Payment : System.Web.UI.Page
 
             if (IsSedndMail.Checked == true)
             {
-                string subject = "Payment Voucher from Excel Enclosures";
-                Send_Mail(id, subject);
+                string subject = "Payment Voucher from Pune Abrasives Pvt. Ltd.";
+              //  Send_Mail(id, subject);
             }
             Session["AgainstVal"] = null;
             ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Data Saved Sucessfully');window.location.href='PaymentList.aspx';", true);
@@ -862,208 +874,208 @@ public partial class Purchase_Payment : System.Web.UI.Page
     decimal payable, paid, TDS, Excess, Basic, Adjust, Total, pending = 0; decimal footer = 0;
     protected void Gvpayment_RowDataBound(object sender, GridViewRowEventArgs e)
     {
-        //if (btnsubmit.Text == "Update")
-        //{
-        //    if (e.Row.RowType == DataControlRowType.DataRow)
-        //    {
-        //        //if (Session["AgainstVal"].ToString() == "Advance")
-        //        //{
+        if (btnsubmit.Text == "Update")
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                //if (Session["AgainstVal"].ToString() == "Advance")
+                //{
 
-        //        int id = Convert.ToInt32(Gvpayment.DataKeys[e.Row.RowIndex].Values[0]);
-        //        TextBox paid = (TextBox)e.Row.FindControl("txtgvpaid");
-        //        TextBox TDS = (TextBox)e.Row.FindControl("txtgvTDS");
-        //        TextBox Adjust = (TextBox)e.Row.FindControl("txtgvadjust");
-        //        TextBox Excess = (TextBox)e.Row.FindControl("txtgvExcess");
-        //        TextBox Pending = (TextBox)e.Row.FindControl("txtgvpending");
-        //        Label Total = (Label)e.Row.FindControl("lbltotal");
-        //        Label lblbasic = (Label)e.Row.FindControl("lblfinalbasic");
-        //        TextBox Notes = (TextBox)e.Row.FindControl("txtgvNote");
-        //        CheckBox chk = (CheckBox)e.Row.FindControl("chkRow");
-        //        con.Open();
-        //        SqlCommand cmd4525 = new SqlCommand("select * from tblPaymentDtls where Id='" + id + "'", con);
-        //        SqlDataReader dr = cmd4525.ExecuteReader();
-        //        if (dr.Read())
-        //        {
+                int id = Convert.ToInt32(Gvpayment.DataKeys[e.Row.RowIndex].Values[0]);
+                TextBox paid = (TextBox)e.Row.FindControl("txtgvpaid");
+                TextBox TDS = (TextBox)e.Row.FindControl("txtgvTDS");
+                TextBox Adjust = (TextBox)e.Row.FindControl("txtgvadjust");
+                TextBox Excess = (TextBox)e.Row.FindControl("txtgvExcess");
+                TextBox Pending = (TextBox)e.Row.FindControl("txtgvpending");
+                Label Total = (Label)e.Row.FindControl("lbltotal");
+                Label lblbasic = (Label)e.Row.FindControl("lblfinalbasic");
+                TextBox Notes = (TextBox)e.Row.FindControl("txtgvNote");
+                CheckBox chk = (CheckBox)e.Row.FindControl("chkRow");
+                con.Open();
+                SqlCommand cmd4525 = new SqlCommand("select * from tblPaymentDtls where Id='" + id + "'", con);
+                SqlDataReader dr = cmd4525.ExecuteReader();
+                if (dr.Read())
+                {
 
-        //            paid.Text = dr["Paid"].ToString();
-        //            lblbasic.Text = dr["Basic"].ToString();
-        //            TDS.Text = dr["TDS"].ToString();
-        //            Adjust.Text = dr["Adjust"].ToString();
-        //            Excess.Text = dr["Excess"].ToString();
-        //            Pending.Text = dr["Pending"].ToString();
-        //            Total.Text = dr["Total"].ToString();
-        //            Notes.Text = dr["Note"].ToString();
-        //            checkinvooice = dr["Chk"].ToString();
-        //            dr.Close();
-        //        }
-        //        chk.Checked = checkinvooice == "True" ? true : false;
-        //        con.Close();
+                    paid.Text = dr["Paid"].ToString();
+                    lblbasic.Text = dr["Basic"].ToString();
+                    TDS.Text = dr["TDS"].ToString();
+                    Adjust.Text = dr["Adjust"].ToString();
+                    Excess.Text = dr["Excess"].ToString();
+                    Pending.Text = dr["Pending"].ToString();
+                    Total.Text = dr["Total"].ToString();
+                    Notes.Text = dr["Note"].ToString();
+                    checkinvooice = dr["Chk"].ToString();
+                    dr.Close();
+                }
+                chk.Checked = checkinvooice == "True" ? true : false;
+                con.Close();
 
-        //        if (chk != null & chk.Checked)
-        //        {
-        //            paid.Enabled = true;
-        //            TDS.Enabled = true;
-        //            Adjust.Enabled = true;
-        //            Excess.Enabled = true;
-        //            Pending.Enabled = true;
-        //            Notes.Enabled = true;
+                if (chk != null & chk.Checked)
+                {
+                    paid.Enabled = true;
+                    TDS.Enabled = true;
+                    Adjust.Enabled = true;
+                    Excess.Enabled = true;
+                    Pending.Enabled = true;
+                    Notes.Enabled = true;
 
-        //        }
-        //        else
-        //        {
-        //            paid.Enabled = false;
-        //            TDS.Enabled = false;
-        //            Adjust.Enabled = false;
-        //            Excess.Enabled = false;
-        //            Pending.Enabled = false;
-        //            Notes.Enabled = false;
+                }
+                else
+                {
+                    paid.Enabled = false;
+                    TDS.Enabled = false;
+                    Adjust.Enabled = false;
+                    Excess.Enabled = false;
+                    Pending.Enabled = false;
+                    Notes.Enabled = false;
 
-        //        }
-        //    }
+                }
+            }
 
-        //}
+        }
 
-        //if (e.Row.RowType == DataControlRowType.DataRow)
-        //{
-        //    System.Globalization.CultureInfo info = System.Globalization.CultureInfo.GetCultureInfo("en-IN");
-        //    int id = Convert.ToInt32(Gvpayment.DataKeys[e.Row.RowIndex].Values[0]);
-        //    Label payableAmt = (Label)e.Row.FindControl("lblpayable");
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            System.Globalization.CultureInfo info = System.Globalization.CultureInfo.GetCultureInfo("en-IN");
+            int id = Convert.ToInt32(Gvpayment.DataKeys[e.Row.RowIndex].Values[0]);
+            Label payableAmt = (Label)e.Row.FindControl("lblpayable");
 
-        //    var pbalevalue = Convert.ToDouble(payableAmt.Text);
-        //    payableAmt.Text = Math.Round(pbalevalue).ToString();
+            var pbalevalue = Convert.ToDouble(payableAmt.Text);
+            payableAmt.Text = Math.Round(pbalevalue).ToString();
 
-        //    Label BillNo = (Label)e.Row.FindControl("lblBillno");
-        //    string billno = BillNo.Text;
-        //    CheckBox chk = (CheckBox)e.Row.FindControl("chkRow");
-        //    CheckBox chkheader = (CheckBox)Gvpayment.HeaderRow.FindControl("chkheader");
+            Label BillNo = (Label)e.Row.FindControl("lblBillno");
+            string billno = BillNo.Text;
+            CheckBox chk = (CheckBox)e.Row.FindControl("chkRow");
+            CheckBox chkheader = (CheckBox)Gvpayment.HeaderRow.FindControl("chkheader");
 
-        //    if (Session["UPID"] != "")
-        //    {
-        //        con.Open();
-        //        SqlCommand cmdmaxid = new SqlCommand("select Id from tblPurchaseBillHdr where SupplierBillNo='" + billno + "' AND SupplierName='" + txtPartyName.Text + "'", con);
-        //        string idd = cmdmaxid.ExecuteScalar().ToString();
+            if (Session["UPID"] != "")
+            {
+                con.Open();
+                SqlCommand cmdmaxid = new SqlCommand("select Id from tblPurchaseBillHdr where SupplierBillNo='" + billno + "' AND SupplierName='" + txtPartyName.Text + "'", con);
+                string idd = cmdmaxid.ExecuteScalar().ToString();
 
-        //        SqlCommand cmddtl = new SqlCommand("select SUM(CAST(Amount as float)) from tblPurchaseBillDtls where HeaderID='" + idd + "'", con);
-        //        Object TaxAmt = cmddtl.ExecuteScalar() == null ? "0" : cmddtl.ExecuteScalar();
-        //        SqlCommand cmdTc = new SqlCommand("select TransportationCharges from tblPurchaseBillHdr where SupplierBillNo='" + billno + "' AND SupplierName='" + txtPartyName.Text + "'", con);
-        //        Object cmdTcval = cmdTc.ExecuteScalar() == null ? "0" : cmdTc.ExecuteScalar();
+                SqlCommand cmddtl = new SqlCommand("select SUM(CAST(Amount as float)) from tblPurchaseBillDtls where HeaderID='" + idd + "'", con);
+                Object TaxAmt = cmddtl.ExecuteScalar() == null ? "0" : cmddtl.ExecuteScalar();
+                SqlCommand cmdTc = new SqlCommand("select TransportationCharges from tblPurchaseBillHdr where SupplierBillNo='" + billno + "' AND SupplierName='" + txtPartyName.Text + "'", con);
+                Object cmdTcval = cmdTc.ExecuteScalar() == null ? "0" : cmdTc.ExecuteScalar();
 
-        //        con.Close();
-        //        Label lblBasic = (Label)e.Row.FindControl("lblfinalbasic");
+                con.Close();
+                Label lblBasic = (Label)e.Row.FindControl("lblfinalbasic");
 
-        //        //var Amt = Convert.ToDecimal(TaxAmt.ToString()) + Convert.ToDecimal(lblBasic.Text==null?"0": lblBasic.Text) + Convert.ToDecimal(cmdTcval.ToString());
-        //        var Amt = Convert.ToDecimal(TaxAmt.ToString()) + Convert.ToDecimal(cmdTcval.ToString());
-        //        var basicvalue = Math.Round(Amt);
-        //        Label lblfinalbasic = (Label)e.Row.FindControl("lblfinalbasic");
-        //        lblfinalbasic.Text = basicvalue.ToString("N2", info);
+                //var Amt = Convert.ToDecimal(TaxAmt.ToString()) + Convert.ToDecimal(lblBasic.Text==null?"0": lblBasic.Text) + Convert.ToDecimal(cmdTcval.ToString());
+                var Amt = Convert.ToDecimal(TaxAmt.ToString()) + Convert.ToDecimal(cmdTcval.ToString());
+                var basicvalue = Math.Round(Amt);
+                Label lblfinalbasic = (Label)e.Row.FindControl("lblfinalbasic");
+                lblfinalbasic.Text = basicvalue.ToString("N2", info);
 
-        //        Label lblBillno = (Label)e.Row.FindControl("lblBillno");
-        //        SqlCommand cmdmax = new SqlCommand("SELECT Recvd FROM tblPaymentDtls where BillNo='" + lblBillno.Text + "' AND SupplierName='" + txtPartyName.Text + "'", con);
-        //        con.Open();
-        //        Object Recvdval = cmdmax.ExecuteScalar();
-        //        con.Close();
+                Label lblBillno = (Label)e.Row.FindControl("lblBillno");
+                SqlCommand cmdmax = new SqlCommand("SELECT Recvd FROM tblPaymentDtls where BillNo='" + lblBillno.Text + "' AND SupplierName='" + txtPartyName.Text + "'", con);
+                con.Open();
+                Object Recvdval = cmdmax.ExecuteScalar();
+                con.Close();
 
-        //        TextBox lblRecvdd = (TextBox)e.Row.FindControl("lblrate");
+                TextBox lblRecvdd = (TextBox)e.Row.FindControl("lblrate");
 
-        //        if (Recvdval == null)
-        //        {
-        //            lblRecvdd.Text = "0";
-        //        }
-        //        else
-        //        {
-        //            lblRecvdd.Text = Recvdval.ToString();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        SqlCommand cmdmax = new SqlCommand("SELECT min(Pending) FROM tblPaymentDtls  where SupplierName='" + txtPartyName.Text + "' AND BillNo='" + billno + "'", con);
-        //        con.Open();
-        //        Object smpayable = cmdmax.ExecuteScalar();
+                if (Recvdval == null)
+                {
+                    lblRecvdd.Text = "0";
+                }
+                else
+                {
+                    lblRecvdd.Text = Recvdval.ToString();
+                }
+            }
+            else
+            {
+                SqlCommand cmdmax = new SqlCommand("SELECT min(Pending) FROM tblPaymentDtls  where SupplierName='" + txtPartyName.Text + "' AND BillNo='" + billno + "'", con);
+                con.Open();
+                Object smpayable = cmdmax.ExecuteScalar();
 
-        //        SqlCommand cmddtl = new SqlCommand("select SUM(CAST(Amount as float)) from tblPurchaseBillDtls where HeaderID='" + id + "'", con);
-        //        Object TaxAmt = cmddtl.ExecuteScalar();
+                SqlCommand cmddtl = new SqlCommand("select SUM(CAST(Amount as float)) from tblPurchaseBillDtls where HeaderID='" + id + "'", con);
+                Object TaxAmt = cmddtl.ExecuteScalar();
 
-        //        SqlCommand cmdTc = new SqlCommand("select TransportationCharges from tblPurchaseBillHdr where Id='" + id + "'", con);
-        //        Object cmdTcval = cmdTc.ExecuteScalar();
-        //        con.Close();
+                SqlCommand cmdTc = new SqlCommand("select TransportationCharges from tblPurchaseBillHdr where Id='" + id + "'", con);
+                Object cmdTcval = cmdTc.ExecuteScalar();
+                con.Close();
 
-        //        Label lblBasic = (Label)e.Row.FindControl("lblfinalbasic");
+                Label lblBasic = (Label)e.Row.FindControl("lblfinalbasic");
 
-        //        var bval = lblBasic.Text.Replace(",", "");
+                var bval = lblBasic.Text.Replace(",", "");
 
-        //        var txval = TaxAmt.ToString() == "" ? "0" : TaxAmt.ToString();
+                var txval = TaxAmt.ToString() == "" ? "0" : TaxAmt.ToString();
 
-        //        var Amt = Convert.ToDecimal(txval) + Convert.ToDecimal(bval) + Convert.ToDecimal(cmdTcval.ToString());
-        //        var basicvalue = Math.Round(Amt);
-        //        Label lblfinalbasic = (Label)e.Row.FindControl("lblfinalbasic");
-        //        lblfinalbasic.Text = basicvalue.ToString("N2", info);
-        //        Basic += Decimal.Parse(lblfinalbasic.Text);
+                var Amt = Convert.ToDecimal(txval) + Convert.ToDecimal(bval) + Convert.ToDecimal(cmdTcval.ToString());
+                var basicvalue = Math.Round(Amt);
+                Label lblfinalbasic = (Label)e.Row.FindControl("lblfinalbasic");
+                lblfinalbasic.Text = basicvalue.ToString("N2", info);
+                Basic += Decimal.Parse(lblfinalbasic.Text);
 
-        //        if (smpayable.ToString() == "0.00")
-        //        {
-        //            payableAmt.Text = "0";
-        //            chk.Enabled = false;
-        //            chkheader.Enabled = false;
-        //            e.Row.Visible = false;
-        //        }
+                if (smpayable.ToString() == "0.00")
+                {
+                    payableAmt.Text = "0";
+                    chk.Enabled = false;
+                    chkheader.Enabled = false;
+                    e.Row.Visible = false;
+                }
 
-        //        Label lblBillno = (Label)e.Row.FindControl("lblBillno");
-        //        SqlCommand cmdmaxdd = new SqlCommand("SELECT Recvd FROM tblPaymentDtls where BillNo='" + lblBillno.Text + "'", con);
-        //        con.Open();
-        //        Object Recvdval = cmdmaxdd.ExecuteScalar();
-        //        con.Close();
+                Label lblBillno = (Label)e.Row.FindControl("lblBillno");
+                SqlCommand cmdmaxdd = new SqlCommand("SELECT Recvd FROM tblPaymentDtls where BillNo='" + lblBillno.Text + "'", con);
+                con.Open();
+                Object Recvdval = cmdmaxdd.ExecuteScalar();
+                con.Close();
 
-        //        TextBox lblRecvdd = (TextBox)e.Row.FindControl("lblrate");
+                TextBox lblRecvdd = (TextBox)e.Row.FindControl("lblrate");
 
-        //        if (Recvdval == null)
-        //        {
-        //            lblRecvdd.Text = "0";
-        //        }
-        //        else
-        //        {
-        //            lblRecvdd.Text = Recvdval.ToString();
-        //        }
-        //    }
-        //}
-        //if (e.Row.RowType == DataControlRowType.DataRow)
-        //{
-        //    Label lblPgTotal = (Label)e.Row.FindControl("lblpayable");
-        //    payable += Decimal.Parse(lblPgTotal.Text);
-        //}
-        ////if (e.Row.RowType == DataControlRowType.Footer)
-        ////{
-        ////    Label lblpayablefooter = (Label)e.Row.FindControl("footerpayble");
-        ////    lblpayablefooter.Text = payable.ToString();
-        ////    if (payable.ToString() == "0")
-        ////    {
-        ////        //CheckBox chk = Gvpayment.FindControl("chkRow") as CheckBox;
-        ////        //CheckBox chk = (CheckBox)Gvpayment.Rows.FindControl("chkRow");
-        ////        lblmsg.Text = "Payment Already Paid";
-        ////        ScriptManager.RegisterStartupScript(this, this.GetType(), "Alert", "alert('Payment Already Paid');", true);
-        ////        btnsubmit.Enabled = false;
-        ////        //chk.Enabled = false;
-        ////    }
-        ////}
-
+                if (Recvdval == null)
+                {
+                    lblRecvdd.Text = "0";
+                }
+                else
+                {
+                    lblRecvdd.Text = Recvdval.ToString();
+                }
+            }
+        }
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            Label lblPgTotal = (Label)e.Row.FindControl("lblpayable");
+            payable += Decimal.Parse(lblPgTotal.Text);
+        }
         //if (e.Row.RowType == DataControlRowType.Footer)
         //{
         //    Label lblpayablefooter = (Label)e.Row.FindControl("footerpayble");
         //    lblpayablefooter.Text = payable.ToString();
-        //    Label lblfooterpaid = (Label)e.Row.FindControl("footerpaid");
-        //    lblfooterpaid.Text = TDS.ToString();
-        //    lblFooterPaidVal.Text = TDS.ToString();
-        //    Label lblfootertds = (Label)e.Row.FindControl("footertds");
-        //    lblfootertds.Text = TDS.ToString();
-        //    Label lblfooteradjust = (Label)e.Row.FindControl("footeradjust");
-        //    lblfooteradjust.Text = Adjust.ToString();
-        //    Label lblfooterexcess = (Label)e.Row.FindControl("footerexcess");
-        //    lblfooterexcess.Text = Excess.ToString();
-        //    Label lblfootertotal = (Label)e.Row.FindControl("footertotal");
-        //    lblfootertotal.Text = Total.ToString();
-        //    Label lblfooterpending = (Label)e.Row.FindControl("footerpending");
-        //    lblfooterpending.Text = pending.ToString();
-
+        //    if (payable.ToString() == "0")
+        //    {
+        //        //CheckBox chk = Gvpayment.FindControl("chkRow") as CheckBox;
+        //        //CheckBox chk = (CheckBox)Gvpayment.Rows.FindControl("chkRow");
+        //        lblmsg.Text = "Payment Already Paid";
+        //        ScriptManager.RegisterStartupScript(this, this.GetType(), "Alert", "alert('Payment Already Paid');", true);
+        //        btnsubmit.Enabled = false;
+        //        //chk.Enabled = false;
+        //    }
         //}
+
+        if (e.Row.RowType == DataControlRowType.Footer)
+        {
+            Label lblpayablefooter = (Label)e.Row.FindControl("footerpayble");
+            lblpayablefooter.Text = payable.ToString();
+            Label lblfooterpaid = (Label)e.Row.FindControl("footerpaid");
+            lblfooterpaid.Text = TDS.ToString();
+            lblFooterPaidVal.Text = TDS.ToString();
+            Label lblfootertds = (Label)e.Row.FindControl("footertds");
+            lblfootertds.Text = TDS.ToString();
+            Label lblfooteradjust = (Label)e.Row.FindControl("footeradjust");
+            lblfooteradjust.Text = Adjust.ToString();
+            Label lblfooterexcess = (Label)e.Row.FindControl("footerexcess");
+            lblfooterexcess.Text = Excess.ToString();
+            Label lblfootertotal = (Label)e.Row.FindControl("footertotal");
+            lblfootertotal.Text = Total.ToString();
+            Label lblfooterpending = (Label)e.Row.FindControl("footerpending");
+            lblfooterpending.Text = pending.ToString();
+
+        }
     }
 
     protected void chkheader_CheckedChanged(object sender, EventArgs e)
@@ -1146,7 +1158,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
     {
         try
         {
-            if (ddlAgainst.Text == "Invoice Bill")
+            if (ddlAgainst.Text == "Purchase Bill")
             {
                 GridViewRow row = (sender as TextBox).NamingContainer as GridViewRow;
                 Label footertotal = (Label)Gvpayment.FooterRow.FindControl("footerpaid");
@@ -1177,7 +1189,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
         {
             throw ex;
         }
-      
+
     }
 
     protected void txttds_SelectedIndexChanged(object sender, EventArgs e)
@@ -1795,7 +1807,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
             mm.Body = myString.ToString();
 
             mm.IsBodyHtml = true;
-         
+
             mm.From = new MailAddress(ConfigurationManager.AppSettings["mailUserName"].ToLower(), fromMailID);
             MemoryStream file = new MemoryStream(PDFF(id).ToArray());
 
@@ -1823,7 +1835,7 @@ public partial class Purchase_Payment : System.Web.UI.Page
             {
                 return true;
             };
-            smtp.Send(mm);
+          //  smtp.Send(mm);
 
             ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Data Saved Sucessfully');window.location.href='Payment.aspx';", true);
 

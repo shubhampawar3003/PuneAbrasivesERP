@@ -276,7 +276,7 @@
                                             <div class="col-md-12">
                                                 <asp:HiddenField ID="hiddenpending" runat="server" />
                                                 <div class="row">
-                                                    <div class="col-md-2 spancls">Party Name<i class="reqcls">*&nbsp;</i> : </div>
+                                                    <div class="col-md-2 spancls"><b>Party Name</b><i class="reqcls">*&nbsp;</i> : </div>
                                                     <div class="col-md-4">
                                                         <asp:TextBox ID="txtPartyName" CssClass="form-control" runat="server" Width="100%" AutoPostBack="true" OnTextChanged="txtPartyName_TextChanged"></asp:TextBox>
                                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" Display="Dynamic" ErrorMessage="Please Enter Party Name"
@@ -287,7 +287,7 @@
                                                             TargetControlID="txtPartyName">
                                                         </asp:AutoCompleteExtender>
                                                     </div>
-                                                    <div class="col-md-2 spancls">Date<i class="reqcls">*&nbsp;</i> : </div>
+                                                    <div class="col-md-2 spancls"><b>Date</b><i class="reqcls">*&nbsp;</i> : </div>
                                                     <div class="col-md-4">
                                                         <asp:TextBox ID="txtdate" CssClass="form-control" runat="server" Width="100%" AutoComplete="off"></asp:TextBox>
                                                         <asp:CalendarExtender ID="CalendarExtender1" TargetControlID="txtdate" Format="dd-MM-yyyy" CssClass="cal_Theme1" runat="server"></asp:CalendarExtender>
@@ -296,7 +296,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-2 spancls">From Account Name<i class="reqcls">&nbsp;</i> : </div>
+                                                    <div class="col-md-2 spancls"><b>From Account Name</b><i class="reqcls">&nbsp;</i> : </div>
                                                     <div class="col-md-4">
                                                         <asp:DropDownList ID="ddltoaccountName" runat="server" CssClass="form-control" OnSelectedIndexChanged="ddltoaccountName_SelectedIndexChanged" AutoPostBack="true">
                                                             <asp:ListItem Value="" Text="Select"></asp:ListItem>
@@ -307,7 +307,7 @@
                                                         </asp:DropDownList>
 
                                                     </div>
-                                                    <div class="col-md-2 spancls">Bank Name<i class="reqcls">*&nbsp;</i> : </div>
+                                                    <div class="col-md-2 spancls"><b>Bank Name</b><i class="reqcls">*&nbsp;</i> : </div>
                                                     <div class="col-md-4">
                                                         <asp:TextBox ID="txtbankname" CssClass="form-control" runat="server" Width="100%"></asp:TextBox>
                                                         <asp:AutoCompleteExtender ID="AutoCompleteExtender2" runat="server" CompletionListCssClass="completionList"
@@ -318,10 +318,9 @@
                                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" Display="Dynamic" ErrorMessage="Please Enter Bank Name"
                                                             ControlToValidate="txtbankname" ValidationGroup="form1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
                                                     </div>
-
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-2 spancls">Transaction Mode<i class="reqcls">&nbsp;</i> : </div>
+                                                    <div class="col-md-2 spancls"><b>Transaction Mode</b><i class="reqcls">&nbsp;</i> : </div>
                                                     <div class="col-md-4">
                                                         <asp:DropDownList ID="ddltransactionmode" runat="server" CssClass="form-control">
                                                             <asp:ListItem Value="" Text="Select"></asp:ListItem>
@@ -336,34 +335,46 @@
 
                                                         </asp:DropDownList>
                                                     </div>
-                                                    <div class="col-md-2 spancls">Mode Description<i class="reqcls">&nbsp;</i> : </div>
+                                                    <div class="col-md-2 spancls"><b>Mode Description</b><i class="reqcls">&nbsp;</i> : </div>
                                                     <div class="col-md-4">
                                                         <asp:TextBox ID="txtmodedescription" CssClass="form-control" TextMode="MultiLine" runat="server" Width="100%"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-2 spancls">Against<i class="reqcls">&nbsp;</i> : </div>
+                                                    <div class="col-md-2 spancls"><b>Against</b><i class="reqcls">&nbsp;</i> : </div>
                                                     <div class="col-md-4">
                                                         <asp:DropDownList ID="ddlAgainst" runat="server" CssClass="form-control" AutoPostBack="true" OnTextChanged="ddlAgainst_TextChanged">
                                                             <asp:ListItem Value="" Text="Select"></asp:ListItem>
-                                                            <asp:ListItem Text="Invoice Bill"></asp:ListItem>
+                                                            <asp:ListItem Text="Purchase Bill"></asp:ListItem>
                                                             <asp:ListItem Text="Advance"></asp:ListItem>
+                                                            <asp:ListItem Text="Expenses"></asp:ListItem>
                                                         </asp:DropDownList>
                                                     </div>
 
-                                                    <div class="col-md-2 spancls">Amount<i class="reqcls">&nbsp;</i> : </div>
+                                                    <div class="col-md-2 spancls"><b>Amount</b><i class="reqcls">&nbsp;</i> : </div>
                                                     <div class="col-md-4">
                                                         <asp:TextBox ID="txtamount" onkeypress="return isNumberKey(event)" CssClass="form-control" runat="server" Width="100%" OnTextChanged="txtamount_TextChanged" AutoPostBack="true"></asp:TextBox>
                                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" Display="Dynamic" ErrorMessage="Please Enter Amount"
                                                             ControlToValidate="txtamount" ValidationGroup="form1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
                                                     </div>
                                                 </div>
+                                                <div class="row" id="rowtype" runat="server" visible="false">
+                                                    <div class="col-md-2 spancls"><b>Type</b><i class="reqcls">&nbsp;</i> : </div>
+                                                    <div class="col-md-4">
+                                                        <asp:DropDownList ID="ddltype" runat="server" CssClass="form-control">
+                                                            <asp:ListItem Value="" Text="Select"></asp:ListItem>
+                                                            <asp:ListItem Text="Light Bill"></asp:ListItem>
+                                                            <asp:ListItem Text="Water Bill"></asp:ListItem>
+                                                            <asp:ListItem Text="TDS"></asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                </div>
                                                 <div class="row">
-                                                    <div class="col-md-2 spancls">Transaction Remark<i class="reqcls">&nbsp;</i> : </div>
+                                                    <div class="col-md-2 spancls"><b>Transaction Remark</b><i class="reqcls">&nbsp;</i> : </div>
                                                     <div class="col-md-4">
                                                         <asp:TextBox ID="txtremark" CssClass="form-control" TextMode="MultiLine" runat="server" Width="100%"></asp:TextBox>
                                                     </div>
-                                                    <div class="col-md-1 spancls">TDS<i class="reqcls">&nbsp;</i> : </div>
+                                                    <div class="col-md-1 spancls"><b>TDS</b><i class="reqcls">&nbsp;</i> : </div>
                                                     <div class="col-md-2">
                                                         <asp:DropDownList ID="txttds" CssClass="form-control" runat="server" Width="100%" OnSelectedIndexChanged="txttds_SelectedIndexChanged" AutoPostBack="true">
                                                             <asp:ListItem Value="0">--Select--</asp:ListItem>
@@ -396,13 +407,13 @@
                                                             <asp:ListItem Value="10">10</asp:ListItem>
                                                         </asp:DropDownList>
                                                     </div>
-                                                    <div class="col-md-1 spancls">On<i class="reqcls">&nbsp;</i>  </div>
+                                                    <div class="col-md-1 spancls"><b>On</b><i class="reqcls">&nbsp;</i>  </div>
                                                     <div class="col-md-2">
                                                         <asp:TextBox ID="txtbasic" CssClass="form-control" runat="server" Width="100%" ReadOnly="true" Text="Basic"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-2 spancls">Send Mail:</div>
+                                                    <div class="col-md-2 spancls"><b>Send Mail</b>:</div>
                                                     <div class="col-md-4">
                                                         <div class="row">
                                                             <div class="col-md-2">

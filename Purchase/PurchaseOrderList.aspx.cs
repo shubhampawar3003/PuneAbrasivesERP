@@ -62,9 +62,12 @@ public partial class Purchase_PurchaseOrderList : System.Web.UI.Page
         if (e.CommandName == "RowEdit")
         {
             ViewState["id"] = e.CommandArgument.ToString();
-            Response.Redirect("PurchaseOrder.aspx?ID=" + encrypt(e.CommandArgument.ToString()));
+            Response.Redirect("PurchaseOrder.aspx?ID=" + encrypt(e.CommandArgument.ToString())+"&Action=OLD");
         }
-
+        if (e.CommandName == "RowNew")
+        {
+            Response.Redirect("PurchaseOrder.aspx?ID=" + encrypt(e.CommandArgument.ToString()) + "&Action=NEW");
+        }
 
         if (e.CommandName == "DownloadPDF")
         {
@@ -491,63 +494,63 @@ public partial class Purchase_PurchaseOrderList : System.Web.UI.Page
     {
         //try
         //{
-            DataSet Dtt = new DataSet();
-            string strConnString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
-            using (SqlConnection con = new SqlConnection(strConnString))
+        DataSet Dtt = new DataSet();
+        string strConnString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
+        using (SqlConnection con = new SqlConnection(strConnString))
+        {
+            using (SqlCommand cmd = new SqlCommand("[SP_GetTableDetails]", con))
             {
-                using (SqlCommand cmd = new SqlCommand("[SP_GetTableDetails]", con))
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Action", "GetPOReport");
+                cmd.Parameters.AddWithValue("@PONO", PONO);
+
+                using (SqlDataAdapter sda = new SqlDataAdapter())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Action", "GetPOReport");
-                    cmd.Parameters.AddWithValue("@PONO", PONO);
-
-                    using (SqlDataAdapter sda = new SqlDataAdapter())
+                    cmd.Connection = con;
+                    sda.SelectCommand = cmd;
+                    using (DataSet ds = new DataSet())
                     {
-                        cmd.Connection = con;
-                        sda.SelectCommand = cmd;
-                        using (DataSet ds = new DataSet())
-                        {
-                            sda.Fill(Dtt);
+                        sda.Fill(Dtt);
 
-                        }
                     }
                 }
             }
+        }
 
-            if (Dtt.Tables.Count > 0)
+        if (Dtt.Tables.Count > 0)
+        {
+            if (Dtt.Tables[0].Rows.Count > 0)
             {
-                if (Dtt.Tables[0].Rows.Count > 0)
-                {
-                    ReportDataSource obj1 = new ReportDataSource("DataSet1", Dtt.Tables[0]);
-                    ReportDataSource obj2 = new ReportDataSource("DataSet2", Dtt.Tables[1]);
-                    ReportViewer1.LocalReport.DataSources.Add(obj1);
-                    ReportViewer1.LocalReport.DataSources.Add(obj2);
-                    ReportViewer1.LocalReport.ReportPath = "RDLC_Reports\\PurchaseOrder.rdlc";
-                    ReportViewer1.LocalReport.Refresh();
-                    //-------- Print PDF directly without showing ReportViewer ----
-                    Warning[] warnings;
-                    string[] streamids;
-                    string mimeType;
-                    string encoding;
-                    string extension;
-                    byte[] bytePdfRep = ReportViewer1.LocalReport.Render("PDF", null, out mimeType, out encoding, out extension, out streamids, out warnings);
-                    Response.ClearContent();
-                    Response.ClearHeaders();
-                    string filePath = Server.MapPath("~/PDF_Files/") + "PurchaseOrder1.pdf";
+                ReportDataSource obj1 = new ReportDataSource("DataSet1", Dtt.Tables[0]);
+                ReportDataSource obj2 = new ReportDataSource("DataSet2", Dtt.Tables[1]);
+                ReportViewer1.LocalReport.DataSources.Add(obj1);
+                ReportViewer1.LocalReport.DataSources.Add(obj2);
+                ReportViewer1.LocalReport.ReportPath = "RDLC_Reports\\PurchaseOrder.rdlc";
+                ReportViewer1.LocalReport.Refresh();
+                //-------- Print PDF directly without showing ReportViewer ----
+                Warning[] warnings;
+                string[] streamids;
+                string mimeType;
+                string encoding;
+                string extension;
+                byte[] bytePdfRep = ReportViewer1.LocalReport.Render("PDF", null, out mimeType, out encoding, out extension, out streamids, out warnings);
+                Response.ClearContent();
+                Response.ClearHeaders();
+                string filePath = Server.MapPath("~/PDF_Files/") + "PurchaseOrder1.pdf";
 
-                    // Save the file to the specified path
-                    System.IO.File.WriteAllBytes(filePath, bytePdfRep);
-                    Response.Redirect("~/PDF_Files/PurchaseOrder1.pdf");
+                // Save the file to the specified path
+                System.IO.File.WriteAllBytes(filePath, bytePdfRep);
+                Response.Redirect("~/PDF_Files/PurchaseOrder1.pdf");
 
-                    ReportViewer1.LocalReport.DataSources.Clear();
-                    ReportViewer1.Reset();
+                ReportViewer1.LocalReport.DataSources.Clear();
+                ReportViewer1.Reset();
 
-                }
-                else
-                {
-                    ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Record Not Found...........!')", true);
-                }
             }
+            else
+            {
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Record Not Found...........!')", true);
+            }
+        }
         //}
         //catch (Exception ex)
         //{

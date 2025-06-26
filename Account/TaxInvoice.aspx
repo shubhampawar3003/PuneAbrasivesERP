@@ -767,13 +767,13 @@
                                                                     <asp:TextBox ID="txtBasic" Width="100px" runat="server" Text="0" Enabled="true" OnTextChanged="txtBasic_TextChanged" AutoPostBack="true"></asp:TextBox>
                                                                 </td>
                                                                 <td>
-                                                                    <asp:TextBox ID="CGSTPertcs" Width="50px" runat="server" ReadOnly="true" Text="0" AutoPostBack="true" OnTextChanged="CGSTPertcs_TextChanged"></asp:TextBox>
+                                                                    <asp:TextBox ID="CGSTPertcs" Width="50px" runat="server"   Text="0" AutoPostBack="true" OnTextChanged="CGSTPertcs_TextChanged"></asp:TextBox>
                                                                 </td>
                                                                 <td>
-                                                                    <asp:TextBox ID="SGSTPertcs" Width="50px" runat="server" ReadOnly="true" Text="0" AutoPostBack="true" OnTextChanged="SGSTPertcs_TextChanged"></asp:TextBox>
+                                                                    <asp:TextBox ID="SGSTPertcs" Width="50px" runat="server"  Text="0" AutoPostBack="true" OnTextChanged="SGSTPertcs_TextChanged"></asp:TextBox>
                                                                 </td>
                                                                 <td>
-                                                                    <asp:TextBox ID="IGSTPertcs" Width="50px" runat="server" ReadOnly="true" Text="0" AutoPostBack="true" OnTextChanged="IGSTPertcs_TextChanged"></asp:TextBox>
+                                                                    <asp:TextBox ID="IGSTPertcs" Width="50px" runat="server"  Text="0" AutoPostBack="true" OnTextChanged="IGSTPertcs_TextChanged"></asp:TextBox>
                                                                 </td>
                                                                 <td>
                                                                     <asp:TextBox ID="txtCost" Width="100px" runat="server" Enabled="false" Text="0"></asp:TextBox>

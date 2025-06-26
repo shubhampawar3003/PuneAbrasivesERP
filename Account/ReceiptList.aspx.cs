@@ -35,12 +35,24 @@ public partial class Account_ReceiptList : System.Web.UI.Page
 
     protected void GvBindList()
     {
-        DataTable dt = new DataTable();
-        SqlDataAdapter sad = new SqlDataAdapter("select * from tblReceiptHdr where isdeleted='0' order by Createddate DESC", con);
-        sad.Fill(dt);
-        GvRecipt.DataSource = dt;
-        GvRecipt.DataBind();
-        GvRecipt.EmptyDataText = "Record Not Found";
+        if (Session["Role"].ToString()=="Admin")
+        {
+            DataTable dt = new DataTable();
+            SqlDataAdapter sad = new SqlDataAdapter("select * from tblReceiptHdr where isdeleted='0' order by Createddate DESC", con);
+            sad.Fill(dt);
+            GvRecipt.DataSource = dt;
+            GvRecipt.DataBind();
+            GvRecipt.EmptyDataText = "Record Not Found";
+        }
+        else
+        {
+            DataTable dt = new DataTable();
+            SqlDataAdapter sad = new SqlDataAdapter("select * from tblReceiptHdr where isdeleted='0' AND CreatedBy='" + Session["Username"].ToString() +"' order by Createddate DESC", con);
+            sad.Fill(dt);
+            GvRecipt.DataSource = dt;
+            GvRecipt.DataBind();
+            GvRecipt.EmptyDataText = "Record Not Found";
+        }
     }
 
     [System.Web.Script.Services.ScriptMethod()]

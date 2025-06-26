@@ -1112,7 +1112,7 @@ public partial class Account_TaxInvoice : System.Web.UI.Page
         string previousyear = (Convert.ToDecimal(FinFullYear) - 1).ToString();
         string strInvoiceNumber = "";
         string fY = previousyear.ToString() + "-" + FinYear;
-        string strSelect = @"select ISNULL(MAX(InvoiceNo), '0') AS maxno from tblTaxInvoiceHdr where InvoiceNo like '%" + fY + "%'";
+        string strSelect = @"select ISNULL(MAX(InvoiceNo), '450') AS maxno from tblTaxInvoiceHdr where InvoiceNo like '%" + fY + "%'";
         // string strSelect = @"SELECT TOP 1 MAX(ID) FROM tblTaxInvoiceHdr where InvoiceNo like '%" + fY + "%' ";
 
         SqlCommand cmd = new SqlCommand();

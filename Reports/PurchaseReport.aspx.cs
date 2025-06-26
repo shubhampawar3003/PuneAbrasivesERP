@@ -38,7 +38,6 @@ public partial class Reports_PurchaseReport : System.Web.UI.Page
             SqlCommand cmd = new SqlCommand("SP_Reports", con);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@Action", "GetPurchaseReportlist");
-
             cmd.Parameters.AddWithValue("@CompanyName", txtCustomerName.Text);
             cmd.Parameters.AddWithValue("@FromDate", txtfromdate.Text);
             cmd.Parameters.AddWithValue("@ToDate", txttodate.Text);

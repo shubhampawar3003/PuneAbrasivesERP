@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Debug="true" Language="C#" MasterPageFile="~/Admin/WLSPLMaster.master" EnableEventValidation="false" AutoEventWireup="true" CodeFile="PartyLedgerReport.aspx.cs" Inherits="Reports_PartyLedgerReport" %>
+﻿<%@ Page Title="" Debug="true" Language="C#" MasterPageFile="~/Admin/WLSPLMaster.master" EnableEventValidation="false" AutoEventWireup="true" CodeFile="TallyReports.aspx.cs" Inherits="Reports_TallyReports" %>
 
 <%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
@@ -151,7 +151,7 @@
                     <div class="card-header bg-black text-uppercase text-white">
                         <div class="row">
                             <div class="col-md-4">
-                                <h5>Party Ledger Report</h5>
+                                <h5>Tally Import Report</h5>
                             </div>
                         </div>
                     </div>
@@ -159,18 +159,11 @@
                         <div class="col-xl-12 col-md-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <%--<div class="row" style="margin-left: -12px;">
-                                        <asp:HiddenField ID="hiddenopening" runat="server" />
-                                        <asp:HiddenField ID="HiddenClosing" runat="server" />
-                                         <div class="col-xl-1 col-md-1 spancls">Type<i class="reqcls">&nbsp;</i> :</div>
-                                        <div class="col-xl-2 col-md-2 spancls" style="margin-left: 177px;">Party Name<i class="reqcls">&nbsp;</i> :</div>
-                                        <div class="col-xl-2 col-md-2 spancls" style="margin-left: 87px;">From Date<i class="reqcls">&nbsp;</i> :</div>
-                                        <div class="col-xl-2 col-md-2 spancls" style="margin-left: 92px;">To Date<i class="reqcls">&nbsp;</i> :</div>
-                                    </div>--%>
+
                                     <div class="row">
                                         <div class="col-xl-3 col-md-3">
                                             <asp:Label ID="lblcutomername" runat="server" Font-Bold="true">Customer Name :</asp:Label>
-                                            <asp:TextBox ID="txtPartyName" runat="server" CssClass="form-control" OnTextChanged="txtPartyName_TextChanged" placeholder="Customer Name" Width="100%" AutoPostBack="true"></asp:TextBox>
+                                            <asp:TextBox ID="txtPartyName" runat="server" CssClass="form-control" placeholder="Customer Name" Width="100%"></asp:TextBox>
                                             <asp:AutoCompleteExtender ID="AutoCompleteExtender1" runat="server" CompletionListCssClass="completionList"
                                                 CompletionListHighlightedItemCssClass="itemHighlighted" CompletionListItemCssClass="listItem"
                                                 CompletionInterval="10" MinimumPrefixLength="1" ServiceMethod="GetCustomerList"
@@ -194,19 +187,22 @@
 
                                         </div>
                                         <div class="col-xl-3 col-md-3" style="margin-top: auto">
-                                            <asp:Button ID="btnSearch" runat="server" CssClass="btn btn-info" Text="Search" OnClick="btnSearch_Click" />
-                                            <asp:Button ID="btnresetfilter" CssClass="btn btn-danger" runat="server" Text="Reset" OnClick="btnresetfilter_Click" />
                                         </div>
                                     </div>
                                     <br />
                                     <div class="row" id="btn" runat="server">
-                                        <div class="col-xl-6 col-md-6">
-                                            <asp:Button ID="btnexcel" runat="server" ValidationGroup="form1" CssClass="btn btn-success" Text="Excel" OnClick="ExportExcel" />
-                                            <asp:Button ID="btnpdf" runat="server" ValidationGroup="form1" CssClass="btn btn-success" Text="PDF" OnClick="btnpdf_Click" />
-                                            <asp:Button ID="btnxml" runat="server" ValidationGroup="form1" CssClass="btn btn-success" Text="Tally Report" OnClick="btnpdf_Click1" />
+                                        <div class="col-xl-12 col-md-12">
+                                            <asp:Button ID="btnGroup" runat="server" CssClass="btn btn-success" Text="Group" CommandName="Group" OnClick="btnpdf_Click1" />
+                                            <asp:Button ID="btnCostCategory" runat="server" CssClass="btn btn-success" Text="Cost Category" CommandName="CostCategory" OnClick="btnpdf_Click1" />
+                                            <asp:Button ID="btnCostCenter" runat="server" CssClass="btn btn-success" Text="Cost Center" CommandName="CostCenter" OnClick="btnpdf_Click1" />
+                                            <asp:Button ID="btnStockGroup" runat="server" CssClass="btn btn-success" Text="Stock Group" CommandName="StockGroup" OnClick="btnpdf_Click1" />
+                                            <asp:Button ID="btnUnit" runat="server" CssClass="btn btn-success" Text="Unit" CommandName="Unit" OnClick="btnpdf_Click1" />
+                                            <asp:Button ID="btnStockItem" runat="server" CssClass="btn btn-success" Text="Stock Item" CommandName="StockItem" OnClick="btnpdf_Click1" />
+                                            <asp:Button ID="btnLedger" runat="server" CssClass="btn btn-success" Text="Ledger" CommandName="Ledger" OnClick="btnpdf_Click1" />
+                                            <asp:Button ID="btnAccountingVoucher" runat="server" CssClass="btn btn-success" Text="Accounting Voucher" CommandName="AccountingVoucher" OnClick="btnpdf_Click1" />
 
                                         </div>
-                                        <div class="col-xl-4 col-md-4"></div>
+                                     
                                     </div>
                                 </div>
 
@@ -215,89 +211,9 @@
                     </div>
                 </div>
             </div>
-            <div class="container-fluid">
-                <div class="col-md-12" style="padding: 0px; margin-top: 5px;">
-
-                    <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #ccc;">
-
-                        <asp:GridView ID="GVfollowup" runat="server" CellPadding="4" Font-Names="Verdana" ShowFooter="true"
-                            Font-Size="12pt" Width="100%"
-                            GridLines="Both" PageSize="100000" AllowPaging="true" CssClass="grivdiv pagination-ys" AutoGenerateColumns="false"
-                            OnRowDataBound="GVfollowup_RowDataBound">
-                            <Columns>
-                                <asp:TemplateField HeaderText="Sr. No." HeaderStyle-CssClass="gvhead">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblSrNo" runat="server" Text='<%# Container.DataItemIndex + 1 %>'></asp:Label>
-                                    </ItemTemplate>
-                                    <FooterTemplate>
-                                        <asp:Label runat="server" />
-                                    </FooterTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Type" HeaderStyle-CssClass="gvhead">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblType" runat="server" Text='<%#Eval("Type")%>'></asp:Label>
-                                    </ItemTemplate>
-                                    <FooterTemplate>
-                                    </FooterTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Doc No." HeaderStyle-CssClass="gvhead">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblDocNo" runat="server" Text='<%#Eval("DocNo")%>'></asp:Label>
-                                    </ItemTemplate>
-                                    <FooterTemplate>
-                                    </FooterTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Date" HeaderStyle-CssClass="gvhead">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblDate" runat="server" Text='<%#Eval("CDate")%>'></asp:Label>
-                                    </ItemTemplate>
-                                    <FooterTemplate>
-                                    </FooterTemplate>
-                                </asp:TemplateField>
-
-                                <asp:TemplateField HeaderText="Particulers" HeaderStyle-CssClass="gvhead">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblParticulers" runat="server" Text='<%#Eval("Particulars")%>'></asp:Label>
-                                    </ItemTemplate>
-                                    <FooterTemplate>
-                                        <asp:Label runat="server" Text="Total:" />
-                                    </FooterTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Debit" HeaderStyle-CssClass="gvhead">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblDebit" runat="server" Text='<%#Eval("Debit")%>'></asp:Label>
-                                    </ItemTemplate>
-                                    <FooterTemplate>
-                                        <asp:Label ID="lblTotalDebit" runat="server" />
-                                    </FooterTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Credit" HeaderStyle-CssClass="gvhead">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblCredit" runat="server" Text='<%#Eval("Credit")%>'></asp:Label>
-                                    </ItemTemplate>
-                                    <FooterTemplate>
-                                        <asp:Label ID="lblTotalCredit" runat="server" />
-                                    </FooterTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Balance" HeaderStyle-CssClass="gvhead">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblBalance" runat="server" Text='<%#Eval("Balance")%>'></asp:Label>
-                                    </ItemTemplate>
-                                    <FooterTemplate>
-                                        <asp:Label ID="lblTotalBalance" runat="server" />
-                                    </FooterTemplate>
-                                </asp:TemplateField>
-
-                            </Columns>
-                            <FooterStyle Font-Bold="True" ForeColor="Yellow" HorizontalAlign="Center" />
-
-                        </asp:GridView>
-                    </div>
-                </div>
-        </div>
-        <div class="col-md-12" style="padding: 20px; margin-top: 5px;">
-            <iframe id="ifrRight6" runat="server" enableviewstate="false" style="width: 100%; -ms-zoom: 0.75; height: 685px;"></iframe>
-        </div>
+            <div class="col-md-12" style="padding: 20px; margin-top: 5px;">
+                <iframe id="ifrRight6" runat="server" enableviewstate="false" style="width: 100%; -ms-zoom: 0.75; height: 685px;"></iframe>
+            </div>
         </div>
     </div>
     <%-- <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>--%>

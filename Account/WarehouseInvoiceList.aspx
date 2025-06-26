@@ -4,7 +4,11 @@
 <%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="../Content/css/Griddiv.css" rel="stylesheet" />
-
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.body.classList.add('sb-sidenav-toggled');
+        });
+    </script>
     <style>
         .spancls {
             color: #5d5656 !important;
@@ -22,7 +26,7 @@
         .card .card-header span {
             color: #060606;
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             margin-top: 5px;
         }
 
@@ -192,7 +196,116 @@
             }
         };
     </script>
+    <style>
+        .modelprofile1 {
+            background-color: rgba(0, 0, 0, 0.54);
+            display: block;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            /*top: 10px;*/
+            height: 100%;
+            overflow: auto;
+            width: 100%;
+            margin-bottom: 25px;
+        }
 
+        .profilemodel2 {
+            background-color: #fefefe;
+            margin-top: 25px;
+            /*padding: 17px 5px 18px 22px;*/
+            padding: 0px 0px 15px 0px;
+            width: 100%;
+            top: 40px;
+            color: #000;
+            border-radius: 5px;
+        }
+
+        .lblpopup {
+            text-align: left;
+        }
+
+        .wp-block-separator:not(.is-style-wide):not(.is-style-dots)::before, hr:not(.is-style-wide):not(.is-style-dots)::before {
+            content: '';
+            display: block;
+            height: 1px;
+            width: 100%;
+            background: #cccccc;
+        }
+
+        .btnclose {
+            background-color: #ef1e24;
+            float: right;
+            font-size: 18px !important;
+            /* font-weight: 600; */
+            color: #f7f6f6 !important;
+            border: 0px groove !important;
+            background-color: none !important;
+            /*margin-right: 10px !important;*/
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        /*hr {
+          margin-top: 5px !important;
+          margin-bottom: 15px !important;
+          border: 1px solid #eae6e6 !important;
+          width: 100%;
+      }*/
+        hr.new1 {
+            border-top: 1px dashed green !important;
+            border: 0;
+            margin-top: 5px !important;
+            margin-bottom: 5px !important;
+            width: 100%;
+        }
+
+        .errspan {
+            float: right;
+            margin-right: 6px;
+            margin-top: -25px;
+            position: relative;
+            z-index: 2;
+            color: black;
+        }
+
+        .currentlbl {
+            text-align: center !important;
+        }
+
+        .completionList {
+            border: solid 1px Gray;
+            border-radius: 5px;
+            margin: 0px;
+            padding: 3px;
+            height: 120px;
+            overflow: auto;
+            background-color: #FFFFFF;
+        }
+
+        .listItem {
+            color: #191919;
+        }
+
+        .itemHighlighted {
+            background-color: #ADD6FF;
+        }
+
+        .headingcls {
+            background-color: #01a9ac;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px 5px 0px 0px;
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1250px !important;
+            }
+        }
+    </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <asp:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server"></asp:ToolkitScriptManager>
@@ -202,27 +315,26 @@
                 <div class="loader"></div>
             </div>
 
-
-
-            <div class="container-fluid px-4">
+            <div class="container-fluid">
                 <div class="card-header text-uppercase text-black">
-
-                    <div class="row">
-                        <br />
-                        <div class="col-8 col-md-8">
-                            <h4 class="mt-4 ">WareHouse Invoice List</h4>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h4 class="mt-4">WareHouse Invoice List</h4>
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-2">
+                                <asp:Button ID="btnDownloadList" Style="margin-top: 24px; width: 110px" CssClass="form-control btn btn-success" Font-Bold="true" runat="server" Text="Components" OnClientClick="showLoader();" OnClick="btnDownloadList_Click" />
+                            </div>
+                            <div class="col-md-2">
+                                <asp:Button ID="Button2" Style="margin-top: 24px; width: 130px" CssClass="form-control btn btn-success" Font-Bold="true" runat="server" Text="Add E-Invoice" OnClientClick="showLoader();" OnClick="Button2_Click" />
+                            </div>
                         </div>
-                        <div class="col-2 col-md-2">
-                            <asp:Button ID="btnDownloadList" CssClass="form-control btn btn-success" Font-Bold="true" runat="server" Text="Component List" OnClientClick="showLoader();" OnClick="btnDownloadList_Click" />
-                        </div>
-                        <div class="col-2 col-md-2">
-                            <asp:Button ID="Button2" CssClass="form-control btn btn-success" Font-Bold="true" runat="server" Text="Add E-Invoice" OnClientClick="showLoader();" OnClick="Button2_Click" />
-                        </div>
-
                     </div>
                 </div>
             </div>
-            <div class="container-fluid px-4">
+            <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-3">
                         <div style="margin-top: 14px;">
@@ -250,21 +362,21 @@
                             <asp:TextBox ID="txttodate" CssClass="form-control" runat="server" TextMode="Date" Width="100%"></asp:TextBox>
                         </div>
                     </div>
-                    <div class="col-md-3" style="margin-top: 32px">
-                        <asp:Button ID="btnSearchData" CssClass="btn btn-primary" OnClick="btnSearchData_Click" runat="server" Text="Search" Style="padding: 8px;" />
-                        <asp:Button ID="btnresetfilter" OnClick="btnresetfilter_Click" CssClass="btn btn-danger" runat="server" Text="Reset" Style="padding: 8px;" />
+                    <div class="col-md-3">
+                        <asp:Button ID="btnSearchData" CssClass="btn btn-primary" Style="margin-top: 32px" OnClick="btnSearchData_Click" runat="server" Text="Search" />
+                        <asp:Button ID="btnresetfilter" OnClick="btnresetfilter_Click" Style="margin-top: 32px" CssClass="btn btn-danger" runat="server" Text="Reset" />
 
                     </div>
                 </div>
-
-
             </div>
+            <br />
             <div class="container-fluid">
-
-
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div style="flex-grow: 1;">
-                        <!-- Left empty for future content if needed -->
+                        <asp:Label ID="lblsno" runat="server"><span style="color:red;font-weight:bold">Note:</span>1) Light Sky Blue color rows show outward edit request Pending.
+                        </asp:Label>&nbsp;&nbsp;
+                        <asp:Label ID="Label1" runat="server">2) Light green color rows show outward edit request Approved.
+                        </asp:Label>
                     </div>
                     <div class="col-md-1" style="text-align: right;">
                         <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
@@ -274,7 +386,7 @@
                         </asp:DropDownList>
                     </div>
                 </div>
-                <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #ccc;">
+                <div style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #ccc;">
 
                     <asp:GridView ID="GVInvoice" runat="server" CellPadding="4" DataKeyNames="Id" PageSize="500" AllowPaging="true" Width="100%" OnRowDataBound="GVInvoice_RowDataBound"
                         CssClass="grivdiv pagination-ys" OnRowCommand="GVInvoice_RowCommand" AutoGenerateColumns="false" OnPageIndexChanging="GVInvoice_PageIndexChanging">
@@ -357,5 +469,59 @@
             <asp:PostBackTrigger ControlID="GVInvoice" />
         </Triggers>
     </asp:UpdatePanel>
+
+    <asp:Button ID="btnhist" runat="server" Style="display: none" />
+    <asp:ModalPopupExtender ID="ModalPopupHistory" runat="server" TargetControlID="btnhist"
+        PopupControlID="PopupHistoryDetail" OkControlID="Closepophistory" />
+
+    <asp:Panel ID="PopupHistoryDetail" runat="server" CssClass="modelprofile1">
+        <div class="row container">
+            <div class="col-md-6"></div>
+            <div class="col-md-6">
+                <div class="profilemodel2">
+                    <div class="headingcls">
+                        <h4 class="modal-title">COMPONENT EDIT REQUEST 
+                                  <button type="button" id="Closepophistory" class="btnclose" style="display: inline-block;" data-dismiss="modal">Close</button></h4>
+                    </div>
+
+                    <br />
+                    <div class="body" style="margin-right: 10px; margin-left: 10px; padding-right: 1px; padding-left: 1px;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <asp:Label CssClass="form-label" runat="server" Font-Bold="true">Company Name :</asp:Label>
+                                <asp:Label ID="lblcompanynamepop" CssClass="form-label" runat="server"></asp:Label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <asp:Label CssClass="form-label" runat="server" Font-Bold="true">Invoice No. :</asp:Label>
+                                <asp:Label ID="lblinvoicename" CssClass="form-label" runat="server"></asp:Label>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-12 mb-3">
+                                <asp:Label ID="Label3" Font-Bold="true" runat="server" CssClass="form-label LblStyle"> Remark  :</asp:Label>
+                                <asp:TextBox ID="txtremark" TextMode="MultiLine" CssClass="form-control" placeholder="Enter Remark" runat="server"></asp:TextBox>
+                                <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" Display="Dynamic" ErrorMessage="Please Enter Remark"
+                                    ControlToValidate="txtremark" ValidationGroup="2" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
+                            </div>
+                            <div class="col-md-4" style="margin-top: 18px">
+
+                                <asp:Button ID="btnsave" OnClick="btnsave_Click" ValidationGroup="2" ToolTip="Save & Send" CssClass="form-control btn btn-outline-success m-2" runat="server" Text="Save & Send" />
+
+
+                            </div>
+                            <div class="col-md-12">
+                                <span style="color: red">Note: Click on save & send button Request send to Admin.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </asp:Panel>
 </asp:Content>
 

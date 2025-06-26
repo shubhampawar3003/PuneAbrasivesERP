@@ -87,8 +87,10 @@ public partial class Account_ApprovedInvoiceList : System.Web.UI.Page
             if (e.CommandName == "Approve")
             {
                 Cls_Main.Conn_Open();
-                SqlCommand Cmd = new SqlCommand("UPDATE [tblTaxInvoiceHdr] SET Status=@Status WHERE ID=@ID", Cls_Main.Conn);
+                SqlCommand Cmd = new SqlCommand("UPDATE [tblTaxInvoiceHdr] SET Status=@Status,UpdatedBy=@UpdatedBy,UpdatedOn=@UpdatedOn WHERE ID=@ID", Cls_Main.Conn);
                 Cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(e.CommandArgument.ToString()));
+                Cmd.Parameters.AddWithValue("@UpdatedBy", Session["UserCode"].ToString());
+                Cmd.Parameters.AddWithValue("@UpdatedOn", DateTime.Now);
                 Cmd.Parameters.AddWithValue("@Status", '2');
                 Cmd.ExecuteNonQuery();
                 Cls_Main.Conn_Close();
@@ -172,8 +174,10 @@ public partial class Account_ApprovedInvoiceList : System.Web.UI.Page
             if (e.CommandName == "RowCancel")
             {
                 Cls_Main.Conn_Open();
-                SqlCommand Cmd = new SqlCommand("UPDATE [tblTaxInvoiceHdr] SET e_invoice_cancel_status=@Status,e_invoice_cancel_date=@Date WHERE ID=@ID", Cls_Main.Conn);
+                SqlCommand Cmd = new SqlCommand("UPDATE [tblTaxInvoiceHdr] SET e_invoice_cancel_status=@Status,e_invoice_cancel_date=@Date,UpdatedBy=@UpdatedBy,UpdatedOn=@UpdatedOn WHERE ID=@ID", Cls_Main.Conn);
                 Cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(e.CommandArgument.ToString()));
+                Cmd.Parameters.AddWithValue("@UpdatedBy", Session["UserCode"].ToString());
+                Cmd.Parameters.AddWithValue("@UpdatedOn", DateTime.Now);
                 Cmd.Parameters.AddWithValue("@Date", DateTime.Now);
                 Cmd.Parameters.AddWithValue("@Status", 1);
                 Cmd.ExecuteNonQuery();

@@ -31,15 +31,51 @@ public partial class Reports_SalesReport : System.Web.UI.Page
         }
     }
 
+    protected string isTaxInvoiceChecked=string.Empty;
+    protected string isEInvoiceChecked = string.Empty;
+    protected string isCancelEInvoiceChecked = string.Empty;
+    protected string isEWayBillChecked = string.Empty;
+    protected string isCancelEWayBillChecked = string.Empty;
+    public void IsChecked()
+    {
+        if (CheckBox1.Checked)
+        {
+            isTaxInvoiceChecked = "TaxInvoice";
+        }
+        if (CheckBox2.Checked)
+        {
+            isEInvoiceChecked = "EInvoice";
+        }
+        if (CheckBox3.Checked)
+        {
+            isCancelEInvoiceChecked = "CancelEInvoice";
+        }
+        if (CheckBox4.Checked)
+        {
+            isEWayBillChecked = "EWayBill";
+        }
+        if (CheckBox5.Checked)
+        {
+            isCancelEWayBillChecked = "CancelEWayBill";
+        }
+    }
+
     void GridView()
     {
         try
         {
+            IsChecked();
             SqlCommand cmd = new SqlCommand("SP_Reports", con);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@Action", "GetSalesReportNew");
             cmd.Parameters.AddWithValue("@CompanyName", txtCustomerName.Text);
-            cmd.Parameters.AddWithValue("@Status", ddlStatus.SelectedItem.Text);
+
+            cmd.Parameters.AddWithValue("@IsTaxInvoiceChecked", isTaxInvoiceChecked);
+            cmd.Parameters.AddWithValue("@IsEInvoiceChecked", isEInvoiceChecked);
+            cmd.Parameters.AddWithValue("@IsCancelEInvoiceChecked", isCancelEInvoiceChecked);
+            cmd.Parameters.AddWithValue("@IsEWayBillChecked", isEWayBillChecked);
+            cmd.Parameters.AddWithValue("@IsCancelEWayBillChecked", isCancelEWayBillChecked);
+
             cmd.Parameters.AddWithValue("@FromDate", txtfromdate.Text);
             cmd.Parameters.AddWithValue("@ToDate", txttodate.Text);
             SqlDataAdapter sda = new SqlDataAdapter(cmd);
@@ -62,11 +98,9 @@ public partial class Reports_SalesReport : System.Web.UI.Page
             //throw ex;
             string errorMsg = "An error occurred : " + ex.Message;
             ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('" + errorMsg + "') ", true);
-            //ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('" + errorMsg + "') ", true);
+           
         }
     }
-    
-
     protected void btnSearchData_Click(object sender, EventArgs e)
     {
         GridView();
@@ -91,6 +125,7 @@ public partial class Reports_SalesReport : System.Web.UI.Page
     {
         try
         {
+            IsChecked();
             DataSet Dtt = new DataSet();
             string strConnString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
             using (SqlConnection con = new SqlConnection(strConnString))
@@ -100,7 +135,11 @@ public partial class Reports_SalesReport : System.Web.UI.Page
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@Action", "GetSalesReportNew");
                     cmd.Parameters.AddWithValue("@CompanyName", txtCustomerName.Text);
-                    cmd.Parameters.AddWithValue("@Status", ddlStatus.SelectedItem.Text);
+                    cmd.Parameters.AddWithValue("@IsTaxInvoiceChecked", isTaxInvoiceChecked);
+                    cmd.Parameters.AddWithValue("@IsEInvoiceChecked", isEInvoiceChecked);
+                    cmd.Parameters.AddWithValue("@IsCancelEInvoiceChecked", isCancelEInvoiceChecked);
+                    cmd.Parameters.AddWithValue("@IsEWayBillChecked", isEWayBillChecked);
+                    cmd.Parameters.AddWithValue("@IsCancelEWayBillChecked", isCancelEWayBillChecked);
                     cmd.Parameters.AddWithValue("@FromDate", txtfromdate.Text);
                     cmd.Parameters.AddWithValue("@ToDate", txttodate.Text);
                     using (SqlDataAdapter sda = new SqlDataAdapter())
@@ -304,6 +343,11 @@ public partial class Reports_SalesReport : System.Web.UI.Page
     }
 
     protected void ddlStatus_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        GridView();
+    }
+
+    protected void CheckBox_CheckedChanged(object sender, EventArgs e)
     {
         GridView();
     }

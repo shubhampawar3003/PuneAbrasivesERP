@@ -6,7 +6,11 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="../Content/css/Griddiv.css" rel="stylesheet" />
-
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.body.classList.add('sb-sidenav-toggled');
+        });
+    </script>
     <style>
         .spancls {
             color: #5d5656 !important;
@@ -249,7 +253,7 @@
                 </div>
 
             </div>
-          
+
             <div class="row">
                 <asp:Repeater runat="server" ID="rptsales">
                     <ItemTemplate>

@@ -1,30 +1,11 @@
-﻿using System;
+﻿using Microsoft.Reporting.WebForms;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Configuration;
-using System.Text;
-using System.Security.Cryptography;
-using System.IO;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using ClosedXML.Excel;
-using System.Globalization;
-using Spire.Pdf;
-using Spire.Pdf.Texts;
-using iTextSharp.text.pdf.parser;
-using iTextSharp.tool.xml.html.table;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Font = iTextSharp.text.Font;
-using DocumentFormat.OpenXml;
-using iTextSharp.tool.xml;
-using Spire.Pdf.Conversion;
-using Microsoft.Reporting.WebForms;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
 public partial class Repoerts_OutstandingReport : System.Web.UI.Page
 {
@@ -94,16 +75,16 @@ public partial class Repoerts_OutstandingReport : System.Web.UI.Page
             AutoCompleteExtender1.Enabled = true;
             txtPartyName.Text = string.Empty;
             GetCustomerList(txtPartyName.Text, count);
-            // AutoCompleteExtender2.Enabled = false;
-
+             AutoCompleteExtender2.Enabled = false;
+            
         }
         else if (ddltype.Text == "PURCHASE")
         {
-            // AutoCompleteExtender2.Enabled = true;
+             AutoCompleteExtender2.Enabled = true;
             txtPartyName.Text = string.Empty;
             GetSupplierList(txtPartyName.Text, count);
             AutoCompleteExtender1.Enabled = false;
-
+           
         }
     }
     [System.Web.Script.Services.ScriptMethod()]
@@ -353,10 +334,30 @@ public partial class Repoerts_OutstandingReport : System.Web.UI.Page
                 if (row.RowType == DataControlRowType.DataRow)
                 {
                     // Calculate the total for each column
-                    totalPayable += Convert.ToDecimal((row.FindControl("lblPayable") as Label).Text);
-                    totalReceived += Convert.ToDecimal((row.FindControl("lblReceived") as Label).Text);
-                    totalBalance += Convert.ToDecimal((row.FindControl("lblbalance") as Label).Text);
-                    totalCumBalance += Convert.ToDecimal((row.FindControl("lblCum_Balance") as Label).Text);
+                    Label lblPayable = row.FindControl("lblPayable") as Label;
+                    if (lblPayable != null && !string.IsNullOrWhiteSpace(lblPayable.Text))
+                    {
+                        totalPayable += Convert.ToDecimal(lblPayable.Text);
+                    }
+
+                    Label lblReceived = row.FindControl("lblReceived") as Label;
+                    if (lblReceived != null && !string.IsNullOrWhiteSpace(lblReceived.Text))
+                    {
+                        totalReceived += Convert.ToDecimal(lblReceived.Text);
+                    }
+
+                    Label lblBalance = row.FindControl("lblbalance") as Label;
+                    if (lblBalance != null && !string.IsNullOrWhiteSpace(lblBalance.Text))
+                    {
+                        totalBalance += Convert.ToDecimal(lblBalance.Text);
+                    }
+
+                    Label lblCumBalance = row.FindControl("lblCum_Balance") as Label;
+                    if (lblCumBalance != null && !string.IsNullOrWhiteSpace(lblCumBalance.Text))
+                    {
+                        totalCumBalance += Convert.ToDecimal(lblCumBalance.Text);
+                    }
+
 
                 }
             }

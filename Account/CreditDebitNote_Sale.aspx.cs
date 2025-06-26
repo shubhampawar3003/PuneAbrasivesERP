@@ -964,7 +964,7 @@ public partial class Account_CreditDebitNote : System.Web.UI.Page
             using (SqlCommand com = new SqlCommand())
             {
                 //com.CommandText = "Select DISTINCT [SupplierName] from tblSupplierMaster where " + "SupplierName like @Search + '%'";
-                com.CommandText = "Select DISTINCT [billingcustomer] from tbltaxinvoicehdr where " + "billingcustomer like @Search + '%'";
+                com.CommandText = "Select DISTINCT [billingcustomer] from tbltaxinvoicehdr where billingcustomer like  @Search + '%'";
 
                 com.Parameters.AddWithValue("@Search", prefixText);
                 com.Connection = con;
@@ -2335,7 +2335,7 @@ public partial class Account_CreditDebitNote : System.Web.UI.Page
             txtshortShippingaddress.Text = dt.Rows[0]["ShippingAddress1"].ToString();
             txtshippingPincode.Text = dt.Rows[0]["ShipPincode"].ToString();
             txtshippingstatecode.Text = dt.Rows[0]["ShipStatecode"].ToString();
-            txtshippingGST.Text = dt.Rows[0]["GSTNo"].ToString();
+            txtshippingGST.Text = dt.Rows[0]["GSTNo1"].ToString();
 
         }
     }

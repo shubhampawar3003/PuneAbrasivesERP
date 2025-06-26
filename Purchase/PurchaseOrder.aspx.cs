@@ -35,41 +35,41 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
         {
             if (!IsPostBack)
             {
-                //fillddlpaymentterm();
                 fillddlUnit();
                 FillddlComponent();
-                //BindParticular();
-                //fillddlFooter();
-                //txtPodate.Text = DateTime.Today.ToString("dd-MM-yyyy");
                 UpdateHistorymsg = string.Empty; regdate = string.Empty;
-                if (Request.QueryString["ID"] != null)
-                {
-                    ViewState["RowNo"] = 0;
-                    dt.Columns.AddRange(new DataColumn[16] { new DataColumn("id"),
-                 new DataColumn("Particulars"), new DataColumn("HSN")
+                ViewState["RowNo"] = 0;
+                dt.Columns.AddRange(new DataColumn[17] { new DataColumn("id"),
+                 new DataColumn("Particulars"), new DataColumn("Product"),new DataColumn("HSN")
                 , new DataColumn("Qty"), new DataColumn("Rate"),new DataColumn("Discount"), new DataColumn("Amount"),
                     new DataColumn("CGSTPer"),new DataColumn("CGSTAmt"),new DataColumn("SGSTPer")
                     ,new DataColumn("SGSTAmt"),new DataColumn("IGSTPer"),new DataColumn("IGSTAmt"),new DataColumn("TotalAmount"),new DataColumn("Description"),new DataColumn("UOM")
             });
 
-                    ViewState["ParticularDetails"] = dt;
+                ViewState["ParticularDetails"] = dt;
+                if (Request.QueryString["ID"] != null)
+                {
 
-                    ViewState["UpdateRowId"] = Decrypt(Request.QueryString["ID"].ToString());
-                    GetPurchaseOrderData(ViewState["UpdateRowId"].ToString());
+                    string action = Request.QueryString["Action"].ToString();
+                    if (action == "OLD")
+                    {
+                        ViewState["UpdateRowId"] = Decrypt(Request.QueryString["ID"].ToString());
+                        GetPurchaseOrderData(ViewState["UpdateRowId"].ToString());
+                        sName = txtSupplierName.Text;
+                        divcheckamend.Visible = true;
+                    }
+                    else if (action == "NEW")
+                    {
+                        ViewState["UpdateRowId"] = Decrypt(Request.QueryString["ID"].ToString());
+                        GetPurchaseOrderData(ViewState["UpdateRowId"].ToString());
+                        sName = txtSupplierName.Text;
+                        divcheckamend.Visible = false;
+                    }
 
-                    sName = txtSupplierName.Text;
                 }
                 else
                 {
-                    ViewState["RowNo"] = 0;
-                    dt.Columns.AddRange(new DataColumn[16] { new DataColumn("id"),
-                 new DataColumn("Particulars"), new DataColumn("HSN")
-                , new DataColumn("Qty"), new DataColumn("Rate"),new DataColumn("Discount"), new DataColumn("Amount"),
-                    new DataColumn("CGSTPer"),new DataColumn("CGSTAmt"),new DataColumn("SGSTPer")
-                    ,new DataColumn("SGSTAmt"),new DataColumn("IGSTPer"),new DataColumn("IGSTAmt"),new DataColumn("TotalAmount"),new DataColumn("Description"),new DataColumn("UOM")
-            });
-                    ViewState["ParticularDetails"] = dt;
-                    //txtPONo.Text = GenerateComCode();
+                    divcheckamend.Visible = false;
                     txtPONo.Text = Code();
                 }
             }
@@ -179,9 +179,8 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
 
             BindKindAtt();
             BindEmailId();
-
-            ddlKindAtt.Text = dt.Rows[0]["KindAtt"].ToString();
             txtPONo.Text = dt.Rows[0]["PONo"].ToString();
+            ddlKindAtt.Text = dt.Rows[0]["KindAtt"].ToString();
             txtPodate.Text = dt.Rows[0]["PODate"].ToString();
             ddlMode.Text = dt.Rows[0]["Mode"].ToString();
             txtDeliverydate.Text = dt.Rows[0]["DeliveryDate"].ToString();
@@ -223,15 +222,31 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
             txtDeliveryTime.Text = dt.Rows[0]["DeliveryTime"].ToString();
             txtPacking.Text = dt.Rows[0]["Packing"].ToString();
             txtTaxs.Text = dt.Rows[0]["Taxs"].ToString();
-            btnadd.Text = "Update PO";
+
         }
     }
 
     protected void getParticularsdts(string id)
     {
-
         DataTable Dtproduct = new DataTable();
-        SqlDataAdapter daa = new SqlDataAdapter("select * from tblPurchaseOrderDtls where HeaderID='" + id + "'", con);
+        SqlDataAdapter daa = new SqlDataAdapter(@"SELECT  [Id]
+      ,[Particulars]
+      ,[Product]
+      ,[HSN]
+      ,[Qty]
+      ,[Rate]
+      ,[Amount]
+      ,[CGSTPer]
+      ,[CGSTAmt]
+      ,[SGSTPer]
+      ,[SGSTAmt]
+      ,[IGSTPer]
+      ,[IGSTAmt]
+      ,[GrandTotal]
+      ,[Description]
+      ,[Discount]
+      ,[UOM]
+  FROM [tblPurchaseOrderDtls] where HeaderID='" + id + "'", con);
         daa.Fill(Dtproduct);
         ViewState["RowNo"] = (int)ViewState["RowNo"] + 1;
 
@@ -241,7 +256,7 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
         {
             for (int i = 0; i < Dtproduct.Rows.Count; i++)
             {
-                dt.Rows.Add(ViewState["RowNo"], Dtproduct.Rows[i]["Particulars"].ToString(), Dtproduct.Rows[i]["HSN"].ToString(), Dtproduct.Rows[i]["Qty"].ToString(),
+                dt.Rows.Add(ViewState["RowNo"], Dtproduct.Rows[i]["Particulars"].ToString(), Dtproduct.Rows[i]["Product"].ToString(), Dtproduct.Rows[i]["HSN"].ToString(), Dtproduct.Rows[i]["Qty"].ToString(),
                     Dtproduct.Rows[i]["Rate"].ToString(), Dtproduct.Rows[i]["Discount"].ToString(), Dtproduct.Rows[i]["Amount"].ToString(), Dtproduct.Rows[i]["CGSTPer"].ToString(), Dtproduct.Rows[i]["CGSTAmt"].ToString(),
                     Dtproduct.Rows[i]["SGSTPer"].ToString(), Dtproduct.Rows[i]["SGSTAmt"].ToString(), Dtproduct.Rows[i]["IGSTPer"].ToString(), Dtproduct.Rows[i]["IGSTAmt"].ToString(),
                     Dtproduct.Rows[i]["GrandTotal"].ToString(), Dtproduct.Rows[i]["Description"].ToString(), Dtproduct.Rows[i]["UOM"].ToString());
@@ -344,10 +359,17 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
         string previousyear = (Convert.ToDecimal(FinFullYear) - 1).ToString();
         string strInvoiceNumber = "";
         string fY = previousyear.ToString() + "-" + FinYear;
-        string strSelect = @"select ISNULL(MAX(PONo), '') AS maxno from tblPurchaseOrderHdr where PONo like '%" + fY + "%'";
+        string strSelect = @"SELECT TOP 1
+    LEFT(
+        SUBSTRING(PONo, CHARINDEX('/', PONo) + 1, LEN(PONo)),
+        PATINDEX('%[^0-9]%', SUBSTRING(PONo, CHARINDEX('/', PONo) + 1, LEN(PONo) + 1)) - 1
+    ) AS maxno
+FROM tblPurchaseOrderHdr
+WHERE CHARINDEX('/', PONo) > 0 AND  PONo like  '%" + fY + "%' order by id desc";
         // string strSelect = @"SELECT TOP 1 ISNULL(MAX(PONo), '') AS maxno FROM tblPurchaseOrderHdr where PONo like '%" + fY + "%' ORDER BY ID DESC";
         SqlCommand cmd = new SqlCommand();
         cmd.Connection = con;
+
         cmd.CommandType = CommandType.Text;
         cmd.CommandText = strSelect;
         con.Open();
@@ -356,9 +378,9 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
         con.Close();
         if (result != "")
         {
-            int numbervalue = Convert.ToInt32(result.Substring(result.IndexOf("/") + 1, result.Length - (result.IndexOf("/") + 1)));
+            int numbervalue = Convert.ToInt32(result);
             numbervalue = numbervalue + 1;
-            strInvoiceNumber = result.Substring(0, result.IndexOf("/") + 1) + "" + numbervalue.ToString("00");
+            strInvoiceNumber = fY + "/" + result.Substring(0, result.IndexOf("/") + 1) + "" + numbervalue.ToString("00") + "-R0";
         }
         else
         {
@@ -367,291 +389,234 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
         return strInvoiceNumber;
     }
 
+    //Revised quotation number genrate
+    public static string Revicecode(string number)
+    {
+        string total = string.Empty;
+        string Lastresult = number.Substring(number.Length - 2);
+        string Firstresult = number.Substring(0, number.Length - 2);
+        if (Lastresult == "A0")
+        {
+            total = Firstresult + "A1";
+        }
+        if (Lastresult == "A1")
+        {
+            total = Firstresult + "A2";
+        }
+        if (Lastresult == "A2")
+        {
+            total = Firstresult + "A3";
+        }
+        if (Lastresult == "A3")
+        {
+            total = Firstresult + "A4";
+        }
+        if (Lastresult == "A4")
+        {
+            total = Firstresult + "A5";
+        }
+        if (Lastresult == "A5")
+        {
+            total = Firstresult + "A6";
+        }
+        if (Lastresult == "A6")
+        {
+            total = Firstresult + "A7";
+        }
+        return total;
+    }
+
     protected void btnadd_Click(object sender, EventArgs e)
     {
-        #region Insert
-        if (btnadd.Text == "Add PO")
+        try
         {
-            string PONo = Code();
-            if (!string.IsNullOrEmpty(PONo))
-            {
-                //byte[] bytes = null;
-                //if (UploadRefDocs.HasFile)
-                //{
-                //    string filename = Path.GetFileName(UploadRefDocs.PostedFile.FileName);
-                //    string contentType = UploadRefDocs.PostedFile.ContentType;
-                //    using (Stream fs = UploadRefDocs.PostedFile.InputStream)
-                //    {
-                //        using (BinaryReader br = new BinaryReader(fs))
-                //        {
-                //            bytes = br.ReadBytes((Int32)fs.Length);
-                //        }
-                //    }
-                //}
-                if (dgvParticularsDetails.Rows.Count > 0)
-                {
-                    SqlCommand cmd = new SqlCommand("SP_PurchaseOrder", con);
-                    cmd.Parameters.Clear();
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    cmd.Parameters.AddWithValue("@Action", "insert");
-                    cmd.Parameters.AddWithValue("@SupplierName", txtSupplierName.Text.Trim());
-                    cmd.Parameters.AddWithValue("@PONo", PONo);
-                    DateTime PODate = Convert.ToDateTime(txtPodate.Text.ToString(), System.Globalization.CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
-
-                    txtPodate.Text = PODate.ToString("yyyy-MM-dd");
-                    cmd.Parameters.AddWithValue("@PODate", txtPodate.Text);
-                    cmd.Parameters.AddWithValue("@Mode", ddlMode.Text.Trim());
-                    DateTime DeliveryDate = Convert.ToDateTime(txtDeliverydate.Text.ToString(), System.Globalization.CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
-                    txtDeliverydate.Text = DeliveryDate.ToString("yyyy-MM-dd");
-                    cmd.Parameters.AddWithValue("@DeliveryDate", txtDeliverydate.Text.Trim());
-                    cmd.Parameters.AddWithValue("@ReferQuotation", txtReferQuotation.Text.Trim());
-                    cmd.Parameters.AddWithValue("@Remarks", txtRemarks.Text.Trim());
-                    cmd.Parameters.AddWithValue("@OrderCloseMode", ddlOrderCloseMode.Text.Trim());
-                    cmd.Parameters.AddWithValue("@KindAtt", ddlKindAtt.Text.Trim());
-                    cmd.Parameters.AddWithValue("@Payment", txtPayment.Text);
-                    cmd.Parameters.AddWithValue("@Transport", txtTransport.Text);
-                    cmd.Parameters.AddWithValue("@DeliveryTime", txtDeliveryTime.Text);
-                    cmd.Parameters.AddWithValue("@Packing", txtPacking.Text);
-                    cmd.Parameters.AddWithValue("@Taxs", txtTaxs.Text);
-                    //cmd.Parameters.AddWithValue("@RefDocuments", bytes);
-                    //cmd.Parameters.AddWithValue("@PaymentTerm", ddlPaymentTerm.Text.Trim());
-                    //cmd.Parameters.AddWithValue("@PackingAndForwarding", ddlPackingAndForwarding.Text.Trim());
-                    //cmd.Parameters.AddWithValue("@Transportation", ddlTransportation.Text.Trim());
-                    //cmd.Parameters.AddWithValue("@Variation", ddlVariation.Text.Trim());
-                    //cmd.Parameters.AddWithValue("@Delivery", ddlDelivery.Text.Trim());
-                    //cmd.Parameters.AddWithValue("@TestCertificate", ddlTestCertificate.Text.Trim());
-                    //cmd.Parameters.AddWithValue("@WeeklyOff", ddlWeeklyOff.Text.Trim());
-                    //cmd.Parameters.AddWithValue("@Time", ddlTime.Text.Trim());
-                    //cmd.Parameters.AddWithValue("@II", ddlII.Text.Trim());
-                    cmd.Parameters.AddWithValue("@GrandTotal", hdnGrandtotal.Value);
-                    cmd.Parameters.AddWithValue("@CreatedBy", Session["Username"].ToString());
-
-                    //17 March 2022
-                    cmd.Parameters.AddWithValue("@TransportationCharges", txtTCharge.Text.Trim());
-                    cmd.Parameters.AddWithValue("@TransportationDescription", txtTDescription.Text.Trim());
-                    cmd.Parameters.AddWithValue("@TCGSTPer", txtTCGSTPer.Text.Trim());
-                    cmd.Parameters.AddWithValue("@TCGSTAmt", txtTCGSTamt.Text.Trim());
-                    cmd.Parameters.AddWithValue("@TSGSTPer", txtTSGSTPer.Text.Trim());
-                    cmd.Parameters.AddWithValue("@TSGSTAmt", txtTSGSTamt.Text.Trim());
-                    cmd.Parameters.AddWithValue("@TIGSTPer", txtTIGSTPer.Text.Trim());
-                    cmd.Parameters.AddWithValue("@TIGSTAmt", txtTIGSTamt.Text.Trim());
-                    cmd.Parameters.AddWithValue("@TotalCost", txtTCost.Text.Trim());
-                    int a = 0;
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-
-                    SqlCommand cmdmax = new SqlCommand("select MAX(Id) as MAxID from tblPurchaseOrderHdr", con);
-                    con.Open();
-                    Object mx = cmdmax.ExecuteScalar();
-                    con.Close();
-                    int MaxId = Convert.ToInt32(mx.ToString());
-
-
-                    foreach (GridViewRow row in dgvParticularsDetails.Rows)
-                    {
-                        string Particulars = ((Label)row.FindControl("lblParticulars")).Text;
-                        string HSN = ((Label)row.FindControl("lblHSN")).Text;
-                        string Qty = ((Label)row.FindControl("lblQty")).Text;
-                        string Rate = ((Label)row.FindControl("lblRate")).Text;
-                        string Discount = ((Label)row.FindControl("lblDiscount")).Text;
-                        string Amount = ((Label)row.FindControl("lblAmount")).Text;
-                        string CGSTPer = ((Label)row.FindControl("lblCGSTPer")).Text;
-                        string CGSTAmt = ((Label)row.FindControl("lblCGSTAmt")).Text;
-                        string SGSTPer = ((Label)row.FindControl("lblSGSTPer")).Text;
-                        string SGSTAmt = ((Label)row.FindControl("lblSGSTAmt")).Text;
-                        string IGSTPer = ((Label)row.FindControl("lblIGSTPer")).Text;
-                        string IGSTAmt = ((Label)row.FindControl("lblIGSTAmt")).Text;
-                        string TotalAmount = ((Label)row.FindControl("lblTotalAmount")).Text;
-                        string Description = ((Label)row.FindControl("lblDescription")).Text;
-                        string UOM = ((Label)row.FindControl("lblUOM")).Text;
-
-                        SqlCommand cmdParticulardata = new SqlCommand(@"INSERT INTO tblPurchaseOrderDtls([HeaderID],[Particulars],[HSN],[Qty],[Rate],[Amount],[CGSTPer],[CGSTAmt],[SGSTPer],[SGSTAmt],[IGSTPer],[IGSTAmt],[GrandTotal],[Discount],[Description],[UOM]) 
-                        VALUES(" + MaxId + ",'" + Particulars + "','" + HSN + "','" + Qty + "'," +
-                         "'" + Rate + "','" + Amount + "','" + CGSTPer + "','" + CGSTAmt + "'," +
-                         "'" + SGSTPer + "','" + SGSTAmt + "','" + IGSTPer + "','" + IGSTAmt + "','" + TotalAmount + "','" + Discount + "','" + Description + "','" + UOM + "')", con);
-                        con.Open();
-                        cmdParticulardata.ExecuteNonQuery();
-                        con.Close();
-                    }
-
-
-                    if (IsSedndMail.Checked == true)
-                    {
-                        string subject = "PO from Excel Enclosures";
-                        Send_Mail(MaxId, subject);
-                    }
-
-                    ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Data Saved Sucessfully');window.location.href='PurchaseOrderList.aspx';", true);
-                }
-                else
-                {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "Alert", "alert('Please Add Particulars Details !!');", true);
-                }
-
-            }
-            else
-            {
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "Alert", "alert('PO no Generation Problem Please Try Again !!');", true);
-            }
-        }
-        #endregion Insert
-
-        #region Update
-        if (btnadd.Text == "Update PO")
-        {
-            //byte[] bytes = null;
-            //if (hdnfileData.Value == "")
-            //{
-            //    string filename = Path.GetFileName(UploadRefDocs.PostedFile.FileName);
-            //    string contentType = UploadRefDocs.PostedFile.ContentType;
-            //    using (Stream fs = UploadRefDocs.PostedFile.InputStream)
-            //    {
-            //        using (BinaryReader br = new BinaryReader(fs))
-            //        {
-            //            bytes = br.ReadBytes((Int32)fs.Length);
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    if (UploadRefDocs.HasFile)
-            //    {
-            //        string filename = Path.GetFileName(UploadRefDocs.PostedFile.FileName);
-            //        string contentType = UploadRefDocs.PostedFile.ContentType;
-            //        using (Stream fs = UploadRefDocs.PostedFile.InputStream)
-            //        {
-            //            using (BinaryReader br = new BinaryReader(fs))
-            //            {
-            //                bytes = br.ReadBytes((Int32)fs.Length);
-            //            }
-            //        }
-            //    }
-            //}
-
-            if (dgvParticularsDetails.Rows.Count > 0)
-            {
-                SqlCommand cmd = new SqlCommand("SP_PurchaseOrder", con);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@Action", "update");
-                cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(ViewState["UpdateRowId"].ToString()));
-                cmd.Parameters.AddWithValue("@SupplierName", txtSupplierName.Text.Trim());
-                cmd.Parameters.AddWithValue("@PONo", txtPONo.Text);
-                DateTime PODate = Convert.ToDateTime(txtPodate.Text.ToString(), System.Globalization.CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
-
-                txtPodate.Text = PODate.ToString("yyyy-MM-dd");
-                cmd.Parameters.AddWithValue("@PODate", txtPodate.Text);
-                cmd.Parameters.AddWithValue("@Mode", ddlMode.Text.Trim());
-                DateTime DeliveryDate = Convert.ToDateTime(txtDeliverydate.Text.ToString(), System.Globalization.CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
-                txtDeliverydate.Text = DeliveryDate.ToString("yyyy-MM-dd");
-                cmd.Parameters.AddWithValue("@DeliveryDate", txtDeliverydate.Text.Trim());
-                cmd.Parameters.AddWithValue("@ReferQuotation", txtReferQuotation.Text.Trim());
-                cmd.Parameters.AddWithValue("@Remarks", txtRemarks.Text.Trim());
-                cmd.Parameters.AddWithValue("@OrderCloseMode", ddlOrderCloseMode.Text.Trim());
-                cmd.Parameters.AddWithValue("@KindAtt", ddlKindAtt.Text.Trim());
-                cmd.Parameters.AddWithValue("@Payment", txtPayment.Text);
-                cmd.Parameters.AddWithValue("@Transport", txtTransport.Text);
-                cmd.Parameters.AddWithValue("@DeliveryTime", txtDeliveryTime.Text);
-                cmd.Parameters.AddWithValue("@Packing", txtPacking.Text);
-                cmd.Parameters.AddWithValue("@Taxs", txtTaxs.Text);
-                //if (hdnfileData.Value == "")
-                //{
-
-                //    cmd.Parameters.AddWithValue("@RefDocuments", bytes);
-
-                //}
-                //else
-                //{
-                //    if (UploadRefDocs.HasFile)
-                //    {
-                //        cmd.Parameters.AddWithValue("@RefDocuments", hdnfileData.Value);
-                //    }
-                //    else
-                //    {
-                //        cmd.Parameters.AddWithValue("@RefDocuments", bytes);
-                //    }
-                //}
-                //cmd.Parameters.AddWithValue("@PaymentTerm", ddlPaymentTerm.Text.Trim());
-                //cmd.Parameters.AddWithValue("@PackingAndForwarding", ddlPackingAndForwarding.Text.Trim());
-                //cmd.Parameters.AddWithValue("@Transportation", ddlTransportation.Text.Trim());
-                //cmd.Parameters.AddWithValue("@Variation", ddlVariation.Text.Trim());
-                //cmd.Parameters.AddWithValue("@Delivery", ddlDelivery.Text.Trim());
-                //cmd.Parameters.AddWithValue("@TestCertificate", ddlTestCertificate.Text.Trim());
-                //cmd.Parameters.AddWithValue("@WeeklyOff", ddlWeeklyOff.Text.Trim());
-                //cmd.Parameters.AddWithValue("@Time", ddlTime.Text.Trim());
-                //cmd.Parameters.AddWithValue("@II", ddlII.Text.Trim());
-                cmd.Parameters.AddWithValue("@GrandTotal", hdnGrandtotal.Value);
-                cmd.Parameters.AddWithValue("@CreatedBy", Session["Username"].ToString());
-
-                //17 March 2022
-                cmd.Parameters.AddWithValue("@TransportationCharges", txtTCharge.Text.Trim());
-                cmd.Parameters.AddWithValue("@TransportationDescription", txtTDescription.Text.Trim());
-                cmd.Parameters.AddWithValue("@TCGSTPer", txtTCGSTPer.Text.Trim());
-                cmd.Parameters.AddWithValue("@TCGSTAmt", txtTCGSTamt.Text.Trim());
-                cmd.Parameters.AddWithValue("@TSGSTPer", txtTSGSTPer.Text.Trim());
-                cmd.Parameters.AddWithValue("@TSGSTAmt", txtTSGSTamt.Text.Trim());
-                cmd.Parameters.AddWithValue("@TIGSTPer", txtTIGSTPer.Text.Trim());
-                cmd.Parameters.AddWithValue("@TIGSTAmt", txtTIGSTamt.Text.Trim());
-                cmd.Parameters.AddWithValue("@TotalCost", txtTCost.Text.Trim());
-                int a = 0;
-                cmd.Connection.Open();
-                a = cmd.ExecuteNonQuery();
-                cmd.Connection.Close();
-
-
-                SqlCommand cmddelete = new SqlCommand("delete from tblPurchaseOrderDtls where HeaderID='" + Convert.ToInt32(ViewState["UpdateRowId"].ToString()) + "'", con);
-                con.Open();
-                cmddelete.ExecuteNonQuery();
-                con.Close();
-
-
-
-                foreach (GridViewRow row in dgvParticularsDetails.Rows)
-                {
-                    string Particulars = ((Label)row.FindControl("lblParticulars")).Text;
-                    string HSN = ((Label)row.FindControl("lblHSN")).Text;
-                    string Qty = ((Label)row.FindControl("lblQty")).Text;
-                    string Rate = ((Label)row.FindControl("lblRate")).Text;
-                    string Discount = ((Label)row.FindControl("lblDiscount")).Text;
-                    string Amount = ((Label)row.FindControl("lblAmount")).Text;
-                    string CGSTPer = ((Label)row.FindControl("lblCGSTPer")).Text;
-                    string CGSTAmt = ((Label)row.FindControl("lblCGSTAmt")).Text;
-                    string SGSTPer = ((Label)row.FindControl("lblSGSTPer")).Text;
-                    string SGSTAmt = ((Label)row.FindControl("lblSGSTAmt")).Text;
-                    string IGSTPer = ((Label)row.FindControl("lblIGSTPer")).Text;
-                    string IGSTAmt = ((Label)row.FindControl("lblIGSTAmt")).Text;
-                    string TotalAmount = ((Label)row.FindControl("lblTotalAmount")).Text;
-                    string Description = ((Label)row.FindControl("lblDescription")).Text;
-                    string UOM = ((Label)row.FindControl("lblUOM")).Text;
-
-                    SqlCommand cmdParticulardata = new SqlCommand(@"INSERT INTO tblPurchaseOrderDtls([HeaderID],[Particulars],[HSN],[Qty],[Rate],[Amount],[CGSTPer],[CGSTAmt],[SGSTPer],[SGSTAmt],[IGSTPer],[IGSTAmt],[GrandTotal],[Discount],[Description],[UOM]) 
-                        VALUES(" + ViewState["UpdateRowId"].ToString() + ",'" + Particulars + "','" + HSN + "','" + Qty + "'," +
-                     "'" + Rate + "','" + Amount + "','" + CGSTPer + "','" + CGSTAmt + "'," +
-                     "'" + SGSTPer + "','" + SGSTAmt + "','" + IGSTPer + "','" + IGSTAmt + "','" + TotalAmount + "','" + Discount + "','" + Description + "','" + UOM + "')", con);
-                    con.Open();
-                    cmdParticulardata.ExecuteNonQuery();
-                    con.Close();
-                }
-
-
-                if (IsSedndMail.Checked == true)
-                {
-                    int idd = Convert.ToInt32(ViewState["UpdateRowId"].ToString());
-                    string subject = "Updated PO from Pune Abrasieves Pvt. Ltd.";
-                    Send_Mail(idd, subject);
-                }
-
-                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Data Updated Sucessfully');window.location.href='PurchaseOrderList.aspx';", true);
-            }
-            else
+            string subject = string.Empty;
+            string action = string.Empty;
+            string PONo = string.Empty;
+            #region Insert
+            if (dgvParticularsDetails.Rows.Count < 0)
             {
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "Alert", "alert('Please Add Particulars Details !!');", true);
             }
 
+            if (Request.QueryString["ID"] != null)
+            {
+                action = Request.QueryString["Action"].ToString();
+                if (chkAmended.Checked == false && action == "OLD")
+                {
+                    PONo = txtPONo.Text;
+                    Addheaderdata("Update", PONo);
+                    DeleteData();
+                    ProductData();
+                    subject = "Updated PO from Pune Abrasieves Pvt. Ltd.";
+
+                }
+                else if (action == "NEW")
+                {
+                    PONo = Code();
+                    Addheaderdata("Insert", PONo);
+                    ProductData();
+                    subject = "Created PO from Pune Abrasieves Pvt. Ltd.";
+
+                }
+                else
+                {
+                    PONo = Revicecode(txtPONo.Text);
+                    Addheaderdata("Insert", PONo);
+                    ProductData();
+                    subject = "Created PO from Pune Abrasieves Pvt. Ltd.";
+
+
+                }
+
+            }
+            else
+            {
+                PONo = Code();
+                Addheaderdata("Insert", PONo);
+                ProductData();
+                subject = "Created PO from Pune Abrasieves Pvt. Ltd.";
+
+            }
+
+            if (IsSedndMail.Checked == true)
+            {
+                int idd = Convert.ToInt32(ViewState["UpdateRowId"].ToString());
+                Send_Mail(idd, subject);
+            }
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "Alert", "alert('Data Successfully Added !!');window.location.href='PurchaseOrderList.aspx';", true);
+            #endregion Insert
         }
-        #endregion Update
+        catch { }
+
+
+
+    }
+
+    public void Addheaderdata(string action, string PONo)
+    {
+        SqlCommand cmd = new SqlCommand("SP_PurchaseOrder", con);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@Action", action);
+        if (ViewState["UpdateRowId"] != null)
+        {
+            cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(ViewState["UpdateRowId"].ToString()));
+        }
+        cmd.Parameters.AddWithValue("@SupplierName", txtSupplierName.Text.Trim());
+        cmd.Parameters.AddWithValue("@PONo", PONo);
+        if (!string.IsNullOrWhiteSpace(txtPodate.Text))
+        {
+            DateTime PODate = Convert.ToDateTime(txtPodate.Text.ToString(), System.Globalization.CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
+
+            txtPodate.Text = PODate.ToString("yyyy-MM-dd");
+            cmd.Parameters.AddWithValue("@PODate", txtPodate.Text);
+        }
+        else
+        {
+            cmd.Parameters.AddWithValue("@PODate", DBNull.Value);
+        }
+        cmd.Parameters.AddWithValue("@Mode", ddlMode.Text.Trim());
+        DateTime DeliveryDate = Convert.ToDateTime(txtDeliverydate.Text.ToString(), System.Globalization.CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
+        txtDeliverydate.Text = DeliveryDate.ToString("yyyy-MM-dd");
+        cmd.Parameters.AddWithValue("@DeliveryDate", txtDeliverydate.Text.Trim());
+        cmd.Parameters.AddWithValue("@ReferQuotation", txtReferQuotation.Text.Trim());
+        cmd.Parameters.AddWithValue("@Remarks", txtRemarks.Text.Trim());
+        cmd.Parameters.AddWithValue("@OrderCloseMode", ddlOrderCloseMode.Text.Trim());
+        cmd.Parameters.AddWithValue("@KindAtt", ddlKindAtt.Text.Trim());
+        cmd.Parameters.AddWithValue("@Payment", txtPayment.Text);
+        cmd.Parameters.AddWithValue("@Transport", txtTransport.Text);
+        cmd.Parameters.AddWithValue("@DeliveryTime", txtDeliveryTime.Text);
+        cmd.Parameters.AddWithValue("@Packing", txtPacking.Text);
+        cmd.Parameters.AddWithValue("@Taxs", txtTaxs.Text);
+
+        cmd.Parameters.AddWithValue("@GrandTotal", hdnGrandtotal.Value);
+        cmd.Parameters.AddWithValue("@CreatedBy", Session["Username"].ToString());
+
+        //17 March 2022
+        cmd.Parameters.AddWithValue("@TransportationCharges", txtTCharge.Text.Trim());
+        cmd.Parameters.AddWithValue("@TransportationDescription", txtTDescription.Text.Trim());
+        cmd.Parameters.AddWithValue("@TCGSTPer", txtTCGSTPer.Text.Trim());
+        cmd.Parameters.AddWithValue("@TCGSTAmt", txtTCGSTamt.Text.Trim());
+        cmd.Parameters.AddWithValue("@TSGSTPer", txtTSGSTPer.Text.Trim());
+        cmd.Parameters.AddWithValue("@TSGSTAmt", txtTSGSTamt.Text.Trim());
+        cmd.Parameters.AddWithValue("@TIGSTPer", txtTIGSTPer.Text.Trim());
+        cmd.Parameters.AddWithValue("@TIGSTAmt", txtTIGSTamt.Text.Trim());
+        cmd.Parameters.AddWithValue("@TotalCost", txtTCost.Text.Trim());
+        int a = 0;
+        cmd.Connection.Open();
+        a = cmd.ExecuteNonQuery();
+        cmd.Connection.Close();
+    }
+    public void DeleteData()
+    {
+        SqlCommand cmddelete = new SqlCommand("delete from tblPurchaseOrderDtls where HeaderID='" + Convert.ToInt32(ViewState["UpdateRowId"].ToString()) + "'", con);
+        con.Open();
+        cmddelete.ExecuteNonQuery();
+        con.Close();
+    }
+    public void ProductData()
+    {
+        int MaxId = 0;
+        if (Request.QueryString["ID"] != null)
+        {
+            string action = Request.QueryString["Action"].ToString();
+            if (action == "NEW" || action == "OLD")
+            {
+                if (chkAmended.Checked == true || action == "NEW")
+                {
+                    SqlCommand cmdmax = new SqlCommand("select MAX(Id) as MAxID from tblPurchaseOrderHdr", con);
+                    con.Open();
+                    Object mx = cmdmax.ExecuteScalar();
+                    con.Close();
+                    MaxId = Convert.ToInt32(mx.ToString());
+                }
+                else
+                {
+                    MaxId = Convert.ToInt32(ViewState["UpdateRowId"].ToString());
+                }
+
+            }
+            else
+            {
+                MaxId = Convert.ToInt32(ViewState["UpdateRowId"].ToString());
+            }
+
+        }
+        else
+        {
+            SqlCommand cmdmax = new SqlCommand("select MAX(Id) as MAxID from tblPurchaseOrderHdr", con);
+            con.Open();
+            Object mx = cmdmax.ExecuteScalar();
+            con.Close();
+            MaxId = Convert.ToInt32(mx.ToString());
+        }
+        foreach (GridViewRow row in dgvParticularsDetails.Rows)
+        {
+            string Particulars = ((Label)row.FindControl("lblParticulars")).Text;
+            string Product = ((Label)row.FindControl("lblProduct")).Text;
+            string HSN = ((Label)row.FindControl("lblHSN")).Text;
+            string Qty = ((Label)row.FindControl("lblQty")).Text;
+            string Rate = ((Label)row.FindControl("lblRate")).Text;
+            string Discount = ((Label)row.FindControl("lblDiscount")).Text;
+            string Amount = ((Label)row.FindControl("lblAmount")).Text;
+            string CGSTPer = ((Label)row.FindControl("lblCGSTPer")).Text;
+            string CGSTAmt = ((Label)row.FindControl("lblCGSTAmt")).Text;
+            string SGSTPer = ((Label)row.FindControl("lblSGSTPer")).Text;
+            string SGSTAmt = ((Label)row.FindControl("lblSGSTAmt")).Text;
+            string IGSTPer = ((Label)row.FindControl("lblIGSTPer")).Text;
+            string IGSTAmt = ((Label)row.FindControl("lblIGSTAmt")).Text;
+            string TotalAmount = ((Label)row.FindControl("lblTotalAmount")).Text;
+            string Description = ((Label)row.FindControl("lblDescription")).Text;
+            string UOM = ((Label)row.FindControl("lblUOM")).Text;
+
+            SqlCommand cmdParticulardata = new SqlCommand(@"INSERT INTO tblPurchaseOrderDtls([HeaderID],[Particulars],[Product],[HSN],[Qty],[Rate],[Amount],[CGSTPer],[CGSTAmt],[SGSTPer],[SGSTAmt],[IGSTPer],[IGSTAmt],[GrandTotal],[Discount],[Description],[UOM]) 
+                        VALUES(" + MaxId.ToString() + ",'" + Particulars + "','" + Product + "','" + HSN + "','" + Qty + "'," +
+             "'" + Rate + "','" + Amount + "','" + CGSTPer + "','" + CGSTAmt + "'," +
+             "'" + SGSTPer + "','" + SGSTAmt + "','" + IGSTPer + "','" + IGSTAmt + "','" + TotalAmount + "','" + Discount + "','" + Description + "','" + UOM + "')", con);
+            con.Open();
+            cmdParticulardata.ExecuteNonQuery();
+            con.Close();
+        }
     }
 
     protected void btnreset_Click(object sender, EventArgs e)
@@ -771,7 +736,7 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
         ViewState["RowNo"] = (int)ViewState["RowNo"] + 1;
         DataTable dt = (DataTable)ViewState["ParticularDetails"];
 
-        dt.Rows.Add(ViewState["RowNo"], ddlcomponent.SelectedItem.Text, txtHSN.Text, txtQty.Text, txtRate.Text, txtDisc.Text, txtAmountt.Text, CGSTPer.Text, CGSTAmt.Text, SGSTPer.Text, SGSTAmt.Text, IGSTPer.Text, IGSTAmt.Text, txtTotalamt.Text, txtDescription.Text, txtUOM.Text);
+        dt.Rows.Add(ViewState["RowNo"], ddlcomponent.SelectedItem.Text, txtProduct.Text, txtHSN.Text, txtQty.Text, txtRate.Text, txtDisc.Text, txtAmountt.Text, CGSTPer.Text, CGSTAmt.Text, SGSTPer.Text, SGSTAmt.Text, IGSTPer.Text, IGSTAmt.Text, txtTotalamt.Text, txtDescription.Text, txtUOM.Text);
         ViewState["ParticularDetails"] = dt;
 
         dgvParticularsDetails.DataSource = (DataTable)ViewState["ParticularDetails"];
@@ -812,6 +777,7 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
         GridViewRow row = (sender as LinkButton).NamingContainer as GridViewRow;
 
         string Particulars = ((Label)row.FindControl("lblParticulars")).Text;
+        string Product = ((TextBox)row.FindControl("txtProduct")).Text;
         string HSN = ((Label)row.FindControl("lblHSN")).Text;
         string Qty = ((TextBox)row.FindControl("txtQty")).Text;
         string Rate = ((TextBox)row.FindControl("txtRate")).Text;
@@ -832,6 +798,7 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
         DataTable Dt = ViewState["ParticularDetails"] as DataTable;
 
         Dt.Rows[row.RowIndex]["Particulars"] = Particulars;
+        Dt.Rows[row.RowIndex]["Product"] = Product;
         Dt.Rows[row.RowIndex]["HSN"] = HSN;
         Dt.Rows[row.RowIndex]["Qty"] = Qty;
         Dt.Rows[row.RowIndex]["Rate"] = Rate;
@@ -915,46 +882,10 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
             txtHSN.Text = Dt.Rows[0]["HSN"].ToString() == "" ? "0" : Dt.Rows[0]["HSN"].ToString();
             txtRate.Text = Dt.Rows[0]["Price"].ToString() == "" ? "0" : Dt.Rows[0]["Price"].ToString();
             txtUOM.Text = Dt.Rows[0]["Unit"].ToString() == "" ? "0" : Dt.Rows[0]["Unit"].ToString();
-
-
-
+            txtProduct.Text = ddlcomponent.SelectedItem.Text;
 
         }
     }
-    //[System.Web.Script.Services.ScriptMethod()]
-    //[System.Web.Services.WebMethod]
-    //public static List<string> GetItemList(string prefixText, int count)
-    //{
-    //    return AutoFilItem(prefixText);
-    //}
-
-    //public static List<string> AutoFilItem(string prefixText)
-    //{
-    //    using (SqlConnection con = new SqlConnection())
-    //    {
-    //        con.ConnectionString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
-
-    //        using (SqlCommand com = new SqlCommand())
-    //        {
-    //            com.CommandText = "select DISTINCT ComponentName from tbl_ComponentMaster where IsDeleted=0 AND " + "ComponentName like '%'+ @Search + '%'";
-
-    //            com.Parameters.AddWithValue("@Search", prefixText);
-    //            //com.Parameters.AddWithValue("@SName", sName);
-    //            com.Connection = con;
-    //            con.Open();
-    //            List<string> Items = new List<string>();
-    //            using (SqlDataReader sdr = com.ExecuteReader())
-    //            {
-    //                while (sdr.Read())
-    //                {
-    //                    Items.Add(sdr["ComponentName"].ToString());
-    //                }
-    //            }
-    //            con.Close();
-    //            return Items;
-    //        }
-    //    }
-    //}
 
     [System.Web.Script.Services.ScriptMethod()]
     [System.Web.Services.WebMethod]
@@ -1239,12 +1170,13 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
             if (txts == null)
             {
                 Totalamt += Convert.ToDecimal((e.Row.FindControl("lblTotalAmount") as Label).Text);
-                hdnGrandtotal.Value = Totalamt.ToString();
+                hdnGrandtotal.Value = Totalamt.ToString();               
             }
             else
             {
                 Totalamt += Convert.ToDecimal((e.Row.FindControl("txtTotalAmount") as TextBox).Text);
                 hdnGrandtotal.Value = Totalamt.ToString();
+
             }
         }
         if (e.Row.RowType == DataControlRowType.Footer)
@@ -1557,19 +1489,34 @@ public partial class Purchase_PurchaseOrder : System.Web.UI.Page
     }
     protected void txtDeliverydate_TextChanged(object sender, EventArgs e)
     {
+        if (!string.IsNullOrWhiteSpace(txtPodate.Text) && !string.IsNullOrWhiteSpace(txtDeliverydate.Text))
+        {
+            DateTime PoDate = Convert.ToDateTime(txtPodate.Text);
+            DateTime Ddate = Convert.ToDateTime(txtDeliverydate.Text);
+
+            if (PoDate > Ddate)
+            {
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('PO Date is greater than Delivery Date...Please Choose Correct Date.');", true);
+                btnadd.Enabled = false;
+            }
+            else
+            {
+                btnadd.Enabled = true;
+            }
+        }
         //DateTime fromdate = DateTime.Parse(Convert.ToDateTime(txtBilldate.Text).ToShortDateString());
-        DateTime PoDate = Convert.ToDateTime(txtPodate.Text);
-        DateTime Ddate = Convert.ToDateTime(txtDeliverydate.Text);
-        //DateTime todate = DateTime.Parse(Convert.ToDateTime(txtDOR.Text).ToShortDateString());
-        if (PoDate > Ddate)
-        {
-            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('PO Date is greater than Delivery Date...Please Choose Correct Date.');", true);
-            btnadd.Enabled = false;
-        }
-        else
-        {
-            btnadd.Enabled = true;
-        }
+        //DateTime PoDate = Convert.ToDateTime(txtPodate.Text);
+        //DateTime Ddate = Convert.ToDateTime(txtDeliverydate.Text);
+        ////DateTime todate = DateTime.Parse(Convert.ToDateTime(txtDOR.Text).ToShortDateString());
+        //if (PoDate > Ddate)
+        //{
+        //    ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('PO Date is greater than Delivery Date...Please Choose Correct Date.');", true);
+        //    btnadd.Enabled = false;
+        //}
+        //else
+        //{
+        //    btnadd.Enabled = true;
+        //}
     }
     protected void txtRate_TextChanged1(object sender, EventArgs e)
     {

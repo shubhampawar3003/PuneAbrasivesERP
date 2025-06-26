@@ -2961,7 +2961,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(CDBL(Fields!GSTAmt.Value))</Value>
+                                  <Value>=FORMATNUMBER(Sum(CDBL(Fields!GSTAmt.Value)),2)</Value>
                                   <Style>
                                     <FontFamily>times New Roman</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -3015,7 +3015,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(CDBL(Fields!Amount.Value))</Value>
+                                  <Value>=FORMATNUMBER(Sum(CDBL(Fields!Amount.Value)),2)</Value>
                                   <Style>
                                     <FontSize>11pt</FontSize>
                                   </Style>
@@ -3140,7 +3140,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(CDBL(Fields!Amount.Value))</Value>
+                                  <Value>=FormatNumber(Sum(CDbl(Fields!Amount.Value)), 2)</Value>
                                   <Style>
                                     <FontFamily>times New Roman</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -3268,7 +3268,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(CDBL(Fields!GSTAmt.Value))</Value>
+                                  <Value>=FormatNumber(Sum(CDbl(Fields!GSTAmt.Value)), 2)</Value>
                                   <Style>
                                     <FontFamily>times New Roman</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -3394,7 +3394,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(CDBL(Fields!GrandTotal.Value))</Value>
+                                  <Value>=FormatNumber(Sum(CDbl(Fields!GrandTotal.Value)), 2)</Value>
                                   <Style>
                                     <FontFamily>times New Roman</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -3462,7 +3462,7 @@
             <DataSetName>DataSet2</DataSetName>
             <Top>6.11955cm</Top>
             <Height>3.5548cm</Height>
-            <Width>18.7661cm</Width>
+            <Width>18.76611cm</Width>
             <ZIndex>3</ZIndex>
             <Style>
               <Border>
@@ -3473,7 +3473,7 @@
         </ReportItems>
         <KeepTogether>true</KeepTogether>
         <Height>12.83436cm</Height>
-        <Width>18.7661cm</Width>
+        <Width>18.76611cm</Width>
         <Style>
           <Border>
             <Style>Solid</Style>
@@ -3491,7 +3491,7 @@
   <Width>7.38823in</Width>
   <Page>
     <PageHeader>
-      <Height>3.43076cm</Height>
+      <Height>3.7218cm</Height>
       <PrintOnFirstPage>true</PrintOnFirstPage>
       <PrintOnLastPage>true</PrintOnLastPage>
       <ReportItems>
@@ -3548,7 +3548,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>Pune 411019, Maharashtra, India</Value>
+                      <Value>Pune 411019, Maharashtra, India.</Value>
                       <Style>
                         <FontStyle>Normal</FontStyle>
                         <FontFamily>times New Roman</FontFamily>
@@ -3558,13 +3558,27 @@
                       </Style>
                     </TextRun>
                     <TextRun>
-                      <Value xml:space="preserve">                   </Value>
+                      <Value xml:space="preserve">             </Value>
                       <Style>
                         <FontFamily>times New Roman</FontFamily>
                         <FontSize>12pt</FontSize>
                         <FontWeight>Normal</FontWeight>
                         <TextDecoration>None</TextDecoration>
                         <Color>#000000</Color>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Contact No.: 7709991923.     Email : rucha@puneabrasivea.com</Value>
+                      <Style>
+                        <FontFamily>Times New Roman</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <FontWeight>Normal</FontWeight>
+                        <TextDecoration>None</TextDecoration>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -3640,7 +3654,7 @@
           </ReportItems>
           <KeepTogether>true</KeepTogether>
           <Left>0.00003cm</Left>
-          <Height>3.43076cm</Height>
+          <Height>3.61597cm</Height>
           <Width>18.75724cm</Width>
           <Style>
             <Border>

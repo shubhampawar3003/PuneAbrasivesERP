@@ -751,9 +751,17 @@ public partial class Admin_PurchaseBillPDF : System.Web.UI.Page
             doc.Add(table);
             ///
 
-            var CGSTResAmt = CGST_price + CGSTamt + Convert.ToDouble(TCGSTAmt); //Convert.ToDecimal(amount) * Convert.ToDecimal(Dt.Rows[0]["cgstperc"].ToString()) / 100;
-            var SGSTResAmt = SGST_price + SGSTamt + Convert.ToDouble(TSGSTAmt); //Convert.ToDecimal(amount) * Convert.ToDecimal(Dt.Rows[0]["sgstperc"].ToString()) / 100;
-            var IGSTResAmt = IGST_price + IGSTamt + Convert.ToDouble(TIGSTAmt); //Convert.ToDecimal(amount) * Convert.ToDecimal(Dt.Rows[0]["igstperc"].ToString()) / 100;
+            //var CGSTResAmt = Convert.ToDecimal(amount) * Convert.ToDecimal(Dt.Rows[0]["cgstperc"].ToString()) / 100;
+            //var SGSTResAmt = Convert.ToDecimal(amount) * Convert.ToDecimal(Dt.Rows[0]["sgstperc"].ToString()) / 100;
+            //var IGSTResAmt = Convert.ToDecimal(amount) * Convert.ToDecimal(Dt.Rows[0]["igstperc"].ToString()) / 100;
+            decimal cgstPerc = string.IsNullOrWhiteSpace(Dt.Rows[0]["cgstperc"].ToString()) ? 0 : Convert.ToDecimal(Dt.Rows[0]["cgstperc"]);
+            decimal sgstPerc = string.IsNullOrWhiteSpace(Dt.Rows[0]["sgstperc"].ToString()) ? 0 : Convert.ToDecimal(Dt.Rows[0]["sgstperc"]);
+            decimal igstPerc = string.IsNullOrWhiteSpace(Dt.Rows[0]["igstperc"].ToString()) ? 0 : Convert.ToDecimal(Dt.Rows[0]["igstperc"]);
+
+            var CGSTResAmt = Convert.ToDecimal(amount) * cgstPerc / 100;
+            var SGSTResAmt = Convert.ToDecimal(amount) * sgstPerc / 100;
+            var IGSTResAmt = Convert.ToDecimal(amount) * igstPerc / 100;
+
 
 
             //Add Total Row start
