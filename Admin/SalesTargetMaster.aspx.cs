@@ -24,8 +24,7 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
         {
             if (!IsPostBack)
             {
-                GetSalesPerson();
-                UserCode();
+                GetSalesPerson();              
                 GetYears();
                 GetMonths();
                 if (Request.QueryString["ID"] != null)
@@ -38,22 +37,6 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
         }
     }
 
-    //Company Code Auto
-    protected void UserCode()
-    {
-        SqlDataAdapter ad = new SqlDataAdapter("SELECT  ISNULL(MAX(CAST(SUBSTRING(TargetCode, CHARINDEX('-', TargetCode) + 1, LEN(TargetCode)) AS INT)), 0) + 1 AS maxno FROM [tbl_SalesTargetMaster]", Cls_Main.Conn);
-        DataTable dt = new DataTable();
-        ad.Fill(dt);
-        if (dt.Rows.Count > 0)
-        {
-            int maxid = dt.Rows[0]["maxno"].ToString() == "" ? 0 : Convert.ToInt32(dt.Rows[0]["maxno"].ToString());
-            txtTargetcode.Text = "PAPL/ST-" + maxid.ToString();
-        }
-        else
-        {
-            txtTargetcode.Text = string.Empty;
-        }
-    }
 
     //Data Fetch
     private void Load_Record(string ID)
@@ -68,11 +51,11 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
             txtRate.Text = Dt.Rows[0]["Rate"].ToString();
             txtcompanyname.Text = Dt.Rows[0]["Customername"].ToString();
             txtcomponent.Text = Dt.Rows[0]["Component"].ToString();
-            txtGrade.Text = Dt.Rows[0]["Grade"].ToString();
+           
             txtQuantity.Text = Dt.Rows[0]["Quantity"].ToString();
             txtamount.Text = Dt.Rows[0]["Amount"].ToString();
             hfCalculatedAmount.Value = Dt.Rows[0]["Amount"].ToString();
-            txtTargetcode.Text = Dt.Rows[0]["TargetCode"].ToString();
+            hhd.Value = Dt.Rows[0]["id"].ToString();
 
 
         }
@@ -163,8 +146,7 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
                     Cmd.Parameters.AddWithValue("@Amount", hfCalculatedAmount.Value);
                     Cmd.Parameters.AddWithValue("@companyname", txtcompanyname.Text.Trim());
                     Cmd.Parameters.AddWithValue("@component", txtcomponent.Text.Trim());
-                    Cmd.Parameters.AddWithValue("@Rate", txtRate.Text.Trim());
-                    Cmd.Parameters.AddWithValue("@Grade", txtGrade.Text.Trim());
+                    Cmd.Parameters.AddWithValue("@Rate", txtRate.Text.Trim());                
                     Cmd.Parameters.AddWithValue("@User", ddlSalesperson.SelectedItem.Text.Trim());
                     Cmd.Parameters.AddWithValue("@Quantity", txtQuantity.Text.Trim());
                     Cmd.Parameters.AddWithValue("@CreatedOn", DateTime.Now);
@@ -176,12 +158,11 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
                 }
                 else
                 {
-                    DataTable Dt = Cls_Main.Read_Table("Select * from tbl_SalesTargetMaster where IsDeleted=0 AND Year='" + ddlYear.SelectedItem.Text.Trim() + "' AND Month='" + ddlMonth.SelectedItem.Text.Trim() + "' AND CustomerName='" + txtcompanyname.Text + "' AND Grade='" + txtGrade.Text + "' AND salesperson='" + ddlSalesperson.SelectedItem.Text + "'");
+                    DataTable Dt = Cls_Main.Read_Table("Select * from tbl_SalesTargetMaster where IsDeleted=0 AND Year='" + ddlYear.SelectedItem.Text.Trim() + "' AND Month='" + ddlMonth.SelectedItem.Text.Trim() + "' AND CustomerName='" + txtcompanyname.Text + "' AND salesperson='" + ddlSalesperson.SelectedItem.Text + "'");
                     if (Dt.Rows.Count > 0)
                     {
                         ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('Already registerd please check and edit..!!')", true);
-                        txtcompanyname.Text = null;
-                        txtGrade.Text = null;
+                        txtcompanyname.Text = null;                       
                         txtRate.Text = null;
                         txtQuantity.Text = null;
 
@@ -194,13 +175,12 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
                         Cmd.Parameters.AddWithValue("@Action", "Save");
                         Cmd.Parameters.AddWithValue("@companyname", txtcompanyname.Text.Trim());
                         Cmd.Parameters.AddWithValue("@component", txtcomponent.Text.Trim());
-                        Cmd.Parameters.AddWithValue("@Year", ddlYear.SelectedItem.Text.Trim());
-                        Cmd.Parameters.AddWithValue("@TargetCode", txtTargetcode.Text.Trim());
+                        Cmd.Parameters.AddWithValue("@Year", ddlYear.SelectedItem.Text.Trim());                       
                         Cmd.Parameters.AddWithValue("@Month", ddlMonth.SelectedValue);
                         Cmd.Parameters.AddWithValue("@Amount", hfCalculatedAmount.Value);
                         Cmd.Parameters.AddWithValue("@Rate", txtRate.Text.Trim());
                         Cmd.Parameters.AddWithValue("@User", ddlSalesperson.SelectedItem.Text.Trim());
-                        Cmd.Parameters.AddWithValue("@Grade", txtGrade.Text.Trim());
+                
                         Cmd.Parameters.AddWithValue("@Quantity", txtQuantity.Text.Trim());
                         Cmd.Parameters.AddWithValue("@CreatedOn", DateTime.Now);
                         Cmd.Parameters.AddWithValue("@CreatedBy", Session["UserCode"].ToString());
@@ -266,40 +246,6 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
         }
     }
 
-    [ScriptMethod()]
-    [WebMethod]
-    public static List<string> GetGradeList(string prefixText, int count)
-    {
-        return AutoFillGradeName(prefixText);
-    }
-
-    public static List<string> AutoFillGradeName(string prefixText)
-    {
-        using (SqlConnection con = new SqlConnection())
-        {
-            con.ConnectionString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
-
-            using (SqlCommand com = new SqlCommand())
-            {
-                com.CommandText = "Select DISTINCT [Grade] from [tbl_ComponentMaster] where " + "Grade like @Search + '%' and IsDeleted=0";
-
-                com.Parameters.AddWithValue("@Search", prefixText);
-                com.Connection = con;
-                con.Open();
-                List<string> countryNames = new List<string>();
-                using (SqlDataReader sdr = com.ExecuteReader())
-                {
-                    while (sdr.Read())
-                    {
-                        countryNames.Add(sdr["Grade"].ToString());
-                    }
-                }
-                con.Close();
-                return countryNames;
-            }
-        }
-    }
-
 
     //Search Components  methods
     [System.Web.Script.Services.ScriptMethod()]
@@ -317,7 +263,7 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
 
             using (SqlCommand com = new SqlCommand())
             {
-                com.CommandText = "SELECT DISTINCT [ComponentName] FROM [tbl_ComponentMaster] where " + "ComponentName like '%'+ @Search + '%' and IsDeleted=0 AND Status = '1'";
+                com.CommandText = "SELECT DISTINCT [ProductName] FROM [tbl_ProductMaster] where " + "ProductName like '%'+ @Search + '%' and IsDeleted=0 AND Status = '1'";
 
                 com.Parameters.AddWithValue("@Search", prefixText);
                 com.Connection = con;
@@ -327,7 +273,7 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
                 {
                     while (sdr.Read())
                     {
-                        countryNames.Add(sdr["ComponentName"].ToString());
+                        countryNames.Add(sdr["ProductName"].ToString());
                     }
                 }
                 con.Close();
@@ -337,20 +283,4 @@ public partial class Admin_SalesTargetMaster : System.Web.UI.Page
     }
 
 
-    protected void txtcomponent_TextChanged(object sender, EventArgs e)
-    {
-        if (txtcomponent.Text != "" || txtcomponent.Text != null)
-        {
-            string Compo = txtcomponent.Text;
-
-            DataTable dt = new DataTable();
-            SqlDataAdapter sad = new SqlDataAdapter("select * from [tbl_ComponentMaster] where ComponentName = '" + Compo + "' AND IsDeleted = 0", Cls_Main.Conn);
-            sad.Fill(dt);
-            if (dt.Rows.Count > 0)
-            {
-                txtGrade.Text = dt.Rows[0]["Grade"].ToString();
-                txtGrade.Enabled = true;
-            }
-        }
-    }
 }

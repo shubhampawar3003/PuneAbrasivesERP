@@ -47,9 +47,8 @@ public partial class Admin_SalesTargetList : System.Web.UI.Page
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@Action", "GetSalesTargetList");
             cmd.Parameters.AddWithValue("@YEAR", ddlYear.SelectedValue);
-            cmd.Parameters.AddWithValue("@Month", ddlMonth.SelectedItem.Text);
-            cmd.Parameters.AddWithValue("@User", txtusername.Text);
-            cmd.Parameters.AddWithValue("@Grade", txtGrade.Text);
+            cmd.Parameters.AddWithValue("@Month", ddlMonth.SelectedValue);
+            cmd.Parameters.AddWithValue("@User", txtusername.Text);           
             cmd.Parameters.AddWithValue("@companyname", txtCustomerName.Text);
             cmd.Parameters.AddWithValue("@component", txtcomponent.Text);
             cmd.Parameters.AddWithValue("@FromDate", txtfromdate.Text);
@@ -199,40 +198,7 @@ public partial class Admin_SalesTargetList : System.Web.UI.Page
         FillGrid();
     }
 
-    //Search Grade method
-    [ScriptMethod()]
-    [WebMethod]
-    public static List<string> GetGradeList(string prefixText, int count)
-    {
-        return AutoFillGradeName(prefixText);
-    }
 
-    public static List<string> AutoFillGradeName(string prefixText)
-    {
-        using (SqlConnection con = new SqlConnection())
-        {
-            con.ConnectionString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
-
-            using (SqlCommand com = new SqlCommand())
-            {
-                com.CommandText = "Select DISTINCT [Grade] from [tbl_SalesTargetMaster] where " + "Grade like @Search + '%' and IsDeleted=0";
-
-                com.Parameters.AddWithValue("@Search", prefixText);
-                com.Connection = con;
-                con.Open();
-                List<string> countryNames = new List<string>();
-                using (SqlDataReader sdr = com.ExecuteReader())
-                {
-                    while (sdr.Read())
-                    {
-                        countryNames.Add(sdr["Grade"].ToString());
-                    }
-                }
-                con.Close();
-                return countryNames;
-            }
-        }
-    }
     protected void btnCreate_Click(object sender, EventArgs e)
     {
         Response.Redirect("SalesTargetMaster.aspx");
@@ -328,8 +294,7 @@ public partial class Admin_SalesTargetList : System.Web.UI.Page
             cmd.Parameters.AddWithValue("@Action", "GetSalesTargetList");
             cmd.Parameters.AddWithValue("@YEAR", ddlYear.SelectedValue);
             cmd.Parameters.AddWithValue("@Month", ddlMonth.SelectedItem.Text);
-            cmd.Parameters.AddWithValue("@User", txtusername.Text);
-            cmd.Parameters.AddWithValue("@Grade", txtGrade.Text);
+            cmd.Parameters.AddWithValue("@User", txtusername.Text);       
             cmd.Parameters.AddWithValue("@companyname", txtCustomerName.Text);
             cmd.Parameters.AddWithValue("@FromDate", txtfromdate.Text);
             cmd.Parameters.AddWithValue("@ToDate", txttodate.Text);

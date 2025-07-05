@@ -176,7 +176,7 @@
                                 </div>
                                 <div class="col-md-3 col-12 mb-3">
                                     <label for="lblcomponent" class="form-label LblStyle"><span class="spncls">*</span>Component :</label>
-                                    <asp:TextBox ID="txtcomponent" CssClass="form-control" placeholder="Search Component" runat="server" OnTextChanged="txtcomponent_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
+                                    <asp:TextBox ID="txtcomponent" CssClass="form-control" placeholder="Search Component" runat="server"  Width="100%" AutoPostBack="true"></asp:TextBox>
                                     <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" Display="Dynamic" ErrorMessage="Please Enter Company Name"
                                         ControlToValidate="txtcomponent" ValidationGroup="form1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
                                     <asp:AutoCompleteExtender ID="AutoCompleteExtender3" runat="server" CompletionListCssClass="completionList"
@@ -184,18 +184,7 @@
                                         CompletionInterval="10" MinimumPrefixLength="1" ServiceMethod="GetComponentList"
                                         TargetControlID="txtcomponent">
                                     </asp:AutoCompleteExtender>
-                                </div>
-                                <div class="col-md-3 col-12 mb-3">
-                                    <label for="lblGrade" class="form-label LblStyle"><span class="spncls">*</span>Grade :</label>
-                                    <asp:TextBox ID="txtGrade" ValidationGroup="1" CssClass="form-control" placeholder="Search Grade" runat="server" Width="100%"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" Display="Dynamic" ErrorMessage="Please Enter Grade"
-                                        ControlToValidate="txtGrade" ValidationGroup="1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                    <asp:AutoCompleteExtender ID="AutoCompleteExtender2" runat="server" CompletionListCssClass="completionList"
-                                        CompletionListHighlightedItemCssClass="itemHighlighted" CompletionListItemCssClass="listItem"
-                                        CompletionInterval="10" MinimumPrefixLength="1" ServiceMethod="GetGradeList"
-                                        TargetControlID="txtGrade" Enabled="true">
-                                    </asp:AutoCompleteExtender>
-                                </div>
+                                </div>                          
                                 <div class="col-md-3 col-12 mb-2">
                                     <label for="lblRate" class="form-label LblStyle"><span class="spncls">*</span>Rate :</label>
                                     <asp:TextBox ID="txtRate" CssClass="form-control" TextMode="Number" ValidationGroup="1" onkeyup="GetCalculation()" placeholder="Enter Rate" runat="server"></asp:TextBox>
@@ -212,11 +201,7 @@
                                     <asp:HiddenField ID="hfCalculatedAmount" runat="server" />
                                     <asp:TextBox ID="txtamount" ReadOnly="true" ClientIDMode="Static" ValidationGroup="1" CssClass="form-control" placeholder="Enter Total" runat="server"></asp:TextBox>
                                     <asp:RequiredFieldValidator ID="RequiredFieldValidator3" ValidationGroup="1" runat="server" ErrorMessage="Please fill Total" ControlToValidate="txtamount" ForeColor="Red"></asp:RequiredFieldValidator>
-                                </div>
-                                <div class="col-md-3 col-12 mb-3" id="rolecodeid" runat="server" visible="false">
-                                    <label for="lblRolecode" class="form-label LblStyle"><span class="spncls">*</span>Target Code :</label>
-                                    <asp:TextBox ID="txtTargetcode" CssClass="form-control" ValidationGroup="1" ReadOnly="true" ForeColor="red" placeholder="Enter Target Code" runat="server"></asp:TextBox>
-                                </div>
+                                </div>                             
                             </div>
                             <div class="col-md-3 col-12 mb-2">
                                 <label for="lblsalesperson" class="form-label LblStyle"><span class="spncls">*</span>Sales Person : </label>
@@ -228,7 +213,7 @@
                             <div class="row">
                                 <div class="col-md-4"></div>
                                 <div class="col-6 col-md-2">
-                                    <asp:Button ID="btnsave" OnClick="btnsave_Click" ValidationGroup="1" CssClass="form-control btn btn-outline-primary m-2" runat="server" Text="Save" />
+                                    <asp:Button ID="btnsave" ValidationGroup="1"  OnClientClick="this.value='Processing...';"  OnClick="btnsave_Click" CssClass="form-control btn btn-outline-primary m-2" runat="server" Text="Save" />
                                 </div>
                                 <div class="col-6 col-md-2">
                                     <asp:Button ID="btncancel" CausesValidation="false" OnClick="btncancel_Click" CssClass="form-control btn btn-outline-danger m-2" runat="server" Text="Cancel" />

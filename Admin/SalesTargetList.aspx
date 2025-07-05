@@ -212,7 +212,7 @@
                             </div>
                             <div class="col-md-3 col-12 mb-3">
                                 <div style="margin-top: 14px;">
-                                    <asp:Label for="lblcomponent" runat="server" Font-Bold="true">Component :</asp:Label>
+                                    <asp:Label for="lblcomponent" runat="server" Font-Bold="true">Product :</asp:Label>
                                     <asp:TextBox ID="txtcomponent" CssClass="form-control" placeholder="Search Component" runat="server" OnTextChanged="txtcomponent_TextChanged" Width="100%" AutoPostBack="true"></asp:TextBox>
                                     <asp:AutoCompleteExtender ID="AutoCompleteExtender4" runat="server" CompletionListCssClass="completionList"
                                         CompletionListHighlightedItemCssClass="itemHighlighted" CompletionListItemCssClass="listItem"
@@ -221,20 +221,7 @@
                                     </asp:AutoCompleteExtender>
                                 </div>
                             </div>
-                            <div class="col-md-3 col-12 mb-3">
-                                <div style="margin-top: 14px;">
-                                    <asp:Label ID="lblGrade" Font-Bold="true" runat="server" Text="Grade :"></asp:Label>
-
-                                    <asp:TextBox ID="txtGrade" ValidationGroup="1" CssClass="form-control" AutoPostBack="true" OnTextChanged="txtGrade_TextChanged" placeholder="Search Grade" runat="server" Width="100%"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" Display="Dynamic" ErrorMessage="Please Enter Grade"
-                                        ControlToValidate="txtGrade" ValidationGroup="1" ForeColor="Red" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                    <asp:AutoCompleteExtender ID="AutoCompleteExtender3" runat="server" CompletionListCssClass="completionList"
-                                        CompletionListHighlightedItemCssClass="itemHighlighted" CompletionListItemCssClass="listItem"
-                                        CompletionInterval="10" MinimumPrefixLength="1" ServiceMethod="GetGradeList"
-                                        TargetControlID="txtGrade" Enabled="true">
-                                    </asp:AutoCompleteExtender>
-                                </div>
-                            </div>
+                          
                             <div class="col-md-3">
                                 <div style="margin-top: 14px;">
                                     <asp:Label ID="lbluser" Font-Bold="true" runat="server" Text="Sales Person Name :"></asp:Label>
@@ -307,12 +294,7 @@
                                         <ItemTemplate>
                                             <asp:Label ID="avComponent" runat="server" Text='<%#Eval("Component")%>'></asp:Label>
                                         </ItemTemplate>
-                                    </asp:TemplateField>
-                                    <asp:TemplateField HeaderText="Grade" HeaderStyle-CssClass="gvhead">
-                                        <ItemTemplate>
-                                            <asp:Label ID="avGrade" runat="server" Text='<%#Eval("Grade")%>'></asp:Label>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
+                                    </asp:TemplateField>                                  
                                     <asp:TemplateField HeaderText="Sales Person" HeaderStyle-CssClass="gvhead">
                                         <ItemTemplate>
                                             <asp:Label ID="Salesperson" runat="server" Text='<%#Eval("SalesPerson")%>'></asp:Label>

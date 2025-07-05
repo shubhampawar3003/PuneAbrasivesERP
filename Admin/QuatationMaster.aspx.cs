@@ -549,7 +549,7 @@ public partial class Admin_QuatationMaster : System.Web.UI.Page
         if (int.TryParse(txtquantity.Text, out value))
         {
             // Check if the value is a multiple of 25
-            if (value % 25 == 0)
+            if (value % 1 == 0)
             {
                 var TotalAmt = Convert.ToDecimal(txtquantity.Text.Trim()) * Convert.ToDecimal(txtrate.Text.Trim());
                 txttotal.Text = Convert.ToString(TotalAmt);
@@ -1521,7 +1521,7 @@ public partial class Admin_QuatationMaster : System.Web.UI.Page
         if (int.TryParse(Qty.Text, out value))
         {
             // Check if the value is a multiple of 25
-            if (value % 25 == 0)
+            if (value % 1 == 0)
             {
                 var total = Convert.ToDecimal(Rate.Text) * Convert.ToDecimal(Qty.Text);
                 Total.Text = string.Format("{0:0.00}", total);
